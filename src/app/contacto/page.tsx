@@ -110,7 +110,7 @@ export default function ContactPage() {
                         <Input
                           id="email"
                           type="email"
-                          placeholder="contacto@empresa.com"
+                          placeholder="nbytex@gmail.com"
                           value={formData.email}
                           onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                           required
@@ -122,7 +122,7 @@ export default function ContactPage() {
                         <Label htmlFor="phone" className="text-xs text-slate-300 font-medium">Teléfono / WhatsApp *</Label>
                         <Input
                           id="phone"
-                          placeholder="+51 999 999 999"
+                          placeholder="+51 990 804 482"
                           value={formData.phone}
                           onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                           required
