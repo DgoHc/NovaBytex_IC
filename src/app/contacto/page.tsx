@@ -27,7 +27,7 @@ export default function ContactPage() {
     );
     setSubmitted(true);
     setTimeout(() => {
-      window.open(`https://wa.me/51999999999?text=${messageText}`, "_blank");
+      window.open(`https://wa.me/51990804482?text=${messageText}`, "_blank");
     }, 400);
   };
 
@@ -172,8 +172,8 @@ export default function ContactPage() {
                     <MapPin className="w-5 h-5" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-white text-sm">Oficina Central</h3>
-                    <p className="text-slate-400 text-xs leading-relaxed mt-0.5">Av. Javier Prado Este 2450, San Borja, Lima, Perú</p>
+                    <h3 className="font-semibold text-white text-sm">Ubicación</h3>
+                    <p className="text-slate-400 text-xs leading-relaxed mt-0.5">Av. Vía Universitaria S/N.</p>
                   </div>
                 </div>
 
@@ -182,8 +182,8 @@ export default function ContactPage() {
                     <Phone className="w-5 h-5" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-white text-sm">Central Telefónica</h3>
-                    <p className="text-slate-400 text-xs mt-0.5">+51 (01) 748-9900 | +51 999 999 999</p>
+                    <h3 className="font-semibold text-white text-sm">Teléfono</h3>
+                    <p className="text-slate-400 text-xs mt-0.5">+51 990 804 482</p>
                   </div>
                 </div>
 
@@ -192,8 +192,8 @@ export default function ContactPage() {
                     <Mail className="w-5 h-5" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-white text-sm">Correo Corporativo</h3>
-                    <p className="text-slate-400 text-xs mt-0.5">ventas@novabytex.com | soporte@novabytex.com</p>
+                    <h3 className="font-semibold text-white text-sm">Correo</h3>
+                    <p className="text-slate-400 text-xs mt-0.5">nbytex@gmail.com</p>
                   </div>
                 </div>
 
@@ -220,7 +220,7 @@ export default function ContactPage() {
                 className="w-full bg-blue-600 hover:bg-blue-500 text-white font-semibold text-sm h-11 rounded-2xl shadow-md shadow-blue-600/20"
                 onClick={() => {
                   const message = encodeURIComponent("¡Hola! Quisiera hablar con un asesor de ventas de Nova Bytex.");
-                  window.open(`https://wa.me/51999999999?text=${message}`, "_blank");
+                  window.open(`https://wa.me/51990804482?text=${message}`, "_blank");
                 }}
               >
                 <MessageCircle className="w-4 h-4 mr-2" />

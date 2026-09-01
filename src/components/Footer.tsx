@@ -105,15 +105,15 @@ export const Footer = () => {
             <ul className="space-y-3 text-xs text-slate-400">
               <li className="flex items-start gap-2.5">
                 <Mail className="w-4 h-4 text-cyan-400 shrink-0 mt-0.5" />
-                <span>ventas@novabytex.com</span>
+                <span>nbytex@gmail.com</span>
               </li>
               <li className="flex items-start gap-2.5">
                 <Phone className="w-4 h-4 text-cyan-400 shrink-0 mt-0.5" />
-                <span>+51 (01) 748-9900 / +51 999 999 999</span>
+                <span>+51 990 804 482</span>
               </li>
               <li className="flex items-start gap-2.5">
                 <MapPin className="w-4 h-4 text-cyan-400 shrink-0 mt-0.5" />
-                <span>San Borja, Lima, Perú</span>
+                <span>Av. Vía Universitaria S/N.</span>
               </li>
             </ul>
           </div>
