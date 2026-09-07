@@ -6,6 +6,9 @@ export const metadata: Metadata = {
   title: "Nova Bytex - Tecnología para Empresas",
   description:
     "Comercialización de productos tecnológicos, infraestructura TI, soporte especializado, proyectos y asesoría para empresas.",
+  icons: {
+    icon: "/assets/branding/logo.jpeg",
+  },
 };
 
 export default function RootLayout({
