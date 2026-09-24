@@ -52,7 +52,7 @@ export const Footer = () => {
             <Link href="/" className="flex items-center gap-3 text-white font-extrabold text-xl tracking-tight select-none">
               <div className="h-11 aspect-[683/450] rounded-xl overflow-hidden border border-slate-700/80 shadow-md shrink-0">
                 <img
-                  src="/assets/branding/logonb-cropped.jpeg"
+                  src="/assets/branding/logonb.jpeg"
                   alt="Nova Bytex"
                   className="h-full w-full object-cover block"
                 />

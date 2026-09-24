@@ -20,6 +20,8 @@ import {
   Briefcase,
   Backpack,
   Paperclip,
+  FileText,
+  FolderArchive,
 } from "lucide-react";
 import { PRODUCTS_DATA, LIBRARY_CATEGORIES } from "@/lib/products";
 import { useCatalog } from "@/contexts/CatalogContext";
@@ -29,14 +31,16 @@ import { cn } from "@/lib/utils";
 
 const categories = ["Todos", ...LIBRARY_CATEGORIES];
 const categoryIcons: Record<string, React.ComponentType<{ className?: string }>> = {
-  Libros: BookOpen,
+  Papelería: FileText,
   Cuadernos: Notebook,
-  Agendas: Calendar,
+  Archivadores: FolderArchive,
   Escritura: Pen,
-  Arte: Palette,
   Oficina: Briefcase,
-  Escolar: Backpack,
+  Arte: Palette,
   Accesorios: Paperclip,
+  Escolar: Backpack,
+  Libros: BookOpen,
+  Agendas: Calendar,
 };
 
 export default function LibreriaPage() {

@@ -9,18 +9,18 @@ import { Button } from "@/components/ui/button";
 const features = [
   {
     icon: BookOpen,
-    title: "Libros & Saberes",
-    desc: "Literatura, académicos y especializados.",
+    title: "Papelería & Impresión",
+    desc: "Papel bond Report, fólderes y suministros.",
   },
   {
     icon: Ruler,
-    title: "Organización Total",
-    desc: "Agendas, cuadernos y planners premium.",
+    title: "Cuadernos & Archivo",
+    desc: "Cuadernos Stanford, archivadores y notas.",
   },
   {
     icon: Sparkles,
-    title: "Arte & Creatividad",
-    desc: "Marcadores, lápices y materiales de arte.",
+    title: "Escritura & Arte",
+    desc: "Lapiceros Faber-Castell, plumones y resaltadores.",
   },
 ];
 
@@ -169,10 +169,10 @@ export const LibraryHero: React.FC = () => {
 
                 <div className="mt-8 space-y-3.5 flex-1">
                   {[
-                    { n: "01", title: "Cuaderno cosido · A5", cat: "Cuadernos" },
-                    { n: "02", title: "Set de marcadores · 24u", cat: "Arte" },
-                    { n: "03", title: "Agenda Premium 2026", cat: "Agendas" },
-                    { n: "04", title: "Architecture of Systems", cat: "Libros" },
+                    { n: "01", title: "Papel Bond Report · A4 75g", cat: "Papelería" },
+                    { n: "02", title: "Cuaderno Stanford · 100h", cat: "Cuadernos" },
+                    { n: "03", title: "Lapiceros Faber-Castell · x12", cat: "Escritura" },
+                    { n: "04", title: "Archivador Palanca · Vinifan", cat: "Archivadores" },
                   ].map((item) => (
                     <div
                       key={item.n}

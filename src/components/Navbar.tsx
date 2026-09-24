@@ -74,7 +74,7 @@ export const Navbar = () => {
         >
           <div className="relative h-full aspect-[683/450] overflow-hidden border-r border-slate-800/90 bg-slate-900 shadow-[4px_0_20px_rgba(0,0,0,0.35)] transition-all duration-300 group-hover:brightness-105">
             <img
-              src="/assets/branding/logonb-cropped.jpeg"
+              src="/assets/branding/logonb.jpeg"
               alt="Nova Bytex"
               className="h-full w-full object-cover block"
             />

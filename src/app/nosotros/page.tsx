@@ -9,10 +9,10 @@ import Link from "next/link";
 import {
   Compass,
   Eye,
+  Target,
+  CircuitBoard,
+  HeartHandshake,
   ShieldCheck,
-  Zap,
-  Cpu,
-  Users,
   Building,
   Sparkles,
   ArrowRight,
@@ -22,7 +22,7 @@ import {
 
 const corporateValues = [
   {
-    icon: <Zap className="w-7 h-7 text-amber-400" />,
+    icon: <Target className="w-7 h-7 text-amber-400" />,
     accent: "from-amber-500/20 to-amber-500/5",
     border: "group-hover:border-amber-500/40",
     title: "Orientación a la Solución",
@@ -40,7 +40,7 @@ const corporateValues = [
       "Garantía en la confidencialidad, protección de datos y estabilidad técnica en cada servicio de redes, soporte y software desplegado.",
   },
   {
-    icon: <Cpu className="w-7 h-7 text-cyan-400" />,
+    icon: <CircuitBoard className="w-7 h-7 text-cyan-400" />,
     accent: "from-cyan-500/20 to-cyan-500/5",
     border: "group-hover:border-cyan-500/40",
     title: "Tecnología e Innovación",
@@ -49,36 +49,13 @@ const corporateValues = [
       "Adopción de herramientas digitales modernas que aporten valor medible, eficiencia y modernización a los negocios.",
   },
   {
-    icon: <Users className="w-7 h-7 text-emerald-400" />,
+    icon: <HeartHandshake className="w-7 h-7 text-emerald-400" />,
     accent: "from-emerald-500/20 to-emerald-500/5",
     border: "group-hover:border-emerald-500/40",
     title: "Compromiso y Cercanía",
     subtitle: "Trato Directo y Transparente",
     description:
       "Asesoría transparente y trato directo, construyendo relaciones duraderas basadas en el cumplimiento y la calidad.",
-  },
-];
-
-const milestones = [
-  {
-    year: "2014",
-    title: "Inicios y Suministro",
-    desc: "Nace la operación atendiendo requerimientos ágiles de suministros de oficina, hardware y soporte técnico corporativo.",
-  },
-  {
-    year: "2018",
-    title: "Alianzas Estratégicas",
-    desc: "Consolidación de canal de distribución con fabricantes líderes de conectividad, servidores y marcas tecnológicas globales.",
-  },
-  {
-    year: "2022",
-    title: "Ingeniería de Software & Redes",
-    desc: "Ampliación de servicios especializados a ciberseguridad gestionada, desarrollo a medida y automatización de procesos.",
-  },
-  {
-    year: "2026 - 2030",
-    title: "Liderazgo Integral",
-    desc: "Horizonte estratégico consolidado en soluciones 360°: papelería corporativa, hardware, IoT, domótica y nube híbrida.",
   },
 ];
 
@@ -304,47 +281,7 @@ export default function AboutPage() {
           </div>
         </div>
 
-        {/* Hitos / Trayectoria */}
-        <div className="mb-20 space-y-10">
-          <motion.div
-            initial={reduceMotion ? false : "hidden"}
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.2 }}
-            variants={reveal(0.08)}
-            className="text-center"
-          >
-            <h2 className="font-editorial text-3xl md:text-4xl leading-[1.08] tracking-[-0.02em] text-white">
-              Trayectoria &amp; Evolución
-            </h2>
-            <p className="text-slate-400 text-sm mt-2">
-              El camino recorrido para convertirnos en tu socio tecnológico integral.
-            </p>
-          </motion.div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 lg:gap-6">
-            {milestones.map((m, index) => (
-              <motion.div
-                key={m.year}
-                initial={reduceMotion ? false : "hidden"}
-                whileInView="visible"
-                viewport={{ once: true, amount: 0.2 }}
-                variants={reveal(0.1 + index * 0.08)}
-              >
-                <Card className="h-full bg-slate-900/50 border-slate-800/80 p-6 space-y-3 relative rounded-2xl hover:border-blue-500/30 transition-all duration-300 hover:-translate-y-1">
-                  <span className="text-2xl sm:text-3xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-400 font-editorial">
-                    {m.year}
-                  </span>
-                  <h3 className="text-base font-semibold text-white leading-snug">
-                    {m.title}
-                  </h3>
-                  <p className="text-slate-400 text-xs sm:text-sm leading-relaxed">
-                    {m.desc}
-                  </p>
-                </Card>
-              </motion.div>
-            ))}
-          </div>
-        </div>
 
         {/* Bottom CTA Card */}
         <motion.div

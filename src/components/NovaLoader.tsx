@@ -30,7 +30,7 @@ export function NovaLoader({
           >
             <div className="relative flex h-20 w-20 items-center justify-center rounded-[24px] border border-blue-100 bg-white p-3 shadow-[0_20px_60px_rgba(29,78,216,0.12)] overflow-hidden">
               <motion.img
-                src="/assets/branding/logonb-cropped.jpeg"
+                src="/assets/branding/logonb.jpeg"
                 alt="Nova Bytex Logo"
                 animate={{ scale: [1, 1.06, 1], opacity: [0.9, 1, 0.9] }}
                 transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut" }}
