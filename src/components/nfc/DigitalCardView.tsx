@@ -173,29 +173,17 @@ export const DigitalCardView: React.FC<DigitalCardViewProps> = ({ profile }) => 
             </motion.div>
           </motion.div>
 
-          {/* Text Hierarchy: Name (strong), Title, Description (light) */}
+          {/* Text Hierarchy: Name (strong) and Title only to minimize scroll */}
           <motion.div 
             variants={{ hidden: { opacity: 0, y: 16 }, visible: { opacity: 1, y: 0 } }}
-            className="text-center w-full mb-8 space-y-3"
+            className="text-center w-full mb-6"
           >
-            <div>
-              <h1 className="text-[26px] sm:text-3xl font-black tracking-tight text-white flex items-center justify-center gap-1.5 leading-none">
-                {profile.nombre}
-                <CheckCircle2 className="w-[18px] h-[18px] text-blue-400 shrink-0" />
-              </h1>
-              <p className="text-[13px] font-semibold text-blue-400 tracking-wide mt-2">
-                {profile.cargo}
-              </p>
-            </div>
-
-            {profile.headline && (
-              <p className="font-editorial text-[19px] sm:text-[21px] leading-tight text-slate-200 italic mt-3 mb-2 px-2">
-                "{profile.headline}"
-              </p>
-            )}
-
-            <p className="text-[13px] leading-relaxed text-slate-400 font-light px-2 max-w-sm mx-auto">
-              {profile.descripcion}
+            <h1 className="text-[24px] sm:text-[28px] font-black tracking-tight text-white flex items-center justify-center gap-1.5 leading-none mb-1.5">
+              {profile.nombre}
+              <CheckCircle2 className="w-[16px] h-[16px] text-blue-400 shrink-0" />
+            </h1>
+            <p className="text-[12px] font-bold text-blue-400/90 tracking-wide uppercase">
+              {profile.cargo}
             </p>
           </motion.div>
 
@@ -355,54 +343,6 @@ export const DigitalCardView: React.FC<DigitalCardViewProps> = ({ profile }) => 
             )}
           </motion.div>
 
-          {/* Nuestros Servicios - Bento Style */}
-          {profile.servicios && profile.servicios.length > 0 && (
-            <motion.div 
-              variants={{ hidden: { opacity: 0, y: 16 }, visible: { opacity: 1, y: 0 } }}
-              className="w-full mt-6"
-            >
-              <div className="flex items-center justify-between px-2 mb-5">
-                <h2 className="text-[13px] uppercase font-black tracking-[0.2em] text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-400">
-                  Servicios Premium
-                </h2>
-                <Link href="/servicios" className="text-[12px] font-bold text-slate-400 hover:text-white flex items-center gap-1.5 group transition-colors bg-slate-900/50 px-3 py-1.5 rounded-full border border-slate-800">
-                  Ver catálogo <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-                </Link>
-              </div>
-              
-              <div className="grid grid-cols-1 gap-3">
-                {profile.servicios.map((srv) => {
-                  const IconComponent = (srv.iconName && serviceIcons[srv.iconName]) || Sparkles;
-                  return (
-                    <Link
-                      key={srv.id}
-                      href={srv.href}
-                      className="relative p-5 rounded-[2rem] bg-gradient-to-r from-slate-900/90 to-slate-900/50 backdrop-blur-xl border border-slate-700/50 hover:border-blue-500/50 transition-all group overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.2)] hover:shadow-[0_10px_40px_-10px_rgba(59,130,246,0.4)] hover:-translate-y-1"
-                    >
-                      <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                      
-                      <div className="relative z-10 flex items-center gap-5">
-                        <div className="w-12 h-12 rounded-2xl bg-slate-800 border border-slate-700 flex items-center justify-center text-blue-400 shrink-0 group-hover:bg-gradient-to-br group-hover:from-blue-500 group-hover:to-cyan-500 group-hover:text-white group-hover:border-transparent transition-all shadow-inner group-hover:scale-110 group-hover:-rotate-3">
-                          <IconComponent className="w-5 h-5" />
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <p className="text-[16px] font-bold text-slate-100 group-hover:text-white transition-colors leading-tight mb-1">
-                            {srv.title}
-                          </p>
-                          <p className="text-[12px] text-slate-400 line-clamp-2 leading-relaxed font-medium mt-1">
-                            {srv.description}
-                          </p>
-                        </div>
-                        <div className="w-8 h-8 rounded-full bg-slate-800/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all -translate-x-4 group-hover:translate-x-0">
-                          <ArrowRight className="w-4 h-4 text-white" />
-                        </div>
-                      </div>
-                    </Link>
-                  );
-                })}
-              </div>
-            </motion.div>
-          )}
 
           {/* Footer Branding */}
           <motion.footer 
