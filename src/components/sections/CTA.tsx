@@ -46,9 +46,13 @@ export const CTA = () => {
             viewport={{ once: true, amount: 0.2 }}
             transition={{ duration: 1.0, delay: 0.12, ease: [0.22, 1, 0.36, 1] }}
           >
-            <Badge className="border border-white/20 bg-white/10 px-4 py-1.5 font-medium text-white">
-              <ShieldCheck className="mr-1.5 inline h-4 w-4 text-blue-200" />
-              Asesoría Corporativa Inmediata
+            <Badge className="border border-white/20 bg-white/10 px-4 py-1.5 font-medium text-white shadow-sm inline-flex items-center gap-2">
+              <img
+                src="/assets/branding/nb-isotype.png"
+                alt="Nova Bytex"
+                className="h-4 w-auto object-contain brightness-110"
+              />
+              <span>Solución, Seguridad y Tecnología para Empresas</span>
             </Badge>
           </motion.div>
 
@@ -59,7 +63,7 @@ export const CTA = () => {
             transition={{ duration: 1.0, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
             className="font-editorial text-4xl font-medium leading-[1.18] tracking-[-0.015em] text-white sm:text-5xl lg:text-6xl"
           >
-            ¿Listo para Transformar la Tecnología de tu Empresa?
+            ¿Listo para Impulsar la Tecnología y Suministros de tu Empresa?
           </motion.h2>
 
           <motion.p
@@ -69,7 +73,7 @@ export const CTA = () => {
             transition={{ duration: 1.0, delay: 0.28, ease: [0.22, 1, 0.36, 1] }}
             className="mx-auto max-w-2xl text-base leading-relaxed text-blue-100 sm:text-lg"
           >
-            Nuestros asesores senior responderán tus consultas técnicas y prepararán una cotización personalizada en menos de 15 minutos.
+            Atendemos desde el requerimiento más urgente de papelería y útiles de oficina hasta infraestructura, redes, ciberseguridad y software con soporte técnico de excelencia.
           </motion.p>
 
           <motion.div

@@ -46,7 +46,7 @@ export const Navbar = () => {
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchValue.trim()) {
-      router.push(`/productos`);
+      router.push(`/productos?search=${encodeURIComponent(searchValue.trim())}`);
       setIsMenuOpen(false);
     }
   };
@@ -54,6 +54,7 @@ export const Navbar = () => {
   const navLinks = [
     { name: "Inicio", href: "/" },
     { name: "Productos", href: "/productos" },
+    { name: "Librería", href: "/libreria" },
     { name: "Servicios", href: "/servicios" },
     { name: "Nosotros", href: "/nosotros" },
     { name: "Contacto", href: "/contacto" }
@@ -61,46 +62,39 @@ export const Navbar = () => {
 
   return (
     <nav
-      className={`fixed left-0 right-0 top-0 z-50 border-b border-slate-800/80 bg-slate-950/90 shadow-[0_16px_40px_rgba(2,6,23,0.35)] backdrop-blur-xl transition-transform duration-300 ease-out ${
+      className={`fixed left-0 right-0 top-0 z-[120] border-b border-slate-800/80 bg-slate-950/90 shadow-[0_16px_40px_rgba(2,6,23,0.35)] backdrop-blur-xl transition-transform duration-300 ease-out ${
         isVisible ? "translate-y-0" : "-translate-y-full"
       }`}
     >
-      <div className="mx-auto flex h-[72px] w-full max-w-[1600px] items-center justify-between gap-3 px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto flex h-[72px] w-full max-w-[1600px] items-center justify-between gap-3 pl-0 pr-4 sm:pr-6 lg:pr-8">
         <Link
           href="/"
-          className="group flex shrink-0 items-center gap-2.5 text-white transition-opacity duration-200 hover:opacity-95"
+          className="group relative flex h-full shrink-0 items-center select-none"
           aria-label="Nova Bytex inicio"
         >
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-blue-400/40 bg-blue-500/10 shadow-[0_0_25px_rgba(59,130,246,0.18)] transition-all duration-200 group-hover:scale-[1.02] group-hover:border-blue-300/60">
-            <Cpu className="h-4 w-4 text-blue-300" />
-          </div>
-          <div className="flex flex-col leading-none">
-            <span className="text-base font-black tracking-[-0.04em] text-white md:text-[1.08rem]">Nova Bytex</span>
-            <span className="mt-1 text-[8.5px] font-medium uppercase tracking-[0.22em] text-blue-300/90">
-              Technology
-            </span>
+          <div className="relative h-full aspect-[683/450] overflow-hidden border-r border-slate-800/90 bg-slate-900 shadow-[4px_0_20px_rgba(0,0,0,0.35)] transition-all duration-300 group-hover:brightness-105">
+            <img
+              src="/assets/branding/logonb-cropped.jpeg"
+              alt="Nova Bytex"
+              className="h-full w-full object-cover block"
+            />
           </div>
         </Link>
 
         <div className="hidden items-center gap-1 md:flex">
           {navLinks.map((link) => {
-            const isActive = pathname === link.href || pathname.startsWith(`${link.href}/`);
+            const isActive = pathname === link.href || (link.href !== "/" && pathname.startsWith(`${link.href}/`));
 
             return (
               <Link
                 key={link.href}
                 href={link.href}
                 aria-current={isActive ? "page" : undefined}
-                className={`group relative px-2.5 py-2 text-[12.5px] font-medium transition-all duration-200 xl:px-3.5 ${
-                  isActive ? "text-white" : "text-slate-300 hover:text-white"
+                className={`px-2.5 py-2 text-[12.5px] font-medium transition-all duration-200 xl:px-3.5 ${
+                  isActive ? "font-semibold text-white" : "text-slate-300 hover:text-white"
                 }`}
               >
-                <span className={isActive ? "font-semibold" : "font-medium"}>{link.name}</span>
-                <span
-                  className={`absolute -bottom-2 left-2 right-2 h-px origin-left transition-all duration-300 ${
-                    isActive ? "scale-x-100 bg-blue-400/80" : "scale-x-0 bg-blue-400/60 group-hover:scale-x-100"
-                  }`}
-                />
+                {link.name}
               </Link>
             );
           })}

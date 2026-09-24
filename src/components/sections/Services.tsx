@@ -20,31 +20,31 @@ import Link from "next/link";
 const services = [
   {
     icon: <ShoppingBag className="w-8 h-8 text-blue-500" />,
-    title: "Comercialización TI",
+    title: "Papelería & Hardware Corporativo",
     sla: "Entrega Inmediata",
-    description: "Venta e importación directa de equipos Cisco, Dell, Fortinet, HP y Lenovo con garantía oficial y facturación empresarial.",
-    highlights: ["Garantía de fábrica 100%", "Factura electrónica RUC 20", "Asesoría pre-venta técnica"]
+    description: "Suministro confiable de útiles de oficina, papelería empresarial y hardware de las mejores marcas con garantía oficial y facturación RUC 20.",
+    highlights: ["Garantía de fábrica 100%", "Facturación electrónica inmediata", "Abastecimiento continuo y ágil"]
   },
   {
     icon: <Headphones className="w-8 h-8 text-blue-500" />,
-    title: "Soporte TI 24/7",
+    title: "Soporte Técnico de Excelencia",
     sla: "Respuesta < 15 min",
-    description: "Mantenimiento preventivo, correctivo y mesa de ayuda dedicada para mantener tu negocio operando sin interrupciones.",
-    highlights: ["Nivel 1, 2 y 3 especializado", "Monitoreo de red en tiempo real", "Asistencia remota e in-situ"]
+    description: "Acompañamiento especializado, mantenimiento preventivo y correctivo para garantizar la continuidad operativa diaria de tu organización.",
+    highlights: ["Nivel 1, 2 y 3 especializado", "Monitoreo en tiempo real", "Asistencia remota e in-situ"]
   },
   {
     icon: <Server className="w-8 h-8 text-blue-500" />,
-    title: "Infraestructura & Data Center",
+    title: "Conectividad & Data Center",
     sla: "99.99% Uptime",
-    description: "Diseño, implementación y virtualización de data centers, cableado estructurado certificado y soluciones Cloud híbridas.",
-    highlights: ["Virtualización VMware / Hyper-V", "Redes SD-WAN & Switch 10G", "Respaldo y recuperación BCP"]
+    description: "Diseño, implementación y cableado de redes seguras, virtualización y servidores para una infraestructura digital robusta.",
+    highlights: ["Redes SD-WAN & Switch 10G", "Virtualización de alta disponibilidad", "Respaldo y recuperación BCP"]
   },
   {
     icon: <Layers className="w-8 h-8 text-blue-500" />,
-    title: "Proyectos a Medida",
-    sla: "Metodología PMBOK",
-    description: "Desarrollo e implementación llave en mano de proyectos de transformación digital e integración de sistemas complejos.",
-    highlights: ["Gestión por hitos y entregables", "Pruebas de estrés y benchmarking", "Documentación técnica integral"]
+    title: "Ingeniería de Software & Automatización",
+    sla: "Desarrollo Ágil",
+    description: "Desarrollo a medida, automatización de procesos empresariales y tecnologías inteligentes (IoT y Domótica) para modernizar tu negocio.",
+    highlights: ["Sistemas web y móviles a medida", "Automatización de flujos y procesos", "Integración de tecnologías IoT"]
   },
   {
     icon: <Lightbulb className="w-8 h-8 text-blue-500" />,

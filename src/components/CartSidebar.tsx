@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { PRODUCTS_DATA } from "@/lib/products";
 import { ProductImage } from "@/components/ui/ProductImage";
+import { useCatalog } from "@/contexts/CatalogContext";
 
 const openWhatsAppOrder = (cart: CartItem[], total: number) => {
   let message = "¡Hola Nova Bytex! Quisiera solicitar la cotización formal de los siguientes ítems:\n\n";
@@ -150,7 +151,8 @@ export function CartSidebar() {
 
 function CartItemCard({ item }: { item: CartItem }) {
   const { removeFromCart, updateQuantity } = useCart();
-  const matched = PRODUCTS_DATA.find(p => p.id === item.id);
+  const { products } = useCatalog();
+  const matched = products.find((p) => p.id === item.id) ?? PRODUCTS_DATA.find((p) => p.id === item.id);
   const imageType = matched ? matched.imageType : 'switch';
 
   const formatPrice = (amount: number) => {
@@ -166,7 +168,7 @@ function CartItemCard({ item }: { item: CartItem }) {
       className="bg-slate-800/80 rounded-xl border border-slate-700/60 p-3.5 flex gap-3 min-w-0"
     >
       <div className="w-16 h-16 bg-slate-950 rounded-lg overflow-hidden shrink-0 p-1">
-        <ProductImage type={imageType} name={item.name} className="h-full min-h-0 text-[8px]" />
+        <ProductImage type={imageType} name={item.name} image={item.image} className="h-full min-h-0 text-[8px]" />
       </div>
       <div className="flex-1 min-w-0 flex flex-col justify-between">
         <div className="flex items-start justify-between gap-1">

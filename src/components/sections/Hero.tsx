@@ -3,7 +3,7 @@
 import React from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, ShoppingBag, ShieldCheck, Cpu, CheckCircle2, PhoneCall } from "lucide-react";
+import { ArrowRight, ShoppingBag, ShieldCheck, CheckCircle2, PhoneCall } from "lucide-react";
 import Link from "next/link";
 import { ProductImage } from "@/components/ui/ProductImage";
 
@@ -48,10 +48,14 @@ export const Hero = () => {
               initial={reduceMotion ? false : "hidden"}
               animate={reduceMotion ? { opacity: 1, scale: 1, y: 0 } : "visible"}
               variants={reveal(0.12, 1)}
-              className="inline-flex items-center gap-2 rounded-full border border-blue-100 bg-white px-4 py-2 text-xs font-medium text-blue-700 shadow-sm md:text-sm"
+              className="inline-flex items-center gap-2 rounded-full border border-blue-200/80 bg-white/95 px-3.5 py-1.5 text-xs font-semibold text-blue-900 shadow-sm md:text-sm backdrop-blur-sm"
             >
-              <Cpu className="h-4 w-4 text-blue-600" />
-              <span className="font-medium">Infraestructura TI &amp; Ciberseguridad Corporativa</span>
+              <img
+                src="/assets/branding/nb-isotype.png"
+                alt="Nova Bytex"
+                className="h-4 w-auto object-contain shrink-0"
+              />
+              <span className="font-semibold">Solución, seguridad y tecnología para empresas</span>
             </motion.div>
 
             <motion.h1
@@ -71,7 +75,7 @@ export const Hero = () => {
               variants={reveal(0.24, 1)}
               className="mx-auto max-w-2xl text-base leading-relaxed text-slate-600 md:text-lg lg:mx-0"
             >
-              Venta de hardware corporativo, servidores, equipos de red Cisco &amp; Dell, consultoría especializada y soporte TI 24/7 con garantía oficial.
+              Suministro confiable de papelería, útiles de oficina y hardware con servicios especializados de ingeniería de software, conectividad y automatización de procesos.
             </motion.p>
 
             <motion.div
@@ -80,17 +84,17 @@ export const Hero = () => {
               variants={reveal(0.32, 1)}
               className="flex flex-col justify-center gap-4 pt-2 sm:flex-row lg:justify-start"
             >
-              <Link href="/productos">
-                <Button size="lg" className="h-14 w-full rounded-2xl bg-blue-700 px-8 text-sm font-semibold text-white shadow-lg shadow-blue-700/20 transition-all duration-300 hover:-translate-y-0.5 hover:bg-blue-800 sm:w-auto">
+              <Button asChild size="lg" className="h-14 w-full rounded-2xl bg-blue-700 px-8 text-sm font-semibold text-white shadow-lg shadow-blue-700/20 transition-all duration-300 hover:-translate-y-0.5 hover:bg-blue-800 sm:w-auto">
+                <Link href="/productos">
                   Explorar Catálogo <ShoppingBag className="ml-2 h-4 w-4" />
-                </Button>
-              </Link>
+                </Link>
+              </Button>
 
-              <Link href="/contacto">
-                <Button size="lg" variant="outline" className="h-14 w-full rounded-2xl border-slate-200 bg-white px-8 text-sm font-semibold text-slate-800 shadow-sm transition-all duration-300 hover:bg-slate-50 sm:w-auto">
+              <Button asChild size="lg" variant="outline" className="h-14 w-full rounded-2xl border-slate-200 bg-white px-8 text-sm font-semibold text-slate-800 shadow-sm transition-all duration-300 hover:bg-slate-50 sm:w-auto">
+                <Link href="/contacto">
                   Solicitar Cotización <PhoneCall className="ml-2 h-4 w-4 text-blue-700" />
-                </Button>
-              </Link>
+                </Link>
+              </Button>
             </motion.div>
 
             <motion.div

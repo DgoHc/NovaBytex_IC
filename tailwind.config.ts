@@ -60,6 +60,16 @@ const config = {
           DEFAULT: "hsl(var(--surface))",
           foreground: "hsl(var(--surface-foreground))",
         },
+        library: {
+          cream: "hsl(var(--library-cream))",
+          creamForeground: "hsl(var(--library-cream-foreground))",
+          beige: "hsl(var(--library-beige))",
+          sage: "hsl(var(--library-sage))",
+          sageForeground: "hsl(var(--library-sage-foreground))",
+          terracotta: "hsl(var(--library-terracotta))",
+          paper: "hsl(var(--library-paper))",
+          paperForeground: "hsl(var(--library-paper-foreground))",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -102,6 +112,7 @@ const config = {
         sans: ["DM Sans", "Inter", "system-ui", "sans-serif"],
         serif: ["Playfair Display", "Georgia", "serif"],
         editorial: ["Playfair Display", "Georgia", "serif"],
+        bodoni: ["Bodoni Moda", "Playfair Display", "Georgia", "serif"],
         ui: ["DM Sans", "Inter", "system-ui", "sans-serif"],
       },
       spacing: {

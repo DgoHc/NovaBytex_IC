@@ -17,27 +17,25 @@ export function NovaLoader({
           initial={{ opacity: 0 }}
           animate={{ opacity: fadingOut ? 0 : 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] as const }}
-          className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-50/90 backdrop-blur-[2px]"
+          transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] as const }}
+          className={`fixed inset-0 z-[100] flex items-center justify-center bg-slate-50/90 backdrop-blur-[2px] ${
+            fadingOut ? "pointer-events-none" : ""
+          }`}
         >
           <motion.div
-            initial={{ opacity: 0, y: 22, scale: 0.96 }}
-            animate={{ opacity: fadingOut ? 0 : 1, y: fadingOut ? -16 : 0, scale: fadingOut ? 0.98 : 1 }}
-            transition={{ duration: 1.05, ease: [0.22, 1, 0.36, 1] as const }}
+            initial={{ opacity: 0, y: 16, scale: 0.97 }}
+            animate={{ opacity: fadingOut ? 0 : 1, y: fadingOut ? -12 : 0, scale: fadingOut ? 0.98 : 1 }}
+            transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] as const }}
             className="flex flex-col items-center"
           >
-            <div className="relative flex h-20 w-20 items-center justify-center rounded-[24px] border border-blue-100 bg-white shadow-[0_20px_60px_rgba(29,78,216,0.12)]">
-              <motion.div
-                animate={{ scale: [1, 1.08, 1], opacity: [0.82, 1, 0.82] }}
+            <div className="relative flex h-20 w-20 items-center justify-center rounded-[24px] border border-blue-100 bg-white p-3 shadow-[0_20px_60px_rgba(29,78,216,0.12)] overflow-hidden">
+              <motion.img
+                src="/assets/branding/logonb-cropped.jpeg"
+                alt="Nova Bytex Logo"
+                animate={{ scale: [1, 1.06, 1], opacity: [0.9, 1, 0.9] }}
                 transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut" }}
-                className="relative h-12 w-12"
-              >
-                <span className="absolute left-2 top-1 h-10 w-1.5 rounded-full bg-blue-700" />
-                <span className="absolute right-2 top-1 h-10 w-1.5 rounded-full bg-blue-700" />
-                <span className="absolute left-2 top-1 h-1.5 w-8 rotate-[32deg] rounded-full bg-blue-700" />
-                <span className="absolute left-[32%] top-1.5 h-8 w-1.5 rotate-[10deg] rounded-full bg-blue-700" />
-                <span className="absolute inset-x-2 bottom-1 h-1.5 rounded-full bg-blue-400/40" />
-              </motion.div>
+                className="h-full w-full object-cover rounded-xl"
+              />
             </div>
 
             <div className="mt-6 text-center">

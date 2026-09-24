@@ -1,36 +1,61 @@
 "use client";
 
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useMemo, useEffect, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Search, Filter, RotateCcw, ArrowUpDown } from "lucide-react";
-import { PRODUCTS_DATA } from "@/lib/products";
+import { PRODUCTS_DATA, TECHNOLOGY_CATEGORIES } from "@/lib/products";
+import { useCatalog } from "@/contexts/CatalogContext";
 import { ProductCard } from "@/components/ui/ProductCard";
 
-const categories = ["Todos", "Redes", "Servidores", "Seguridad", "Equipos", "Almacenamiento"];
-const brands = ["Cisco", "Dell", "Fortinet", "HP", "Lenovo", "Ubiquiti", "Mikrotik"];
+const categories = ["Todos", ...TECHNOLOGY_CATEGORIES];
+const defaultBrands = ["Cisco", "Dell", "Fortinet", "HP", "Lenovo", "Ubiquiti", "Mikrotik"];
 
-export default function ProductosPage() {
+function ProductosContent() {
+  const { products, hydrated } = useCatalog();
+  const searchParams = useSearchParams();
+  const initialSearch = searchParams.get("search") ?? "";
   const [selectedCategory, setSelectedCategory] = useState("Todos");
   const [selectedBrand, setSelectedBrand] = useState<string | null>(null);
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState(initialSearch);
   const [sortOrder, setSortOrder] = useState<"default" | "asc" | "desc">("default");
   const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    const q = searchParams.get("search");
+    if (q !== null) {
+      setSearchQuery(q);
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
+  const technologyProducts = useMemo(() => {
+    const list = hydrated && products.length > 0 ? products : PRODUCTS_DATA;
+    return list.filter((p) => p.type === "technology" && p.available !== false);
+  }, [hydrated, products]);
+
+  const brands = useMemo(() => {
+    const found = new Set(technologyProducts.map((p) => p.brand).filter(Boolean));
+    defaultBrands.forEach((b) => found.add(b));
+    return Array.from(found);
+  }, [technologyProducts]);
+
   const filteredProducts = useMemo(() => {
-    let result = PRODUCTS_DATA.filter(product => {
-      const matchesCategory = selectedCategory === "Todos" || product.category === selectedCategory;
+    let result = technologyProducts.filter((product) => {
+      const matchesCategory =
+        selectedCategory === "Todos" || product.category === selectedCategory;
       const matchesBrand = !selectedBrand || product.brand === selectedBrand;
-      const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                            product.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                            product.sku.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesSearch =
+        product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        product.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        product.sku.toLowerCase().includes(searchQuery.toLowerCase());
       return matchesCategory && matchesBrand && matchesSearch;
     });
 
@@ -41,7 +66,7 @@ export default function ProductosPage() {
     }
 
     return result;
-  }, [selectedCategory, selectedBrand, searchQuery, sortOrder]);
+  }, [technologyProducts, selectedCategory, selectedBrand, searchQuery, sortOrder]);
 
   const resetFilters = () => {
     setSelectedCategory("Todos");
@@ -190,5 +215,19 @@ export default function ProductosPage() {
         </div>
       </div>
     </section>
+  );
+}
+
+export default function ProductosPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="py-20 min-h-screen bg-slate-950 flex items-center justify-center text-slate-400">
+          Cargando catálogo...
+        </div>
+      }
+    >
+      <ProductosContent />
+    </Suspense>
   );
 }

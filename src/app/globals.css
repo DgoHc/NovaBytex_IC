@@ -39,6 +39,16 @@
 
     --surface: 210 40% 98%;
     --surface-foreground: 222.2 84% 4.9%;
+
+    /* Librería — Acentos discretos */
+    --library-cream: 42 60% 96%;
+    --library-cream-foreground: 35 40% 22%;
+    --library-beige: 35 45% 90%;
+    --library-sage: 145 30% 72%;
+    --library-sage-foreground: 145 40% 22%;
+    --library-terracotta: 18 55% 70%;
+    --library-paper: 45 80% 97.5%;
+    --library-paper-foreground: 32 45% 18%;
   }
 
   .dark {
@@ -72,6 +82,16 @@
 
     --surface: 217.2 32.6% 17.5%;
     --surface-foreground: 210 40% 98%;
+
+    /* Librería — Dark mode */
+    --library-cream: 35 25% 20%;
+    --library-cream-foreground: 42 60% 92%;
+    --library-beige: 35 20% 28%;
+    --library-sage: 145 25% 38%;
+    --library-sage-foreground: 145 30% 88%;
+    --library-terracotta: 18 35% 48%;
+    --library-paper: 30 18% 14%;
+    --library-paper-foreground: 45 40% 90%;
   }
 }
 
@@ -112,6 +132,35 @@
   font-weight: 500;
   letter-spacing: -0.015em;
   line-height: 1.32;
+}
+
+.font-bodoni {
+  font-family: 'Bodoni Moda', 'Playfair Display', Georgia, serif;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 1.28;
+  font-feature-settings: "liga", "dlig";
+}
+
+/* Librería — Warm paper texture (subtle) */
+.paper-warm-bg {
+  background-color: hsl(var(--library-paper));
+  background-image:
+    radial-gradient(circle at 15% 20%, hsla(42, 60%, 86%, 0.5) 0%, transparent 55%),
+    radial-gradient(circle at 85% 80%, hsla(35, 45%, 84%, 0.4) 0%, transparent 60%);
+}
+
+.library-badge {
+  background-color: hsla(42, 60%, 90%, 0.9);
+  color: hsl(25 45% 25%);
+  border: 1px solid hsla(35, 45%, 80%, 0.8);
+}
+
+.library-card-image {
+  background: linear-gradient(145deg,
+    hsl(var(--library-cream)) 0%,
+    hsl(var(--library-beige)) 55%,
+    hsl(var(--library-paper)) 100%);
 }
 
 .line-clamp-2 {

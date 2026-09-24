@@ -1,18 +1,29 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import { PRODUCTS_DATA } from "@/lib/products";
+import { useCatalog } from "@/contexts/CatalogContext";
 import { ProductCard } from "@/components/ui/ProductCard";
 
 export const FeaturedProducts = () => {
-  const featuredList = PRODUCTS_DATA.filter((p) => p.featured).slice(0, 4);
+  const { products, hydrated } = useCatalog();
   const [mounted, setMounted] = useState(false);
   const reduceMotion = useReducedMotion();
+
+  const techProducts = useMemo(() => {
+    const list = hydrated && products.length > 0 ? products : PRODUCTS_DATA;
+    return list.filter((p) => p.type === "technology" && p.available !== false);
+  }, [hydrated, products]);
+
+  const featuredList = useMemo(() => {
+    const featured = techProducts.filter((p) => p.featured);
+    return (featured.length > 0 ? featured : techProducts).slice(0, 4);
+  }, [techProducts]);
 
   useEffect(() => {
     setMounted(true);
@@ -52,15 +63,16 @@ export const FeaturedProducts = () => {
         </div>
 
         <div className="mt-16 text-center">
-          <Link href="/productos">
-            <Button
-              size="lg"
-              variant="outline"
-              className="border-slate-200 text-blue-700 hover:bg-blue-50 hover:border-blue-200 font-semibold px-8 h-12 rounded-2xl text-sm"
-            >
-              Ver Todos los {PRODUCTS_DATA.length} Productos
-            </Button>
-          </Link>
+          <Button
+            asChild
+            size="lg"
+            variant="outline"
+            className="border-slate-200 text-blue-700 hover:bg-blue-50 hover:border-blue-200 font-semibold px-8 h-12 rounded-2xl text-sm"
+          >
+            <Link href="/productos">
+              Ver Catálogo Corporativo ({techProducts.length} Equipos)
+            </Link>
+          </Button>
         </div>
       </div>
     </section>

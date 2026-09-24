@@ -134,11 +134,11 @@ export default function ServicesPage() {
               Nuestros arquitectos de red e ingenieros de infraestructura están listos para analizar tus necesidades sin compromiso.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center pt-2">
-              <Link href="/contacto">
-                <Button className="w-full sm:w-auto bg-white text-blue-800 hover:bg-blue-50 text-base px-8 h-13 font-semibold rounded-2xl shadow-lg">
+              <Button asChild className="w-full sm:w-auto bg-white text-blue-800 hover:bg-blue-50 text-base px-8 h-13 font-semibold rounded-2xl shadow-lg">
+                <Link href="/contacto">
                   Solicitar Diagnóstico <PhoneCall className="w-4 h-4 ml-2" />
-                </Button>
-              </Link>
+                </Link>
+              </Button>
               <Button 
                 variant="outline" 
                 className="w-full sm:w-auto border-white/30 bg-white/10 text-white hover:bg-white/20 text-base px-8 h-13 font-semibold rounded-2xl"

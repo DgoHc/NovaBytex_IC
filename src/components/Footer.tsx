@@ -49,14 +49,21 @@ export const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 mb-12">
           {/* Brand Info */}
           <div className="space-y-4">
-            <Link href="/" className="flex items-center gap-2 text-white font-extrabold text-xl tracking-tight">
-              <div className="w-9 h-9 bg-blue-600 rounded-xl flex items-center justify-center text-white shadow-md">
-                <Cpu className="w-5 h-5" />
+            <Link href="/" className="flex items-center gap-3 text-white font-extrabold text-xl tracking-tight select-none">
+              <div className="h-11 aspect-[683/450] rounded-xl overflow-hidden border border-slate-700/80 shadow-md shrink-0">
+                <img
+                  src="/assets/branding/logonb-cropped.jpeg"
+                  alt="Nova Bytex"
+                  className="h-full w-full object-cover block"
+                />
               </div>
               <span>Nova Bytex</span>
             </Link>
             <p className="text-slate-400 text-xs leading-relaxed max-w-sm">
-              Soluciones integrales de tecnología empresarial, infraestructura TI, redes y ciberseguridad con garantía oficial.
+              <strong className="text-blue-400 font-semibold block mb-1">
+                Solución, seguridad y tecnología para empresas.
+              </strong>
+              Suministro confiable de papelería, útiles de oficina y hardware, con servicios especializados de ingeniería de software, conectividad y soporte técnico de excelencia.
             </p>
             <div className="flex gap-2 pt-1">
               {socialLinks.map((item) => (
@@ -66,10 +73,9 @@ export const Footer = () => {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={item.name}
+                  className="inline-flex items-center justify-center bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-800 h-9 w-9 rounded-xl transition-colors"
                 >
-                  <Button variant="ghost" size="icon" className="bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-800 h-9 w-9 rounded-xl">
-                    {item.icon}
-                  </Button>
+                  {item.icon}
                 </a>
               ))}
             </div>
@@ -80,10 +86,11 @@ export const Footer = () => {
             <h4 className="text-xs font-bold uppercase tracking-wider text-white mb-4">Navegación</h4>
             <ul className="space-y-2.5 text-xs text-slate-400">
               <li><Link href="/" className="hover:text-cyan-400 transition-colors">Inicio</Link></li>
-              <li><Link href="/productos" className="hover:text-cyan-400 transition-colors">Catálogo de Productos</Link></li>
+              <li><Link href="/productos" className="hover:text-cyan-400 transition-colors">Catálogo Tecnología</Link></li>
+              <li><Link href="/libreria" className="hover:text-cyan-400 transition-colors">Librería &amp; Oficina</Link></li>
               <li><Link href="/servicios" className="hover:text-cyan-400 transition-colors">Servicios TI</Link></li>
               <li><Link href="/nosotros" className="hover:text-cyan-400 transition-colors">Sobre Nosotros</Link></li>
-              <li><Link href="/contacto" className="hover:text-cyan-400 transition-colors">Contacto & Cotización</Link></li>
+              <li><Link href="/contacto" className="hover:text-cyan-400 transition-colors">Contacto &amp; Cotización</Link></li>
             </ul>
           </div>
 
