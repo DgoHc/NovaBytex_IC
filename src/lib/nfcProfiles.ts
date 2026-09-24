@@ -21,10 +21,10 @@ export const DEFAULT_NOVABYTEX_PROFILE: NFCProfile = {
   website: "https://novabytex.com",
   websiteDisplay: "novabytex.com",
   ubicacion: {
-    ciudad: "Lima",
+    ciudad: "Cajamarca",
     pais: "Perú",
     cobertura: "Atención y envíos a nivel nacional",
-    mapsUrl: "https://maps.google.com/?q=Lima,Peru",
+    mapsUrl: "https://maps.google.com/?q=Cajamarca,Peru",
   },
   redes: [
     {
