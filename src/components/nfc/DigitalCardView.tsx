@@ -147,24 +147,6 @@ export const DigitalCardView: React.FC<DigitalCardViewProps> = ({ profile }) => 
           }}
           className="flex-1 flex flex-col items-center"
         >
-          {/* Top Status & Badge */}
-          <motion.div 
-            variants={{ hidden: { opacity: 0, y: -10 }, visible: { opacity: 1, y: 0 } }}
-            className="w-full flex items-center justify-between mb-16 pt-2"
-          >
-            <div className="inline-flex items-center gap-1.5 rounded-full border border-blue-400/30 bg-blue-500/10 px-3 py-1 text-[11px] font-semibold text-blue-300 shadow-[0_0_15px_rgba(59,130,246,0.15)] backdrop-blur-md">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75" />
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-cyan-500" />
-              </span>
-              <span>{profile.badge || "NFC Card"}</span>
-            </div>
-
-            <div className="flex items-center gap-1.5 text-[11px] text-emerald-400/90 font-medium bg-slate-900/50 px-2.5 py-1 rounded-full border border-slate-800 backdrop-blur-md">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-              <span>En línea</span>
-            </div>
-          </motion.div>
 
           {/* Protagonist Element (Logo) Centered on the division line */}
           <motion.div 
@@ -263,84 +245,83 @@ export const DigitalCardView: React.FC<DigitalCardViewProps> = ({ profile }) => 
             </motion.button>
           </motion.div>
 
-          {/* Quick Actions Grid (Glassmorphism & Glowing Icons) */}
+          {/* BENTO GRID LAYOUT FOR ACTIONS & INFO */}
           <motion.div 
             variants={{ hidden: { opacity: 0, y: 16 }, visible: { opacity: 1, y: 0 } }}
-            className="w-full grid grid-cols-4 gap-3 mb-10"
+            className="w-full grid grid-cols-2 gap-3 mb-6"
           >
-            {/* Llamar */}
-            <motion.a href={`tel:${profile.telefono}`} whileTap={{ scale: 0.94 }} className="flex flex-col items-center gap-2 group">
-              <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-[1.25rem] bg-slate-900/60 backdrop-blur-md border border-slate-700/50 flex items-center justify-center text-blue-400 group-hover:bg-blue-500/10 group-hover:border-blue-500/40 group-hover:text-blue-300 transition-all shadow-lg shadow-black/20">
+            {/* Llamar (Large square) */}
+            <motion.a href={`tel:${profile.telefono}`} whileTap={{ scale: 0.96 }} className="relative flex flex-col items-start justify-between p-5 h-32 rounded-[2rem] bg-gradient-to-br from-blue-600/20 to-slate-900/80 backdrop-blur-md border border-blue-500/20 hover:border-blue-400/50 hover:from-blue-600/30 transition-all group overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.3)]">
+              <div className="absolute -top-6 -right-6 w-24 h-24 bg-blue-500/20 blur-[30px] rounded-full group-hover:bg-blue-400/30 transition-all" />
+              <div className="w-11 h-11 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-400 group-hover:scale-110 group-hover:bg-blue-500 group-hover:text-white transition-all">
                 <Phone className="w-[22px] h-[22px]" />
               </div>
-              <span className="text-[10px] font-semibold text-slate-400 group-hover:text-slate-300">Llamar</span>
+              <div className="relative z-10">
+                <p className="text-[17px] font-black text-white leading-tight">Llamar</p>
+                <p className="text-[11px] text-blue-200/70 font-medium mt-0.5">Contacto directo</p>
+              </div>
             </motion.a>
 
-            {/* Web */}
-            <motion.div whileTap={{ scale: 0.94 }} className="flex flex-col items-center gap-2 group">
-              <Link href="/" className="flex flex-col items-center gap-2">
-                <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-[1.25rem] bg-slate-900/60 backdrop-blur-md border border-slate-700/50 flex items-center justify-center text-cyan-400 group-hover:bg-cyan-500/10 group-hover:border-cyan-500/40 group-hover:text-cyan-300 transition-all shadow-lg shadow-black/20">
+            {/* Web (Large square) */}
+            <motion.div whileTap={{ scale: 0.96 }} className="flex h-32">
+              <Link href="/" className="relative flex flex-col items-start justify-between p-5 w-full rounded-[2rem] bg-gradient-to-br from-cyan-600/20 to-slate-900/80 backdrop-blur-md border border-cyan-500/20 hover:border-cyan-400/50 hover:from-cyan-600/30 transition-all group overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.3)]">
+                <div className="absolute -top-6 -right-6 w-24 h-24 bg-cyan-500/20 blur-[30px] rounded-full group-hover:bg-cyan-400/30 transition-all" />
+                <div className="w-11 h-11 rounded-full bg-cyan-500/20 flex items-center justify-center text-cyan-400 group-hover:scale-110 group-hover:bg-cyan-500 group-hover:text-white transition-all">
                   <Globe className="w-[22px] h-[22px]" />
                 </div>
-                <span className="text-[10px] font-semibold text-slate-400 group-hover:text-slate-300">Web</span>
+                <div className="relative z-10">
+                  <p className="text-[17px] font-black text-white leading-tight">Sitio Web</p>
+                  <p className="text-[11px] text-cyan-200/70 font-medium mt-0.5">Visítanos</p>
+                </div>
               </Link>
             </motion.div>
 
-            {/* Compartir */}
-            <motion.button onClick={handleShare} whileTap={{ scale: 0.94 }} className="flex flex-col items-center gap-2 group">
-              <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-[1.25rem] bg-slate-900/60 backdrop-blur-md border border-slate-700/50 flex items-center justify-center text-purple-400 group-hover:bg-purple-500/10 group-hover:border-purple-500/40 group-hover:text-purple-300 transition-all shadow-lg shadow-black/20">
-                <Share2 className="w-[22px] h-[22px]" />
-              </div>
-              <span className="text-[10px] font-semibold text-slate-400 group-hover:text-slate-300">Compartir</span>
-            </motion.button>
-
-            {/* QR Code */}
-            <motion.button onClick={() => setQrModalOpen(true)} whileTap={{ scale: 0.94 }} className="flex flex-col items-center gap-2 group">
-              <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-[1.25rem] bg-slate-900/60 backdrop-blur-md border border-slate-700/50 flex items-center justify-center text-pink-400 group-hover:bg-pink-500/10 group-hover:border-pink-500/40 group-hover:text-pink-300 transition-all shadow-lg shadow-black/20">
-                <QrCode className="w-[22px] h-[22px]" />
-              </div>
-              <span className="text-[10px] font-semibold text-slate-400 group-hover:text-slate-300">QR Code</span>
-            </motion.button>
-          </motion.div>
-
-          {/* Secondary Contact Info List (Email, Location) - Glass Cards */}
-          <motion.div 
-            variants={{ hidden: { opacity: 0, y: 16 }, visible: { opacity: 1, y: 0 } }}
-            className="w-full space-y-3"
-          >
-            {/* Correo */}
-            <a href={`mailto:${profile.email}`} className="flex items-center gap-4 p-4 rounded-3xl bg-slate-900/50 backdrop-blur-lg border border-slate-700/50 hover:bg-slate-800/80 hover:border-slate-600 transition-all group shadow-md hover:shadow-xl hover:-translate-y-0.5">
-              <div className="w-10 h-10 rounded-full bg-slate-800/80 flex items-center justify-center text-blue-400 shrink-0 group-hover:bg-blue-500/20 group-hover:text-blue-300 transition-colors">
+            {/* Correo (Wide block spanning 2 cols) */}
+            <motion.a href={`mailto:${profile.email}`} whileTap={{ scale: 0.98 }} className="col-span-2 relative flex items-center gap-4 p-4 rounded-[2rem] bg-gradient-to-r from-slate-800/60 to-slate-900/90 backdrop-blur-md border border-slate-700/50 hover:border-slate-500 hover:bg-slate-800 transition-all group overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.2)]">
+              <div className="absolute left-0 top-0 bottom-0 w-[5px] bg-gradient-to-b from-blue-400 to-cyan-400 opacity-0 group-hover:opacity-100 transition-opacity" />
+              <div className="w-12 h-12 rounded-full bg-slate-800/80 flex items-center justify-center text-blue-400 shrink-0 group-hover:bg-blue-500 group-hover:text-white transition-colors shadow-inner">
                 <Mail className="w-5 h-5" />
               </div>
               <div className="min-w-0 flex-1">
-                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-0.5">Correo Electrónico</p>
-                <p className="text-[14px] font-medium text-slate-200 truncate">{profile.email}</p>
+                <p className="text-[11px] font-bold text-slate-500 uppercase tracking-widest mb-0.5">Correo Electrónico</p>
+                <p className="text-[15px] font-bold text-white truncate">{profile.email}</p>
               </div>
-              <div className="w-8 h-8 rounded-full bg-slate-800/40 flex items-center justify-center group-hover:bg-slate-700 transition-colors">
-                <ExternalLink className="w-4 h-4 text-slate-400" />
+              <div className="w-9 h-9 rounded-full bg-slate-700/40 flex items-center justify-center group-hover:bg-slate-700 transition-colors">
+                <ArrowRight className="w-4 h-4 text-slate-400 group-hover:text-white" />
               </div>
-            </a>
+            </motion.a>
 
-            {/* Ubicación */}
+            {/* Ubicación (Wide block spanning 2 cols) */}
             {profile.ubicacion.mapsUrl && (
-              <a href={profile.ubicacion.mapsUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-4 p-4 rounded-3xl bg-slate-900/50 backdrop-blur-lg border border-slate-700/50 hover:bg-slate-800/80 hover:border-slate-600 transition-all group shadow-md hover:shadow-xl hover:-translate-y-0.5">
-                <div className="w-10 h-10 rounded-full bg-slate-800/80 flex items-center justify-center text-cyan-400 shrink-0 group-hover:bg-cyan-500/20 group-hover:text-cyan-300 transition-colors">
+              <motion.a href={profile.ubicacion.mapsUrl} target="_blank" rel="noopener noreferrer" whileTap={{ scale: 0.98 }} className="col-span-2 relative flex items-center gap-4 p-4 rounded-[2rem] bg-gradient-to-r from-slate-800/60 to-slate-900/90 backdrop-blur-md border border-slate-700/50 hover:border-slate-500 hover:bg-slate-800 transition-all group overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.2)]">
+                <div className="absolute left-0 top-0 bottom-0 w-[5px] bg-gradient-to-b from-cyan-400 to-emerald-400 opacity-0 group-hover:opacity-100 transition-opacity" />
+                <div className="w-12 h-12 rounded-full bg-slate-800/80 flex items-center justify-center text-cyan-400 shrink-0 group-hover:bg-cyan-500 group-hover:text-white transition-colors shadow-inner">
                   <MapPin className="w-5 h-5" />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-0.5">Ubicación</p>
-                  <p className="text-[14px] font-medium text-slate-200 truncate">{profile.ubicacion.cobertura || `${profile.ubicacion.ciudad}, ${profile.ubicacion.pais}`}</p>
+                  <p className="text-[11px] font-bold text-slate-500 uppercase tracking-widest mb-0.5">Ubicación</p>
+                  <p className="text-[15px] font-bold text-white truncate">{profile.ubicacion.cobertura || `${profile.ubicacion.ciudad}, ${profile.ubicacion.pais}`}</p>
                 </div>
-                <div className="w-8 h-8 rounded-full bg-slate-800/40 flex items-center justify-center group-hover:bg-slate-700 transition-colors">
-                  <ExternalLink className="w-4 h-4 text-slate-400" />
+                <div className="w-9 h-9 rounded-full bg-slate-700/40 flex items-center justify-center group-hover:bg-slate-700 transition-colors">
+                  <ExternalLink className="w-4 h-4 text-slate-400 group-hover:text-white" />
                 </div>
-              </a>
+              </motion.a>
             )}
 
-            {/* Redes Sociales - Iconos */}
+            {/* QR & Compartir (1 col each) */}
+            <motion.button onClick={() => setQrModalOpen(true)} whileTap={{ scale: 0.96 }} className="relative flex items-center justify-center gap-2.5 p-4 rounded-[2rem] bg-slate-900/60 backdrop-blur-md border border-slate-700/50 hover:bg-slate-800 hover:border-pink-500/40 transition-all group shadow-lg">
+              <QrCode className="w-5 h-5 text-slate-400 group-hover:text-pink-400 transition-colors" />
+              <span className="text-[13px] font-bold text-slate-300 group-hover:text-white transition-colors">Código QR</span>
+            </motion.button>
+            
+            <motion.button onClick={handleShare} whileTap={{ scale: 0.96 }} className="relative flex items-center justify-center gap-2.5 p-4 rounded-[2rem] bg-slate-900/60 backdrop-blur-md border border-slate-700/50 hover:bg-slate-800 hover:border-purple-500/40 transition-all group shadow-lg">
+              <Share2 className="w-5 h-5 text-slate-400 group-hover:text-purple-400 transition-colors" />
+              <span className="text-[13px] font-bold text-slate-300 group-hover:text-white transition-colors">Compartir</span>
+            </motion.button>
+
+            {/* Socials Block */}
             {profile.redes && profile.redes.length > 0 && (
-              <div className="flex flex-wrap items-center justify-center gap-3 pt-6 pb-2">
+              <div className="col-span-2 flex flex-wrap items-center justify-center gap-3 pt-6 pb-2">
                 {profile.redes.map((red) => {
                   const pf = red.platform.toLowerCase();
                   let iconSvg = <ExternalLink className="w-5 h-5 transition-transform group-hover:scale-110" />;
@@ -363,7 +344,7 @@ export const DigitalCardView: React.FC<DigitalCardViewProps> = ({ profile }) => 
                       href={red.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="group relative flex items-center justify-center w-12 h-12 rounded-full bg-slate-900/70 backdrop-blur-md border border-slate-700/60 text-slate-400 hover:text-white hover:border-blue-400 hover:bg-blue-500/10 transition-all shadow-lg hover:shadow-[0_0_15px_rgba(59,130,246,0.3)] hover:-translate-y-1"
+                      className="group relative flex items-center justify-center w-[52px] h-[52px] rounded-full bg-slate-900/80 backdrop-blur-md border border-slate-700/80 text-slate-400 hover:text-white hover:border-blue-400 hover:bg-blue-500/20 transition-all shadow-lg hover:shadow-[0_0_20px_rgba(59,130,246,0.4)] hover:-translate-y-1.5"
                       aria-label={red.label || red.platform}
                     >
                       {iconSvg}
@@ -374,43 +355,46 @@ export const DigitalCardView: React.FC<DigitalCardViewProps> = ({ profile }) => 
             )}
           </motion.div>
 
-          {/* Nuestros Servicios - Tarjetas Elevadas */}
+          {/* Nuestros Servicios - Bento Style */}
           {profile.servicios && profile.servicios.length > 0 && (
             <motion.div 
               variants={{ hidden: { opacity: 0, y: 16 }, visible: { opacity: 1, y: 0 } }}
-              className="w-full mt-8"
+              className="w-full mt-6"
             >
-              <div className="flex items-center justify-between px-1 mb-5">
-                <h2 className="text-[12px] uppercase font-black tracking-[0.2em] text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-400">
-                  Nuestros Servicios
+              <div className="flex items-center justify-between px-2 mb-5">
+                <h2 className="text-[13px] uppercase font-black tracking-[0.2em] text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-400">
+                  Servicios Premium
                 </h2>
-                <Link href="/servicios" className="text-[12px] font-bold text-slate-400 hover:text-white flex items-center gap-1.5 group transition-colors">
+                <Link href="/servicios" className="text-[12px] font-bold text-slate-400 hover:text-white flex items-center gap-1.5 group transition-colors bg-slate-900/50 px-3 py-1.5 rounded-full border border-slate-800">
                   Ver catálogo <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
                 </Link>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              
+              <div className="grid grid-cols-1 gap-3">
                 {profile.servicios.map((srv) => {
                   const IconComponent = (srv.iconName && serviceIcons[srv.iconName]) || Sparkles;
                   return (
                     <Link
                       key={srv.id}
                       href={srv.href}
-                      className="relative p-4 rounded-[1.5rem] bg-gradient-to-b from-slate-900/80 to-slate-900/40 backdrop-blur-lg border border-slate-700/50 hover:border-blue-500/50 transition-all group overflow-hidden shadow-lg hover:shadow-[0_10px_30px_-10px_rgba(59,130,246,0.3)] hover:-translate-y-0.5"
+                      className="relative p-5 rounded-[2rem] bg-gradient-to-r from-slate-900/90 to-slate-900/50 backdrop-blur-xl border border-slate-700/50 hover:border-blue-500/50 transition-all group overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.2)] hover:shadow-[0_10px_40px_-10px_rgba(59,130,246,0.4)] hover:-translate-y-1"
                     >
-                      {/* Hover glow background */}
-                      <div className="absolute inset-0 bg-blue-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                      <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                       
-                      <div className="relative z-10 flex items-start gap-4">
-                        <div className="w-11 h-11 rounded-2xl bg-slate-800/80 border border-slate-700 flex items-center justify-center text-blue-400 shrink-0 group-hover:bg-gradient-to-br group-hover:from-blue-500 group-hover:to-cyan-500 group-hover:text-white group-hover:border-transparent transition-all shadow-inner">
+                      <div className="relative z-10 flex items-center gap-5">
+                        <div className="w-12 h-12 rounded-2xl bg-slate-800 border border-slate-700 flex items-center justify-center text-blue-400 shrink-0 group-hover:bg-gradient-to-br group-hover:from-blue-500 group-hover:to-cyan-500 group-hover:text-white group-hover:border-transparent transition-all shadow-inner group-hover:scale-110 group-hover:-rotate-3">
                           <IconComponent className="w-5 h-5" />
                         </div>
-                        <div className="min-w-0 flex-1 pt-0.5">
-                          <p className="text-[14px] font-bold text-slate-200 group-hover:text-white transition-colors leading-tight mb-1">
+                        <div className="min-w-0 flex-1">
+                          <p className="text-[16px] font-bold text-slate-100 group-hover:text-white transition-colors leading-tight mb-1">
                             {srv.title}
                           </p>
-                          <p className="text-[11px] text-slate-400 line-clamp-2 leading-relaxed">
+                          <p className="text-[12px] text-slate-400 line-clamp-2 leading-relaxed font-medium mt-1">
                             {srv.description}
                           </p>
+                        </div>
+                        <div className="w-8 h-8 rounded-full bg-slate-800/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all -translate-x-4 group-hover:translate-x-0">
+                          <ArrowRight className="w-4 h-4 text-white" />
                         </div>
                       </div>
                     </Link>
