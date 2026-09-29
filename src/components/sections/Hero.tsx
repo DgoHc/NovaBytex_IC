@@ -65,7 +65,7 @@ export const Hero = () => {
   });
 
   return (
-    <section className="relative overflow-hidden bg-gradient-to-b from-slate-50 via-blue-50/30 to-white py-20 text-slate-900 md:py-28 lg:py-32">
+    <section className="relative overflow-hidden bg-gradient-to-b from-slate-50 via-blue-50/30 to-white pt-8 pb-20 text-slate-900 md:pt-12 md:pb-28 lg:pt-12 lg:pb-32">
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <motion.div
           className="absolute -left-32 -top-32 h-[500px] w-[500px] rounded-full bg-blue-400/10 blur-[140px]"
@@ -85,7 +85,7 @@ export const Hero = () => {
             initial={reduceMotion ? false : "hidden"}
             animate={reduceMotion ? { opacity: 1, y: 0 } : "visible"}
             variants={reveal(0.05, 1)}
-            className="space-y-8 text-center lg:col-span-7 lg:text-left"
+            className="space-y-8 text-center lg:col-span-6 lg:text-left"
           >
             <motion.div
               initial={reduceMotion ? false : "hidden"}
@@ -167,35 +167,35 @@ export const Hero = () => {
             initial={reduceMotion ? false : { opacity: 0, scale: 0.94, y: 28 }}
             animate={reduceMotion ? { opacity: 1, scale: 1, y: 0 } : { opacity: 1, scale: 1, y: 0 }}
             transition={{ duration: 1.05, delay: 0.38, ease: easeCurve }}
-            className="relative mx-auto w-full max-w-md lg:col-span-5 mt-10 lg:mt-0"
+            className="relative mx-auto w-full max-w-lg lg:max-w-xl lg:col-span-6 mt-6 lg:mt-0"
           >
             {/* Logo from /card */}
-            <div className="absolute -top-12 -right-4 md:-right-8 z-50">
+            <div className="absolute -top-14 -right-4 md:-top-16 md:-right-10 z-50">
               <motion.div
                 animate={{ y: [-4, 4, -4] }}
                 transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
-                className="relative w-[90px] h-[90px] sm:w-[110px] sm:h-[110px] rounded-[1.5rem] p-0.5 bg-gradient-to-br from-blue-400 via-cyan-500 to-blue-700 shadow-[0_15px_40px_-10px_rgba(59,130,246,0.4)] rotate-3"
+                className="relative w-[110px] h-[110px] sm:w-[130px] sm:h-[130px] rounded-[2rem] p-0.5 bg-gradient-to-br from-blue-400 via-cyan-500 to-blue-700 shadow-[0_15px_40px_-10px_rgba(59,130,246,0.4)] rotate-3"
               >
-                <div className="w-full h-full rounded-[1.4rem] bg-slate-950 p-2 flex items-center justify-center overflow-hidden -rotate-3 relative z-10">
+                <div className="w-full h-full rounded-[1.9rem] bg-slate-950 p-3 flex items-center justify-center overflow-hidden -rotate-3 relative z-10">
                   <img
                     src="/assets/branding/nb-isotype.png"
                     alt="Nova Bytex"
                     className="w-full h-full object-contain"
                   />
                 </div>
-                <div className="absolute -top-2 -right-2 w-4 h-4 rounded-full border border-blue-400/40 -z-10" />
-                <div className="absolute -bottom-1 -left-1 w-2 h-2 rounded-full bg-cyan-500/40 -z-10 blur-[1px]" />
+                <div className="absolute -top-3 -right-3 w-6 h-6 rounded-full border border-blue-400/40 -z-10" />
+                <div className="absolute -bottom-2 -left-2 w-3 h-3 rounded-full bg-cyan-500/40 -z-10 blur-[1px]" />
               </motion.div>
             </div>
 
-            <div className="relative space-y-5 rounded-[28px] border border-slate-100 bg-white p-6 shadow-xl overflow-hidden h-[420px] flex flex-col">
-              <div className="flex items-center justify-between text-xs text-slate-500 mb-2">
-                <span className="flex items-center gap-1.5 font-semibold uppercase tracking-wider text-blue-700 z-10">
+            <div className="relative space-y-6 rounded-[32px] border border-slate-100 bg-white p-6 sm:p-8 shadow-xl overflow-hidden h-[480px] sm:h-[520px] flex flex-col">
+              <div className="flex items-center justify-between text-sm text-slate-500 mb-2">
+                <span className="flex items-center gap-1.5 font-bold uppercase tracking-wider text-blue-700 z-10">
                   Nuestros Servicios
                 </span>
                 <span className="flex gap-1.5 z-10">
                   {heroServices.map((_, i) => (
-                    <div key={i} className={`h-1.5 rounded-full transition-all duration-300 ${i === activeService ? "w-5 bg-blue-600" : "w-1.5 bg-slate-200"}`} />
+                    <div key={i} className={`h-1.5 rounded-full transition-all duration-300 ${i === activeService ? "w-6 bg-blue-600" : "w-1.5 bg-slate-200"}`} />
                   ))}
                 </span>
               </div>
@@ -210,21 +210,21 @@ export const Hero = () => {
                     transition={{ duration: 0.3 }}
                     className="absolute inset-0 flex flex-col"
                   >
-                    <div className={`w-full h-44 rounded-[22px] bg-gradient-to-br ${heroServices[activeService].gradient} flex items-center justify-center mb-6 shadow-lg ${heroServices[activeService].shadow}`}>
-                      <div className="w-16 h-16 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-sm border border-white/30 shadow-inner">
+                    <div className={`w-full h-48 sm:h-56 rounded-[24px] bg-gradient-to-br ${heroServices[activeService].gradient} flex items-center justify-center mb-6 sm:mb-8 shadow-lg ${heroServices[activeService].shadow}`}>
+                      <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-sm border border-white/30 shadow-inner">
                         {heroServices[activeService].icon}
                       </div>
                     </div>
                     
                     <div className="flex-1 flex flex-col">
-                      <h3 className="text-xl font-bold text-slate-900 mb-2">{heroServices[activeService].title}</h3>
-                      <p className="text-sm text-slate-600 leading-relaxed mb-5">{heroServices[activeService].description}</p>
+                      <h3 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-3">{heroServices[activeService].title}</h3>
+                      <p className="text-base sm:text-lg text-slate-600 leading-relaxed mb-6">{heroServices[activeService].description}</p>
                       
-                      <div className="grid grid-cols-2 gap-3 mt-auto pb-1">
+                      <div className="grid grid-cols-2 gap-3 sm:gap-4 mt-auto pb-1">
                         {heroServices[activeService].features.map((feat, i) => (
-                          <div key={i} className="flex items-center gap-2 rounded-xl bg-slate-50 p-3 border border-slate-100/60">
-                            <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0" />
-                            <div className="truncate text-xs font-semibold text-slate-700">{feat}</div>
+                          <div key={i} className="flex items-center gap-2 rounded-2xl bg-slate-50 p-3 sm:p-4 border border-slate-100/60">
+                            <CheckCircle2 className="h-5 w-5 text-emerald-500 shrink-0" />
+                            <div className="truncate text-sm font-semibold text-slate-700">{feat}</div>
                           </div>
                         ))}
                       </div>
