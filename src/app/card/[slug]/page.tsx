@@ -11,7 +11,7 @@ import {
 import QrModal from "@/components/nfc/QrModal";
 import ShareButton from "@/components/nfc/ShareButton";
 import { Metadata } from "next";
-
+import Link from "next/link";
 export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
@@ -169,9 +169,9 @@ export default async function DigitalProfilePage({ params }: { params: Promise<{
         </div>
 
         <div className="text-center pb-6">
-          <a href="/" className="inline-block text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-blue-600 transition-colors">
+          <Link href="/" className="inline-block text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-blue-600 transition-colors">
             Potenciado por NovaBytex NFC
-          </a>
+          </Link>
         </div>
       </div>
     </div>

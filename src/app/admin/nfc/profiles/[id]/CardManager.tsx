@@ -122,7 +122,7 @@ export default function CardManager({ profileId, initialCards }: CardManagerProp
                         1. Copia la URL de arriba.<br/>
                         2. Usa NFC Tools (Write &gt; URL).<br/>
                         3. Escribe la tarjeta física.<br/>
-                        4. Comprueba y haz clic en "Activar".
+                        4. Comprueba y haz clic en &quot;Activar&quot;.
                       </div>
                     )}
                   </div>
