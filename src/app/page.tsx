@@ -4,6 +4,7 @@ import { Services } from "@/components/sections/Services";
 import { FeaturedProducts } from "@/components/sections/FeaturedProducts";
 import { Benefits } from "@/components/sections/Benefits";
 import { CTA } from "@/components/sections/CTA";
+import { NfcBanner } from "@/components/sections/NfcBanner";
 
 export default function Home() {
   return (
@@ -11,6 +12,7 @@ export default function Home() {
       <Hero />
       <Partners />
       <Services />
+      <NfcBanner />
       <FeaturedProducts />
       <Benefits />
       <CTA />
