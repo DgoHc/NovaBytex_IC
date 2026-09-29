@@ -188,7 +188,7 @@ export const Hero = () => {
               </motion.div>
             </div>
 
-            <div className="relative space-y-6 rounded-[32px] border border-slate-100 bg-white p-6 sm:p-8 shadow-xl overflow-hidden h-[480px] sm:h-[520px] flex flex-col">
+            <div className="relative space-y-6 rounded-[32px] border border-slate-100 bg-white p-6 sm:p-8 shadow-xl overflow-hidden min-h-[480px] sm:min-h-[540px] flex flex-col">
               <div className="flex items-center justify-between text-sm text-slate-500 mb-2">
                 <span className="flex items-center gap-1.5 font-bold uppercase tracking-wider text-blue-700 z-10">
                   Nuestros Servicios
@@ -200,7 +200,7 @@ export const Hero = () => {
                 </span>
               </div>
               
-              <div className="relative flex-1">
+              <div className="relative flex-1 flex flex-col w-full h-full">
                 <AnimatePresence mode="wait">
                   <motion.div
                     key={activeService}
@@ -208,19 +208,19 @@ export const Hero = () => {
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: -20 }}
                     transition={{ duration: 0.3 }}
-                    className="absolute inset-0 flex flex-col"
+                    className="flex flex-col flex-1 w-full h-full"
                   >
-                    <div className={`w-full h-48 sm:h-56 rounded-[24px] bg-gradient-to-br ${heroServices[activeService].gradient} flex items-center justify-center mb-6 sm:mb-8 shadow-lg ${heroServices[activeService].shadow}`}>
-                      <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-sm border border-white/30 shadow-inner">
+                    <div className={`w-full h-40 sm:h-48 rounded-[24px] bg-gradient-to-br ${heroServices[activeService].gradient} flex items-center justify-center mb-6 sm:mb-8 shadow-lg ${heroServices[activeService].shadow}`}>
+                      <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-sm border border-white/30 shadow-inner">
                         {heroServices[activeService].icon}
                       </div>
                     </div>
                     
-                    <div className="flex-1 flex flex-col">
+                    <div className="flex-1 flex flex-col justify-end">
                       <h3 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-3">{heroServices[activeService].title}</h3>
                       <p className="text-base sm:text-lg text-slate-600 leading-relaxed mb-6">{heroServices[activeService].description}</p>
                       
-                      <div className="grid grid-cols-2 gap-3 sm:gap-4 mt-auto pb-1">
+                      <div className="grid grid-cols-2 gap-3 sm:gap-4 mt-auto">
                         {heroServices[activeService].features.map((feat, i) => (
                           <div key={i} className="flex items-center gap-2 rounded-2xl bg-slate-50 p-3 sm:p-4 border border-slate-100/60">
                             <CheckCircle2 className="h-5 w-5 text-emerald-500 shrink-0" />
