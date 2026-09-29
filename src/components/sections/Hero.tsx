@@ -1,13 +1,56 @@
 "use client";
 
-import React from "react";
-import { motion, useReducedMotion } from "framer-motion";
+import React, { useState, useEffect } from "react";
+import { motion, useReducedMotion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, ShoppingBag, ShieldCheck, CheckCircle2, PhoneCall } from "lucide-react";
+import { ArrowRight, ShoppingBag, ShieldCheck, CheckCircle2, PhoneCall, CreditCard, Server, Headphones } from "lucide-react";
 import Link from "next/link";
-import { ProductImage } from "@/components/ui/ProductImage";
+
+const heroServices = [
+  {
+    title: "Tarjetas Digitales NFC",
+    description: "Comparte tu contacto al instante. Ecológica, moderna y personalizable para tu empresa.",
+    icon: <CreditCard className="w-8 h-8 text-white" />,
+    features: ["Contacto directo", "Sin apps adicionales"],
+    gradient: "from-blue-600 to-indigo-700",
+    shadow: "shadow-blue-500/30"
+  },
+  {
+    title: "Papelería & Hardware",
+    description: "Suministro confiable de útiles de oficina y hardware de las mejores marcas.",
+    icon: <ShoppingBag className="w-8 h-8 text-white" />,
+    features: ["Entrega inmediata", "Garantía oficial"],
+    gradient: "from-cyan-500 to-blue-600",
+    shadow: "shadow-cyan-500/30"
+  },
+  {
+    title: "Soporte Técnico",
+    description: "Acompañamiento especializado para garantizar la continuidad operativa de tu empresa.",
+    icon: <Headphones className="w-8 h-8 text-white" />,
+    features: ["Respuesta < 15 min", "Monitoreo 24/7"],
+    gradient: "from-violet-500 to-purple-600",
+    shadow: "shadow-purple-500/30"
+  },
+  {
+    title: "Data Center & Redes",
+    description: "Diseño, implementación y cableado de redes seguras, virtualización y servidores.",
+    icon: <Server className="w-8 h-8 text-white" />,
+    features: ["99.99% Uptime", "Redes robustas"],
+    gradient: "from-emerald-500 to-teal-600",
+    shadow: "shadow-emerald-500/30"
+  }
+];
 
 export const Hero = () => {
+  const [activeService, setActiveService] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setActiveService((prev) => (prev + 1) % heroServices.length);
+    }, 4500);
+    return () => clearInterval(timer);
+  }, []);
+
   const reduceMotion = useReducedMotion();
   const easeCurve = [0.22, 1, 0.36, 1] as const;
 
@@ -124,41 +167,70 @@ export const Hero = () => {
             initial={reduceMotion ? false : { opacity: 0, scale: 0.94, y: 28 }}
             animate={reduceMotion ? { opacity: 1, scale: 1, y: 0 } : { opacity: 1, scale: 1, y: 0 }}
             transition={{ duration: 1.05, delay: 0.38, ease: easeCurve }}
-            className="relative mx-auto w-full max-w-md lg:col-span-5"
+            className="relative mx-auto w-full max-w-md lg:col-span-5 mt-10 lg:mt-0"
           >
-            <div className="relative space-y-5 rounded-[28px] border border-slate-100 bg-white p-6 shadow-xl">
-              <div className="space-y-3">
-                <div className="flex items-center justify-between text-xs text-slate-500">
-                  <span className="flex items-center gap-1.5 font-semibold uppercase tracking-wider text-blue-700">
-                    Producto Destacado
-                  </span>
-                  <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-medium text-emerald-700">STOCK LISTO</span>
+            {/* Logo from /card */}
+            <div className="absolute -top-12 -right-4 md:-right-8 z-50">
+              <motion.div
+                animate={{ y: [-4, 4, -4] }}
+                transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
+                className="relative w-[90px] h-[90px] sm:w-[110px] sm:h-[110px] rounded-[1.5rem] p-0.5 bg-gradient-to-br from-blue-400 via-cyan-500 to-blue-700 shadow-[0_15px_40px_-10px_rgba(59,130,246,0.4)] rotate-3"
+              >
+                <div className="w-full h-full rounded-[1.4rem] bg-slate-950 p-2 flex items-center justify-center overflow-hidden -rotate-3 relative z-10">
+                  <img
+                    src="/assets/branding/nb-isotype.png"
+                    alt="Nova Bytex"
+                    className="w-full h-full object-contain"
+                  />
                 </div>
-                <div className="overflow-hidden rounded-[22px]">
-                  <ProductImage type="server" name="Dell PowerEdge R750" className="h-48" />
-                </div>
+                <div className="absolute -top-2 -right-2 w-4 h-4 rounded-full border border-blue-400/40 -z-10" />
+                <div className="absolute -bottom-1 -left-1 w-2 h-2 rounded-full bg-cyan-500/40 -z-10 blur-[1px]" />
+              </motion.div>
+            </div>
+
+            <div className="relative space-y-5 rounded-[28px] border border-slate-100 bg-white p-6 shadow-xl overflow-hidden h-[420px] flex flex-col">
+              <div className="flex items-center justify-between text-xs text-slate-500 mb-2">
+                <span className="flex items-center gap-1.5 font-semibold uppercase tracking-wider text-blue-700 z-10">
+                  Nuestros Servicios
+                </span>
+                <span className="flex gap-1.5 z-10">
+                  {heroServices.map((_, i) => (
+                    <div key={i} className={`h-1.5 rounded-full transition-all duration-300 ${i === activeService ? "w-5 bg-blue-600" : "w-1.5 bg-slate-200"}`} />
+                  ))}
+                </span>
               </div>
-
-              <div className="grid grid-cols-2 gap-3 pt-1">
-                <div className="flex items-center gap-3 rounded-2xl bg-slate-50 p-4">
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-700">
-                    <ShieldCheck className="h-5 w-5" />
-                  </div>
-                  <div className="min-w-0">
-                    <div className="truncate text-xs font-semibold text-slate-900">Garantía Directa</div>
-                    <div className="truncate text-[11px] text-slate-500">100% Oficial</div>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-3 rounded-2xl bg-slate-50 p-4">
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-emerald-700">
-                    <CheckCircle2 className="h-5 w-5" />
-                  </div>
-                  <div className="min-w-0">
-                    <div className="truncate text-xs font-semibold text-slate-900">Facturación RUC</div>
-                    <div className="truncate text-[11px] text-slate-500">Empresa Formal</div>
-                  </div>
-                </div>
+              
+              <div className="relative flex-1">
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={activeService}
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -20 }}
+                    transition={{ duration: 0.3 }}
+                    className="absolute inset-0 flex flex-col"
+                  >
+                    <div className={`w-full h-44 rounded-[22px] bg-gradient-to-br ${heroServices[activeService].gradient} flex items-center justify-center mb-6 shadow-lg ${heroServices[activeService].shadow}`}>
+                      <div className="w-16 h-16 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-sm border border-white/30 shadow-inner">
+                        {heroServices[activeService].icon}
+                      </div>
+                    </div>
+                    
+                    <div className="flex-1 flex flex-col">
+                      <h3 className="text-xl font-bold text-slate-900 mb-2">{heroServices[activeService].title}</h3>
+                      <p className="text-sm text-slate-600 leading-relaxed mb-5">{heroServices[activeService].description}</p>
+                      
+                      <div className="grid grid-cols-2 gap-3 mt-auto pb-1">
+                        {heroServices[activeService].features.map((feat, i) => (
+                          <div key={i} className="flex items-center gap-2 rounded-xl bg-slate-50 p-3 border border-slate-100/60">
+                            <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0" />
+                            <div className="truncate text-xs font-semibold text-slate-700">{feat}</div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </motion.div>
+                </AnimatePresence>
               </div>
             </div>
           </motion.div>
