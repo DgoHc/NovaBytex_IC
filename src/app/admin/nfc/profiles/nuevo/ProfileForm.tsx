@@ -53,18 +53,22 @@ export default function ProfileForm({ initialData, isEdit = false }: ProfileForm
       data.append("is_active", "true");
     }
 
-    let result;
     if (isEdit && initialData) {
-      result = await updateProfileAction(initialData.id, data);
+      const result = await updateProfileAction(initialData.id, data);
+      if (result.success) {
+        router.push(`/admin/nfc/profiles/${initialData.id}`);
+      } else {
+        setError(result.error || "Ocurrió un error al actualizar el perfil.");
+        setLoading(false);
+      }
     } else {
-      result = await createProfileAction(data);
-    }
-
-    if (result.success) {
-      router.push(`/admin/nfc/profiles/${isEdit ? initialData!.id : result.id}`);
-    } else {
-      setError(result.error || `Ocurrió un error al ${isEdit ? 'actualizar' : 'crear'} el perfil.`);
-      setLoading(false);
+      const result = await createProfileAction(data);
+      if (result.success) {
+        router.push(`/admin/nfc/profiles/${result.id}`);
+      } else {
+        setError(result.error || "Ocurrió un error al crear el perfil.");
+        setLoading(false);
+      }
     }
   };
 
