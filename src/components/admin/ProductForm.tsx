@@ -374,605 +374,220 @@ export function ProductForm({
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-5 lg:space-y-6">
-      <motion.div
-        initial={{ opacity: 0, y: 14 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4"
-      >
-        <div className="space-y-2">
-          <div className="flex flex-wrap items-center gap-2">
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={() => router.back()}
-              className="h-9 px-3 rounded-xl border-slate-200 text-slate-700 hover:bg-slate-50 text-xs font-semibold"
-            >
-              <ArrowLeft className="w-3.5 h-3.5 mr-1.5" />
-              Volver
-            </Button>
-            <Badge
-              className={cn(
-                "h-6 px-3 rounded-xl text-[11px] font-bold border",
-                mode === "create"
-                  ? "bg-blue-50 text-blue-700 border-blue-200"
-                  : "bg-library-sage/25 text-library-sage-foreground border-library-sage/50"
+    <form onSubmit={handleSubmit(onSubmit)} className="w-full relative flex flex-col pb-24 max-w-[1120px] mx-auto">
+      {/* Page Header */}
+      <div className="mb-6 space-y-1">
+        <p className="text-sm font-semibold text-slate-900 leading-none">
+          <span className="text-slate-500 font-normal">Productos</span>
+          <span className="mx-1.5 text-slate-300 font-medium">/</span>
+          <span>{mode === "create" ? "Nuevo producto" : "Editar producto"}</span>
+        </p>
+        <h1 className="text-[20px] font-sans font-bold text-slate-900 leading-tight">
+          {mode === "create" ? "Nuevo producto" : "Editar producto"}
+        </h1>
+        <p className="text-xs text-slate-500">* Campo obligatorio</p>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6 items-start">
+        {/* Main Column */}
+        <div className="border border-slate-200 rounded-lg bg-white overflow-hidden shadow-sm divide-y divide-slate-200">
+          
+          {/* Section 1: Tipo de catálogo */}
+          <div className="p-6">
+            <h2 className="text-[14px] font-semibold text-slate-900">Tipo de catálogo</h2>
+            <p className="text-[13px] text-slate-500 mt-1 mb-4">Define en qué tienda se mostrará este producto.</p>
+            <Controller
+              name="type"
+              control={control}
+              render={({ field }) => (
+                <div className="flex bg-slate-100 p-1 rounded-md mb-2">
+                  <button
+                    type="button"
+                    onClick={() => field.onChange("technology")}
+                    className={cn(
+                      "flex-1 flex items-center justify-center gap-2 h-10 rounded text-sm font-medium transition-colors",
+                      field.value === "technology" ? "bg-white text-blue-700 shadow-sm border border-slate-200" : "text-slate-600 hover:text-slate-900"
+                    )}
+                  >
+                    <Cpu className="w-4 h-4" /> Tecnología
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => field.onChange("library")}
+                    className={cn(
+                      "flex-1 flex items-center justify-center gap-2 h-10 rounded text-sm font-medium transition-colors",
+                      field.value === "library" ? "bg-white text-emerald-700 shadow-sm border border-slate-200" : "text-slate-600 hover:text-slate-900"
+                    )}
+                  >
+                    <BookOpen className="w-4 h-4" /> Librería
+                  </button>
+                </div>
               )}
-            >
-              {mode === "create" ? "Nuevo producto" : "Editar producto"}
-            </Badge>
+            />
+            {errors.type?.message && <p className="text-[12px] text-rose-600 mt-1">{errors.type.message}</p>}
           </div>
-          <h1 className="font-bodoni text-3xl md:text-4xl tracking-tight text-slate-900 leading-[1.05]">
-            {mode === "create"
-              ? "Agregar producto al catálogo"
-              : `Editar · ${initial?.name ?? ""}`}
-          </h1>
-          <p className="text-sm text-slate-500 max-w-2xl">
-            Completa la información básica del producto. Los campos con{" "}
-            <span className="font-semibold text-slate-700">*</span> son
-            obligatorios.
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
-          {mode === "edit" && (
-            <Button
-              type="button"
-              variant="outline"
-              asChild
-              className="h-11 px-4 rounded-xl border-slate-200 text-slate-700 hover:bg-slate-50 text-xs font-semibold"
-            >
-              <Link href={`/productos/${initial?.id}`} target="_blank">
-                Ver en tienda
-              </Link>
-            </Button>
-          )}
-          <Button
-            type="submit"
-            disabled={isSubmitting}
-            className="h-11 px-6 rounded-xl bg-slate-900 hover:bg-blue-800 text-white text-sm font-semibold shadow-sm disabled:opacity-60"
-          >
-            <Save className="w-4 h-4 mr-2" />
-            {isSubmitting
-              ? "Guardando…"
-              : mode === "create"
-              ? "Guardar producto"
-              : "Guardar cambios"}
-          </Button>
-        </div>
-      </motion.div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-6">
-        <div className="lg:col-span-8 space-y-5 lg:space-y-6">
-          <Card className="border-slate-200 rounded-2xl overflow-hidden shadow-sm bg-white">
-            <CardHeader className="px-5 py-4 border-b border-slate-100 bg-gradient-to-br from-white to-slate-50/80 flex flex-row items-center justify-between">
-              <div>
-                <h2 className="font-bodoni text-xl text-slate-900 leading-none">
-                  {isTech ? "Equipamiento TI & Conectividad" : "Información de Librería & Papelería"}
-                </h2>
-                <p className="text-xs text-slate-500 mt-1.5">
-                  {isTech
-                    ? "Configura las propiedades de hardware, conectividad y soporte empresarial."
-                    : "Configura el formato, materiales, encuadernación y detalles de librería."}
-                </p>
-              </div>
-              <Badge
-                className={cn(
-                  "hidden sm:inline-flex text-[10.5px] font-bold border",
-                  isTech
-                    ? "bg-blue-50 text-blue-700 border-blue-200"
-                    : "bg-library-sage/25 text-library-sage-foreground border-library-sage/50"
-                )}
-              >
-                {isTech ? "Catálogo TI" : "Catálogo Librería"}
-              </Badge>
-            </CardHeader>
-            <CardContent className="p-5 space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Field
-                  label="Nombre del producto"
-                  required
-                  error={errors.name?.message}
-                  className="md:col-span-2"
-                >
-                  <Controller
-                    name="name"
-                    control={control}
-                    render={({ field }) => (
-                      <Input
-                        {...field}
-                        placeholder={
-                          isTech
-                            ? "Ej. Switch Cisco Catalyst 1000 24 Puertos Gigabit"
-                            : "Ej. Cuaderno Moleskine Classic Tapa Dura Rayado"
-                        }
-                        className="h-11 rounded-xl bg-slate-50 border-slate-200 focus:bg-white focus:border-blue-500"
-                      />
-                    )}
-                  />
-                </Field>
-
-                <Field
-                  label="Tipo de catálogo"
-                  required
-                  hint="Define si este artículo se exhibe en la tienda de Tecnología o en Librería."
-                  error={errors.type?.message}
-                  className="md:col-span-2"
-                >
-                  <Controller
-                    name="type"
-                    control={control}
-                    render={({ field }) => (
-                      <div
-                        role="radiogroup"
-                        aria-label="Tipo de catálogo"
-                        className="grid grid-cols-1 sm:grid-cols-2 gap-3"
-                      >
-                        <TypeCard
-                          value="technology"
-                          checked={field.value === "technology"}
-                          title="Tecnología"
-                          description="Hardware, redes, servidores y equipos TI corporativos."
-                          icon={Cpu}
-                          tone="blue"
-                          onSelect={(v) => field.onChange(v)}
-                        />
-                        <TypeCard
-                          value="library"
-                          checked={field.value === "library"}
-                          title="Librería"
-                          description="Libros, cuadernos, agendas, arte y suministros de oficina."
-                          icon={BookOpen}
-                          tone="sage"
-                          onSelect={(v) => field.onChange(v)}
-                        />
-                      </div>
-                    )}
-                  />
-                </Field>
-
-                <Field label="Categoría" required error={errors.category?.message}>
-                  <Controller
-                    name="category"
-                    control={control}
-                    render={({ field }) => (
-                      <Select
-                        value={field.value}
-                        onValueChange={(v) => field.onChange(v)}
-                      >
-                        <SelectTrigger className="h-11 rounded-xl bg-slate-50 border-slate-200">
-                          <SelectValue placeholder="Selecciona categoría" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {categoriesForType.map((c) => (
-                            <SelectItem key={c} value={c}>
-                              {c}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    )}
-                  />
-                </Field>
-
-                <Field
-                  label={isTech ? "Marca / Fabricante TI" : "Marca / Editorial"}
-                  required
-                  error={errors.brand?.message}
-                >
-                  <Controller
-                    name="brand"
-                    control={control}
-                    render={({ field }) => (
-                      <Input
-                        {...field}
-                        placeholder={
-                          isTech
-                            ? "Ej. Cisco, Dell, Fortinet, HP, Ubiquiti, Mikrotik"
-                            : "Ej. Moleskine, Parker, Faber-Castell, Norma, Santillana"
-                        }
-                        className="h-11 rounded-xl bg-slate-50 border-slate-200 focus:bg-white focus:border-blue-500"
-                      />
-                    )}
-                  />
-                </Field>
-
-                <Field label="SKU / Código Interno" required error={errors.sku?.message}>
-                  <Controller
-                    name="sku"
-                    control={control}
-                    render={({ field }) => (
-                      <Input
-                        {...field}
-                        placeholder={isTech ? "NB-SW-CISCO-24G" : "NB-LIB-MOLE-A5"}
-                        className="h-11 rounded-xl bg-slate-50 border-slate-200 focus:bg-white focus:border-blue-500 font-mono tracking-wide"
-                      />
-                    )}
-                  />
-                </Field>
-
-                <Field
-                  label={isTech ? "Garantía Oficial TI" : "Garantía o Respaldo"}
-                  optional
-                  error={errors.warranty?.message}
-                >
-                  <Controller
-                    name="warranty"
-                    control={control}
-                    render={({ field }) => (
-                      <Input
-                        {...field}
-                        placeholder={
-                          isTech
-                            ? "Ej. 12 meses oficial del fabricante + Soporte 24/7"
-                            : "Ej. 6 meses por defectos de fábrica"
-                        }
-                        className="h-11 rounded-xl bg-slate-50 border-slate-200 focus:bg-white focus:border-blue-500"
-                      />
-                    )}
-                  />
-                </Field>
-              </div>
-
-              <Field
-                label="Descripción corta"
-                required
-                hint="Aparece en las tarjetas de producto y catálogo general."
-                error={errors.description?.message}
-              >
-                <Controller
-                  name="description"
-                  control={control}
-                  render={({ field }) => (
-                    <Textarea
-                      {...field}
-                      rows={3}
-                      placeholder={
-                        isTech
-                          ? "Ej. Switch administrable capa 2 con 24 puertos Gigabit PoE+ y 4 SFP para centros de datos."
-                          : "Ej. Cuaderno cosido de tapa dura con 192 páginas rayadas y papel marfil de 90g."
-                      }
-                      className="rounded-xl bg-slate-50 border-slate-200 focus:bg-white focus:border-blue-500"
-                    />
-                  )}
-                />
-              </Field>
-
-              <Field
-                label="Descripción detallada"
-                optional
-                hint="Información técnica completa, arquitectura, contenidos o recomendaciones."
-                error={errors.fullDescription?.message}
-              >
-                <Controller
-                  name="fullDescription"
-                  control={control}
-                  render={({ field }) => (
-                    <Textarea
-                      {...field}
-                      rows={5}
-                      placeholder={
-                        isTech
-                          ? "Detalles de arquitectura de red, protocolos soportados, ventilación, compatibilidad rack..."
-                          : "Detalles de encuadernación, gramaje de papel, acabados de cubierta, resistencia y técnicas recomendadas..."
-                      }
-                      className="rounded-xl bg-slate-50 border-slate-200 focus:bg-white focus:border-blue-500 leading-relaxed"
-                    />
-                  )}
-                />
-              </Field>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Field
-                  label={
-                    isTech
-                      ? "Características de Hardware & Redes"
-                      : "Características del Artículo & Acabado"
-                  }
-                  optional
-                  hint="Se muestra como viñetas en la ficha del producto."
-                >
-                  <Textarea
-                    rows={4}
-                    value={featuresText}
-                    onChange={(e) => setFeaturesText(e.target.value)}
-                    placeholder={
-                      isTech
-                        ? "- 24 puertos Gigabit 10/100/1000 Mbps\n- 4 enlaces SFP+ 10G para fibra\n- Capacidad de conmutación 128 Gbps\n- Fuentes de alimentación redundantes"
-                        : "- Papel marfil de 90 g/m² libre de ácido\n- Tapa dura con esquinas redondeadas\n- Cierre con elástico y cinta marcapáginas\n- Bolsillo interior expandible"
-                    }
-                    className="rounded-xl bg-slate-50 border-slate-200 focus:bg-white focus:border-blue-500 font-mono text-[12.5px]"
-                  />
-                </Field>
-                <Field
-                  label={
-                    isTech
-                      ? "Ficha Técnica TI (Clave: Valor)"
-                      : "Ficha Técnica / Medidas (Clave: Valor)"
-                  }
-                  optional
-                  hint="Formato corto: Clave: Valor (uno por línea)."
-                >
-                  <Textarea
-                    rows={4}
-                    value={specificationsText}
-                    onChange={(e) => setSpecificationsText(e.target.value)}
-                    placeholder={
-                      isTech
-                        ? "Factor de Forma: Rack 1U 19\"\nMemoria RAM: 16 GB ECC\nAlmacenamiento: 2x 480GB SSD Enterprise\nConsumo Eléctrico: 65W máx."
-                        : "Formato: A5 (14.8 x 21 cm)\nPáginas: 192 páginas rayadas\nGramaje: 90 g/m²\nEncuadernación: Cosido hilo smyth"
-                    }
-                    className="rounded-xl bg-slate-50 border-slate-200 focus:bg-white focus:border-blue-500 font-mono text-[12.5px]"
-                  />
-                </Field>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="border-slate-200 rounded-2xl overflow-hidden shadow-sm bg-white">
-            <CardHeader className="px-5 py-4 border-b border-slate-100 bg-gradient-to-br from-white to-slate-50/80">
-              <div className="flex items-center justify-between gap-3">
-                <div>
-                  <h2 className="font-bodoni text-xl text-slate-900 leading-none">
-                    Precios & Stock
-                  </h2>
-                  <p className="text-xs text-slate-500 mt-1.5">
-                    Define el precio de venta y disponibilidad.
-                  </p>
-                </div>
-                <div className="hidden sm:flex items-center gap-1.5 text-[11px] font-semibold text-slate-500">
-                  <HelpCircle className="w-3.5 h-3.5" />
-                  Soles peruanos (PEN)
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent className="p-5 space-y-4">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <Field label="Precio actual (S/)" required error={errors.price?.message}>
-                  <Controller
-                    name="price"
-                    control={control}
-                    render={({ field }) => (
-                      <Input
-                        {...field}
-                        type="number"
-                        step="0.01"
-                        min={0}
-                        placeholder="0.00"
-                        className="h-11 rounded-xl bg-slate-50 border-slate-200 focus:bg-white focus:border-blue-500 tabular-nums text-lg font-bold"
-                      />
-                    )}
-                  />
-                </Field>
-                <Field
-                  label="Precio anterior / Oferta (S/)"
-                  optional
-                  hint={
-                    typeof previousPrice === "number" && previousPrice > 0
-                      ? `Descuento aplicado ≈ ${Math.round(
-                          ((previousPrice - Number(price ?? 0)) / previousPrice) * 100
-                        )}%`
-                      : "Solo si el producto cuenta con descuento. Debe ser mayor al precio actual."
-                  }
-                  error={errors.previousPrice?.message}
-                >
-                  <Controller
-                    name="previousPrice"
-                    control={control}
-                    render={({ field }) => (
-                      <Input
-                        {...field}
-                        value={
-                          typeof field.value === "number" ? field.value : ""
-                        }
-                        type="number"
-                        step="0.01"
-                        min={0}
-                        placeholder="Opcional"
-                        className="h-11 rounded-xl bg-slate-50 border-slate-200 focus:bg-white focus:border-blue-500 tabular-nums"
-                      />
-                    )}
-                  />
-                </Field>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <Field label="Puntuación inicial (0–5)" optional error={errors.rating?.message}>
-                  <Controller
-                    name="rating"
-                    control={control}
-                    render={({ field }) => (
-                      <Input
-                        {...field}
-                        value={
-                          typeof field.value === "number" ? field.value : 4.5
-                        }
-                        type="number"
-                        step="0.1"
-                        min={0}
-                        max={5}
-                        className="h-11 rounded-xl bg-slate-50 border-slate-200 focus:bg-white focus:border-blue-500 tabular-nums"
-                      />
-                    )}
-                  />
-                </Field>
-                <Field label="Número de reseñas" optional error={errors.reviewsCount?.message}>
-                  <Controller
-                    name="reviewsCount"
-                    control={control}
-                    render={({ field }) => (
-                      <Input
-                        {...field}
-                        value={
-                          typeof field.value === "number" ? field.value : 0
-                        }
-                        type="number"
-                        step={1}
-                        min={0}
-                        className="h-11 rounded-xl bg-slate-50 border-slate-200 focus:bg-white focus:border-blue-500 tabular-nums"
-                      />
-                    )}
-                  />
-                </Field>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 p-4 rounded-2xl bg-slate-50 border border-slate-200">
-                <ToggleField
-                  label="Producto activo"
-                  hint={
-                    <span>
-                      Si está <strong>desactivado</strong> no aparece en tienda.
-                    </span>
-                  }
-                  error={errors.available?.message}
-                >
-                  <Controller
-                    name="available"
-                    control={control}
-                    render={({ field }) => (
-                      <Switch
-                        checked={!!field.value}
-                        onCheckedChange={field.onChange}
-                      />
-                    )}
-                  />
-                </ToggleField>
-                <ToggleField
-                  label="Tiene stock"
-                  hint="Indica si hay unidades disponibles."
-                  error={errors.inStock?.message}
-                >
-                  <Controller
-                    name="inStock"
-                    control={control}
-                    render={({ field }) => (
-                      <Switch
-                        checked={!!field.value}
-                        onCheckedChange={field.onChange}
-                      />
-                    )}
-                  />
-                </ToggleField>
-                <ToggleField
-                  label="Producto destacado"
-                  hint="Aparece en zonas premium como el home."
-                  error={errors.featured?.message}
-                >
-                  <Controller
-                    name="featured"
-                    control={control}
-                    render={({ field }) => (
-                      <Switch
-                        checked={!!field.value}
-                        onCheckedChange={field.onChange}
-                      />
-                    )}
-                  />
-                </ToggleField>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        <div className="lg:col-span-4 space-y-5 lg:space-y-6">
-          <Card className="border-slate-200 rounded-2xl overflow-hidden shadow-sm bg-white">
-            <CardHeader className="px-5 py-4 border-b border-slate-100 bg-gradient-to-br from-white to-slate-50/80">
-              <h2 className="font-bodoni text-xl text-slate-900 leading-none">
-                Imagen del producto
-              </h2>
-              <p className="text-xs text-slate-500 mt-1.5">
-                Sube la foto desde tu dispositivo o selecciona una ilustración temática.
-              </p>
-            </CardHeader>
-            <CardContent className="p-5 space-y-5">
+          {/* Section 2: Información Básica */}
+          <div className="p-6 space-y-4">
+            <h2 className="text-[14px] font-semibold text-slate-900">Información básica</h2>
+            <p className="text-[13px] text-slate-500 mt-1 mb-4">Datos principales para identificar el artículo.</p>
+            
+            <Field label="Nombre del producto" required error={errors.name?.message}>
               <Controller
-                name="image"
+                name="name"
                 control={control}
                 render={({ field }) => (
-                  <ImageUploader
-                    value={field.value ?? ""}
-                    onChange={field.onChange}
-                  />
+                  <Input {...field} className={cn("h-10 rounded-md bg-white border-slate-200 focus:ring-2 focus:ring-blue-500", errors.name && "border-rose-500")} />
                 )}
               />
+            </Field>
 
-              <Field
-                label="Tipo de ilustración (fallback)"
-                required
-                hint={
-                  isTech
-                    ? "Ilustración corporativa para switches, servidores, firewalls, etc."
-                    : "Ilustración para libros, cuadernos, agendas, plumas, etc."
-                }
-                error={errors.imageType?.message}
-              >
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <Field label="Marca / Editorial" required error={errors.brand?.message}>
+                <Controller name="brand" control={control} render={({ field }) => <Input {...field} className="h-10 rounded-md" />} />
+              </Field>
+              <Field label="SKU" required error={errors.sku?.message}>
+                <Controller name="sku" control={control} render={({ field }) => <Input {...field} className="h-10 rounded-md font-mono" />} />
+              </Field>
+              <Field label="Categoría" required error={errors.category?.message}>
                 <Controller
-                  name="imageType"
+                  name="category"
                   control={control}
                   render={({ field }) => (
-                    <Select
-                      value={field.value}
-                      onValueChange={(v) => field.onChange(v)}
-                    >
-                      <SelectTrigger className="h-11 rounded-xl bg-slate-50 border-slate-200">
-                        <SelectValue placeholder="Selecciona un tipo" />
+                    <Select value={field.value} onValueChange={field.onChange}>
+                      <SelectTrigger className="h-10 rounded-md">
+                        <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        {imageTypesForType.map((t) => (
-                          <SelectItem key={t.value} value={t.value}>
-                            {t.label}
-                          </SelectItem>
+                        {categoriesForType.map((c) => (
+                          <SelectItem key={c} value={c}>{c}</SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
                   )}
                 />
               </Field>
-            </CardContent>
-          </Card>
+            </div>
+            
+            <Field label="Descripción" required error={errors.description?.message}>
+              <Controller name="description" control={control} render={({ field }) => <Textarea {...field} rows={3} className="rounded-md" />} />
+            </Field>
+          </div>
 
-          <Card className="border-slate-200 rounded-2xl overflow-hidden shadow-sm bg-white">
-            <CardHeader className="px-5 py-4 border-b border-slate-100 bg-gradient-to-br from-white to-slate-50/80">
-              <h2 className="font-bodoni text-xl text-slate-900 leading-none">
-                Guarda rápido
-              </h2>
-              <p className="text-xs text-slate-500 mt-1.5">
-                Todo cambio queda guardado en tu navegador.
-              </p>
-            </CardHeader>
-            <CardContent className="p-5 space-y-3">
-              <div className="space-y-2 text-[12px] text-slate-500">
-                <CheckboxRow
-                  label="Mostrar producto en tienda"
-                  name="available"
-                  control={control}
-                />
-                <CheckboxRow
-                  label="Marcar como disponible (en stock)"
-                  name="inStock"
-                  control={control}
-                />
-                <CheckboxRow
-                  label="Incluir en destacados"
-                  name="featured"
-                  control={control}
-                />
-              </div>
-              <Button
-                type="submit"
-                disabled={isSubmitting}
-                className="w-full h-12 rounded-xl bg-slate-900 hover:bg-blue-800 text-white text-sm font-semibold shadow-sm disabled:opacity-60"
-              >
-                <Save className="w-4 h-4 mr-2" />
-                {mode === "create" ? "Crear producto" : "Guardar cambios"}
-              </Button>
-              {isDirty && (
-                <p className="text-[11.5px] text-amber-700 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2.5">
-                  Tienes cambios sin guardar en el formulario.
-                </p>
+          {/* Section 3: Especificaciones */}
+          <div className="p-6 space-y-4">
+            <h2 className="text-[14px] font-semibold text-slate-900">Especificaciones técnicas</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <Field label="Características (Viñetas)" optional>
+                <Textarea rows={4} value={featuresText} onChange={(e) => setFeaturesText(e.target.value)} className="rounded-md font-mono text-xs" />
+              </Field>
+              <Field label="Ficha Técnica (Clave: Valor)" optional>
+                <Textarea rows={4} value={specificationsText} onChange={(e) => setSpecificationsText(e.target.value)} className="rounded-md font-mono text-xs" />
+              </Field>
+            </div>
+          </div>
+
+          {/* Section 4: Precio e Inventario */}
+          <div className="p-6 space-y-4">
+            <h2 className="text-[14px] font-semibold text-slate-900">Precio e inventario</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <Field label="Precio (S/)" required error={errors.price?.message}>
+                <Controller name="price" control={control} render={({ field }) => (
+                  <div className="relative">
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 font-semibold">S/</span>
+                    <Input {...field} type="number" step="0.01" className="h-10 pl-8 text-right tabular-nums rounded-md" />
+                  </div>
+                )} />
+              </Field>
+              <Field label="Precio anterior (S/)" optional error={errors.previousPrice?.message}>
+                <Controller name="previousPrice" control={control} render={({ field }) => (
+                  <div className="relative">
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 font-semibold">S/</span>
+                    <Input {...field} value={typeof field.value === "number" ? field.value : ""} type="number" step="0.01" className="h-10 pl-8 text-right tabular-nums rounded-md" />
+                  </div>
+                )} />
+              </Field>
+            </div>
+            
+            <div className="flex gap-6 mt-4">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <Controller name="featured" control={control} render={({ field }) => <Switch checked={!!field.value} onCheckedChange={field.onChange} />} />
+                <span className="text-sm font-medium text-slate-700">Destacado</span>
+              </label>
+              <label className="flex items-center gap-2 cursor-pointer">
+                <Controller name="inStock" control={control} render={({ field }) => <Switch checked={!!field.value} onCheckedChange={field.onChange} />} />
+                <span className="text-sm font-medium text-slate-700">En Stock</span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        {/* Side Column */}
+        <div className="sticky top-[calc(var(--topbar-h)+24px)] space-y-6">
+          <div className="border border-slate-200 rounded-lg bg-white overflow-hidden shadow-sm p-5 space-y-4">
+            <h2 className="text-[14px] font-semibold text-slate-900">Imagen</h2>
+            <Controller
+              name="image"
+              control={control}
+              render={({ field }) => (
+                <ImageUploader value={field.value ?? ""} onChange={field.onChange} />
               )}
-            </CardContent>
-          </Card>
+            />
+            <Field label="O ilustración por defecto" required error={errors.imageType?.message}>
+              <Controller
+                name="imageType"
+                control={control}
+                render={({ field }) => (
+                  <Select value={field.value} onValueChange={field.onChange}>
+                    <SelectTrigger className="h-10 rounded-md text-xs">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {imageTypesForType.map((t) => (
+                        <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
+              />
+            </Field>
+          </div>
+
+          <div className="border border-slate-200 rounded-lg bg-white overflow-hidden shadow-sm p-5 space-y-4">
+            <h2 className="text-[14px] font-semibold text-slate-900">Visibilidad</h2>
+            <label className="flex items-center gap-2 cursor-pointer">
+              <Controller name="available" control={control} render={({ field }) => <Switch checked={!!field.value} onCheckedChange={field.onChange} />} />
+              <span className="text-sm font-medium text-slate-700">Visible en tienda</span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      {/* Sticky Bottom Action Bar */}
+      <div className="fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-slate-200 h-[56px] flex items-center justify-between px-6 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] lg:pl-64">
+        <div className="flex items-center gap-2">
+          {isDirty && (
+            <span className="flex items-center gap-1.5 text-xs font-semibold text-amber-700">
+              <span className="w-2 h-2 rounded-full bg-amber-500" /> Cambios sin guardar
+            </span>
+          )}
+        </div>
+        <div className="flex items-center gap-3">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => router.back()}
+            className="h-9"
+          >
+            Cancelar
+          </Button>
+          <Button
+            type="submit"
+            disabled={isSubmitting}
+            className="h-9 bg-blue-600 hover:bg-blue-700 text-white"
+          >
+            {isSubmitting ? "Guardando…" : (mode === "create" ? "Guardar producto" : "Guardar cambios")}
+          </Button>
         </div>
       </div>
     </form>
@@ -999,26 +614,22 @@ function Field({
   return (
     <div className={cn("space-y-1.5", className)}>
       <div className="flex items-center justify-between gap-2">
-        <Label className="text-[11px] font-bold uppercase tracking-[0.16em] text-slate-700 flex items-center gap-1">
-          {label}
+        <Label className="text-[13px] font-medium normal-case text-slate-800 flex items-center gap-1">
+          {label} {required && <span className="text-rose-500 font-bold">*</span>}
         </Label>
-        {required && (
-          <span className="text-[9.5px] font-bold text-rose-600 bg-rose-50 border border-rose-200 px-1.5 py-0.2 rounded uppercase tracking-wider">
-            Requerido
-          </span>
-        )}
         {optional && (
-          <span className="text-[9.5px] font-semibold text-slate-500 bg-slate-100 border border-slate-200 px-1.5 py-0.2 rounded uppercase tracking-wider">
+          <span className="text-[10px] text-slate-400 normal-case">
             Opcional
           </span>
         )}
       </div>
       {children}
       {hint && !error && (
-        <p className="text-[11.5px] text-slate-500 leading-snug">{hint}</p>
+        <p className="text-[12px] text-slate-500 leading-snug">{hint}</p>
       )}
       {error && (
-        <p className="text-[11.5px] font-semibold text-rose-700 leading-snug">
+        <p className="text-[12px] font-semibold text-rose-700 leading-snug flex items-center gap-1">
+          <HelpCircle className="w-3.5 h-3.5" />
           {error}
         </p>
       )}
@@ -1175,3 +786,4 @@ function TypeCard({
 }
 
 export default ProductForm;
+ 

@@ -5,7 +5,7 @@ export const dynamic = "force-dynamic";
 
 export default function NewNfcProfilePage() {
   return (
-    <div className="max-w-3xl mx-auto space-y-6">
+    <div className="max-w-7xl mx-auto space-y-6">
       <div>
         <h1 className="text-2xl font-bold text-slate-900 flex items-center gap-2">
           <UserPlus className="w-6 h-6 text-blue-600" />

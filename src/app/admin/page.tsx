@@ -76,268 +76,145 @@ export default function AdminDashboardPage() {
         </div>
       </div>
 
-      {/* Row 1: The 3 Core Metric Cards (Spacious, Clear, Clean) */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        {/* Total Card */}
-        <Link
-          href="/admin/productos"
-          className="bg-white rounded-2xl border border-slate-200/90 p-5 shadow-xs hover:border-slate-300 hover:shadow-sm transition-all group"
-        >
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-medium text-slate-500">
-              Total Catálogo
-            </span>
-            <div className="w-8 h-8 rounded-xl bg-slate-100 flex items-center justify-center text-slate-600 group-hover:bg-blue-50 group-hover:text-blue-700 transition-colors">
-              <Package className="w-4 h-4" />
-            </div>
-          </div>
-          <p className="text-3xl font-extrabold text-slate-900 mt-2 tabular-nums">
+      {/* Row 1: KPI Band */}
+      <div className="bg-white rounded-xl border border-slate-200/90 shadow-sm flex flex-col sm:flex-row divide-y sm:divide-y-0 sm:divide-x divide-slate-200/90">
+        <div className="flex-1 p-5">
+          <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">
+            Total Catálogo
+          </p>
+          <p className="text-3xl font-extrabold text-slate-900 mt-2 font-mono">
             {stats.total}
           </p>
-          <p className="text-[11px] text-slate-400 mt-1">
+          <p className="text-[11px] text-slate-500 mt-1">
             {stats.inStock} listos para venta y cotización
           </p>
-        </Link>
-
-        {/* Technology Card */}
-        <Link
-          href="/admin/productos?type=technology"
-          className="bg-white rounded-2xl border border-slate-200/90 p-5 shadow-xs hover:border-blue-300 hover:shadow-sm transition-all group"
-        >
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-medium text-slate-500">
-              Tecnología TI
-            </span>
-            <div className="w-8 h-8 rounded-xl bg-blue-50 flex items-center justify-center text-blue-700 group-hover:bg-blue-100 transition-colors">
-              <Cpu className="w-4 h-4" />
-            </div>
-          </div>
-          <p className="text-3xl font-extrabold text-slate-900 mt-2 tabular-nums">
+        </div>
+        <div className="flex-1 p-5">
+          <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">
+            Tecnología TI
+          </p>
+          <p className="text-3xl font-extrabold text-slate-900 mt-2 font-mono">
             {stats.technology}
           </p>
-          <p className="text-[11px] text-blue-700/80 mt-1">
+          <p className="text-[11px] text-slate-500 mt-1">
             {techInStock} disponibles en almacén
           </p>
-        </Link>
-
-        {/* Library Card */}
-        <Link
-          href="/admin/productos?type=library"
-          className="bg-white rounded-2xl border border-slate-200/90 p-5 shadow-xs hover:border-teal-300 hover:shadow-sm transition-all group"
-        >
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-medium text-slate-500">
-              Librería &amp; Papelería
-            </span>
-            <div className="w-8 h-8 rounded-xl bg-teal-50 flex items-center justify-center text-teal-700 group-hover:bg-teal-100 transition-colors">
-              <BookOpen className="w-4 h-4" />
-            </div>
-          </div>
-          <p className="text-3xl font-extrabold text-slate-900 mt-2 tabular-nums">
+        </div>
+        <div className="flex-1 p-5">
+          <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">
+            Librería & Papelería
+          </p>
+          <p className="text-3xl font-extrabold text-slate-900 mt-2 font-mono">
             {stats.library}
           </p>
-          <p className="text-[11px] text-teal-700/80 mt-1">
+          <p className="text-[11px] text-slate-500 mt-1">
             {libInStock} disponibles en almacén
           </p>
-        </Link>
-      </div>
-
-      {/* Row 2: Two Clean Department Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        {/* TI Division */}
-        <div className="bg-white rounded-2xl border border-slate-200/90 p-5 flex flex-col justify-between shadow-xs">
-          <div className="flex items-start gap-3.5">
-            <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center shrink-0">
-              <Cpu className="w-5 h-5" />
-            </div>
-            <div>
-              <h2 className="text-sm font-bold text-slate-900">
-                División Tecnología &amp; Redes TI
-              </h2>
-              <p className="text-xs text-slate-500 mt-0.5 leading-relaxed">
-                Switches, servidores rack, firewalls y almacenamiento empresarial.
-              </p>
-              <div className="flex items-center gap-2 mt-2 text-[11px] text-slate-600">
-                <span className="font-semibold text-emerald-700">● {techInStock} en stock</span>
-                <span>•</span>
-                <span className="text-slate-400">{stats.technology - techInStock} sin stock</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="flex items-center justify-between pt-3 mt-3 border-t border-slate-100">
-            <Link
-              href="/admin/productos?type=technology"
-              className="text-xs font-semibold text-blue-700 hover:text-blue-800 inline-flex items-center gap-1 group"
-            >
-              Ver productos TI
-              <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
-            </Link>
-            <Button
-              asChild
-              size="sm"
-              variant="ghost"
-              className="h-7 px-2.5 rounded-lg text-xs font-medium text-slate-600 hover:text-blue-700 hover:bg-blue-50"
-            >
-              <Link href="/admin/productos/nuevo?type=technology">
-                + Crear TI
-              </Link>
-            </Button>
-          </div>
-        </div>
-
-        {/* Library Division */}
-        <div className="bg-white rounded-2xl border border-slate-200/90 p-5 flex flex-col justify-between shadow-xs">
-          <div className="flex items-start gap-3.5">
-            <div className="w-10 h-10 rounded-xl bg-teal-50 text-teal-700 flex items-center justify-center shrink-0">
-              <BookOpen className="w-5 h-5" />
-            </div>
-            <div>
-              <h2 className="text-sm font-bold text-slate-900">
-                División Librería &amp; Papelería Fina
-              </h2>
-              <p className="text-xs text-slate-500 mt-0.5 leading-relaxed">
-                Cuadernos de autor, agendas, arte y suministros de oficina.
-              </p>
-              <div className="flex items-center gap-2 mt-2 text-[11px] text-slate-600">
-                <span className="font-semibold text-emerald-700">● {libInStock} en stock</span>
-                <span>•</span>
-                <span className="text-slate-400">{stats.library - libInStock} sin stock</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="flex items-center justify-between pt-3 mt-3 border-t border-slate-100">
-            <Link
-              href="/admin/productos?type=library"
-              className="text-xs font-semibold text-teal-700 hover:text-teal-800 inline-flex items-center gap-1 group"
-            >
-              Ver librería
-              <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
-            </Link>
-            <Button
-              asChild
-              size="sm"
-              variant="ghost"
-              className="h-7 px-2.5 rounded-lg text-xs font-medium text-slate-600 hover:text-teal-700 hover:bg-teal-50"
-            >
-              <Link href="/admin/productos/nuevo?type=library">
-                + Crear Librería
-              </Link>
-            </Button>
-          </div>
         </div>
       </div>
 
-      {/* Row 3: Compact Recent Products (Clear, 5 items max) */}
-      <div className="bg-white rounded-2xl border border-slate-200/90 shadow-xs overflow-hidden">
-        <div className="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
-          <div>
-            <h2 className="text-sm font-bold text-slate-900">
-              Últimos Productos Agregados
-            </h2>
-            <p className="text-[11px] text-slate-500 mt-0.5">
-              Actividad reciente en el catálogo
-            </p>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Requiere Atención (Summary) */}
+        <div className="bg-white rounded-xl border border-slate-200/90 shadow-sm p-5">
+          <h2 className="text-sm font-bold text-slate-900 mb-4">
+            Requiere Atención
+          </h2>
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-slate-900">Sin stock</p>
+                <p className="text-xs text-slate-500">Productos agotados</p>
+              </div>
+              <Link href="/admin/inventario" className="text-xs font-semibold text-rose-600 hover:underline">
+                Revisar {stats.outOfStock}
+              </Link>
+            </div>
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-slate-900">Sin imagen</p>
+                <p className="text-xs text-slate-500">Productos incompletos</p>
+              </div>
+              <Link href="/admin/productos" className="text-xs font-semibold text-amber-600 hover:underline">
+                Completar
+              </Link>
+            </div>
           </div>
-          <Link
-            href="/admin/productos"
-            className="text-xs font-semibold text-blue-700 hover:underline inline-flex items-center gap-1"
-          >
-            Ver todos ({stats.total}) <ArrowRight className="w-3 h-3" />
-          </Link>
         </div>
 
-        <div className="divide-y divide-slate-100">
-          {recentProducts.length === 0 ? (
-            <div className="p-8 text-center text-slate-400 text-xs">
-              No hay productos registrados aún.
+        {/* Actividad Reciente */}
+        <div className="bg-white rounded-xl border border-slate-200/90 shadow-sm overflow-hidden flex flex-col">
+          <div className="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
+            <div>
+              <h2 className="text-sm font-bold text-slate-900">
+                Actividad Reciente
+              </h2>
+              <p className="text-[11px] text-slate-500 mt-0.5">
+                Últimos productos
+              </p>
             </div>
-          ) : (
-            recentProducts.map((p) => {
-              const isTech = p.type === "technology";
-              return (
-                <div
-                  key={p.id}
-                  className="flex items-center justify-between gap-4 px-5 py-3 hover:bg-slate-50/70 transition-colors"
-                >
-                  <div className="flex items-center gap-3 min-w-0">
-                    <div className="w-10 h-10 rounded-xl border border-slate-200 bg-white overflow-hidden shrink-0">
-                      <ProductImage
-                        type={p.imageType}
-                        name={p.name}
-                        image={p.image}
-                      />
-                    </div>
-                    <div className="min-w-0">
-                      <div className="flex items-center gap-1.5 mb-0.5">
-                        <Badge
-                          className={cn(
-                            "h-4 px-1.5 text-[9.5px] font-bold rounded",
-                            isTech
-                              ? "bg-blue-50 text-blue-700 border-blue-200"
-                              : "bg-teal-50 text-teal-700 border-teal-200"
-                          )}
-                        >
-                          {isTech ? "TI" : "Librería"}
-                        </Badge>
-                        <span className="text-[11px] text-slate-400 truncate">
-                          {p.category}
-                        </span>
+            <Link
+              href="/admin/productos"
+              className="text-xs font-semibold text-blue-700 hover:underline inline-flex items-center gap-1"
+            >
+              Ver todos <ArrowRight className="w-3 h-3" />
+            </Link>
+          </div>
+
+          <div className="divide-y divide-slate-100 flex-1 overflow-y-auto max-h-[300px]">
+            {recentProducts.length === 0 ? (
+              <div className="p-8 text-center text-slate-400 text-xs">
+                No hay productos registrados aún.
+              </div>
+            ) : (
+              recentProducts.map((p) => {
+                const isTech = p.type === "technology";
+                return (
+                  <div
+                    key={p.id}
+                    className="flex items-center justify-between gap-4 px-5 py-3 hover:bg-slate-50/70 transition-colors"
+                  >
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className="w-10 h-10 rounded-lg border border-slate-200 bg-white overflow-hidden shrink-0">
+                        <ProductImage
+                          type={p.imageType}
+                          name={p.name}
+                          image={p.image}
+                        />
                       </div>
-                      <p className="text-xs font-semibold text-slate-900 truncate max-w-md">
-                        {p.name}
-                      </p>
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-1.5 mb-0.5">
+                          <span className={cn("text-[9px] font-bold uppercase tracking-wider", isTech ? "text-blue-700" : "text-teal-700")}>
+                            {isTech ? "TI" : "Librería"}
+                          </span>
+                          <span className="text-[10px] text-slate-400 truncate">
+                            {p.category}
+                          </span>
+                        </div>
+                        <p className="text-xs font-semibold text-slate-900 truncate max-w-md">
+                          {p.name}
+                        </p>
+                      </div>
                     </div>
-                  </div>
 
-                  <div className="flex items-center gap-3 shrink-0">
-                    <div className="text-right">
+                    <div className="text-right shrink-0">
                       <p className="text-xs font-bold text-slate-900 tabular-nums">
                         S/ {p.price.toLocaleString("es-PE")}
                       </p>
                       <span
                         className={cn(
-                          "text-[10px] font-medium",
+                          "text-[10px] font-medium flex items-center justify-end gap-1",
                           p.inStock ? "text-emerald-700" : "text-rose-600"
                         )}
                       >
+                        <span className={cn("w-1.5 h-1.5 rounded-full", p.inStock ? "bg-emerald-500" : "bg-rose-500")} />
                         {p.inStock ? "En stock" : "Agotado"}
                       </span>
                     </div>
-
-                    <div className="flex items-center gap-0.5">
-                      <Button
-                        asChild
-                        variant="ghost"
-                        size="icon"
-                        className="h-7 w-7 rounded-lg text-slate-400 hover:text-slate-900"
-                      >
-                        <a
-                          href={`/productos/${p.id}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          title="Ver en tienda"
-                        >
-                          <ExternalLink className="w-3.5 h-3.5" />
-                        </a>
-                      </Button>
-                      <Button
-                        asChild
-                        variant="ghost"
-                        size="icon"
-                        className="h-7 w-7 rounded-lg text-slate-400 hover:text-blue-700 hover:bg-blue-50"
-                      >
-                        <Link href={`/admin/productos/${p.id}`} title="Editar">
-                          <Edit3 className="w-3.5 h-3.5" />
-                        </Link>
-                      </Button>
-                    </div>
                   </div>
-                </div>
-              );
-            })
-          )}
+                );
+              })
+            )}
+          </div>
         </div>
       </div>
 

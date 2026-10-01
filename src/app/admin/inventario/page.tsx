@@ -97,76 +97,40 @@ export default function AdminInventarioPage() {
         </div>
       </div>
 
-      {/* KPI Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="rounded-2xl border border-slate-200/90 bg-white p-5 shadow-xs">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-medium text-slate-500">
-              Total Artículos
-            </span>
-            <div className="w-8 h-8 rounded-xl bg-slate-100 flex items-center justify-center text-slate-600">
-              <Warehouse className="w-4 h-4" />
-            </div>
-          </div>
-          <p className="text-2xl font-bold text-slate-900 mt-2.5 tabular-nums">
+      {/* KPI Band */}
+      <div className="bg-white rounded-xl border border-slate-200/90 shadow-sm flex flex-col sm:flex-row divide-y sm:divide-y-0 sm:divide-x divide-slate-200/90">
+        <div className="flex-1 p-5">
+          <p className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
+            Total Artículos
+          </p>
+          <p className="text-2xl font-extrabold text-slate-900 mt-2 font-mono">
             {stats.total}
           </p>
-          <span className="text-xs text-slate-400 mt-1 block">
-            Catálogo completo
-          </span>
         </div>
-
-        <div className="rounded-2xl border border-slate-200/90 bg-white p-5 shadow-xs">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-medium text-slate-500">
-              En Stock (Disponibles)
-            </span>
-            <div className="w-8 h-8 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-700">
-              <CheckCircle className="w-4 h-4" />
-            </div>
-          </div>
-          <p className="text-2xl font-bold text-emerald-950 mt-2.5 tabular-nums">
+        <div className="flex-1 p-5">
+          <p className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
+            Disponibles (Stock)
+          </p>
+          <p className="text-2xl font-extrabold text-slate-900 mt-2 font-mono">
             {inStockCount}
           </p>
-          <span className="text-xs text-emerald-700/80 mt-1 block">
-            Disponibles para venta
-          </span>
         </div>
-
-        <div className="rounded-2xl border border-slate-200/90 bg-white p-5 shadow-xs">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-medium text-slate-500">
-              Agotados / Sin Stock
-            </span>
-            <div className="w-8 h-8 rounded-xl bg-rose-50 flex items-center justify-center text-rose-700">
-              <XCircle className="w-4 h-4" />
-            </div>
-          </div>
-          <p className="text-2xl font-bold text-rose-950 mt-2.5 tabular-nums">
-            {outOfStockCount}
+        <div className="flex-1 p-5">
+          <p className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
+            Estado General
           </p>
-          <span className="text-xs text-rose-700/80 mt-1 block">
-            {outOfStockCount > 0 ? "Requieren reposición" : "Todo abastecido"}
-          </span>
-        </div>
-
-        <div className="rounded-2xl border border-slate-200/90 bg-white p-5 shadow-xs">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-medium text-slate-500">
-              Tasa de Abastecimiento
-            </span>
-            <div className="w-8 h-8 rounded-xl bg-blue-50 flex items-center justify-center text-blue-700">
-              <Sparkles className="w-4 h-4" />
+          {outOfStockCount === 0 ? (
+            <p className="text-sm font-semibold text-emerald-700 mt-3 flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-emerald-500" /> Todo abastecido
+            </p>
+          ) : (
+            <div className="mt-2">
+              <p className="text-2xl font-extrabold text-rose-600 font-mono">
+                {outOfStockCount}
+              </p>
+              <p className="text-[11px] text-rose-600/80 mt-1">agotados/sin stock</p>
             </div>
-          </div>
-          <p className="text-2xl font-bold text-blue-950 mt-2.5 tabular-nums">
-            {stats.total > 0
-              ? `${Math.round((inStockCount / stats.total) * 100)}%`
-              : "0%"}
-          </p>
-          <span className="text-xs text-blue-700/80 mt-1 block">
-            Disponibilidad activa
-          </span>
+          )}
         </div>
       </div>
 

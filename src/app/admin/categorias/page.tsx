@@ -203,51 +203,66 @@ export default function AdminCategoriasPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 lg:gap-5">
-        <MiniStat
-          label="Categorías Tecnología"
-          value={techCategories.length}
-          tone="blue"
-          icon={Cpu}
-          subtitle={`${stats.technology} productos`}
-        />
-        <MiniStat
-          label="Categorías Librería"
-          value={libraryCategories.length}
-          tone="sage"
-          icon={BookOpen}
-          subtitle={`${stats.library} productos`}
-        />
-        <MiniStat
-          label="En uso con stock"
-          value={breakdown.size}
-          tone="emerald"
-          icon={Tag}
-          subtitle="con productos asignados"
-        />
-        <MiniStat
-          label="Productos totales"
-          value={stats.total}
-          tone="indigo"
-          icon={Tag}
-          subtitle={`${stats.active} activos · ${stats.inactive} inactivos`}
-        />
+      {/* KPI Band */}
+      <div className="bg-white rounded-xl border border-slate-200/90 shadow-sm flex flex-col sm:flex-row divide-y sm:divide-y-0 sm:divide-x divide-slate-200/90">
+        <div className="flex-1 p-4 lg:p-5">
+          <p className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
+            Categorías Tecnología
+          </p>
+          <div className="mt-2 flex items-baseline gap-2">
+            <p className="text-2xl font-extrabold text-slate-900 font-mono">
+              {techCategories.length}
+            </p>
+            <p className="text-xs text-slate-500">{stats.technology} productos</p>
+          </div>
+        </div>
+        <div className="flex-1 p-4 lg:p-5">
+          <p className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
+            Categorías Librería
+          </p>
+          <div className="mt-2 flex items-baseline gap-2">
+            <p className="text-2xl font-extrabold text-slate-900 font-mono">
+              {libraryCategories.length}
+            </p>
+            <p className="text-xs text-slate-500">{stats.library} productos</p>
+          </div>
+        </div>
+        <div className="flex-1 p-4 lg:p-5">
+          <p className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
+            En uso con stock
+          </p>
+          <div className="mt-2 flex items-baseline gap-2">
+            <p className="text-2xl font-extrabold text-slate-900 font-mono">
+              {breakdown.size}
+            </p>
+            <p className="text-xs text-slate-500">con productos</p>
+          </div>
+        </div>
+        <div className="flex-1 p-4 lg:p-5">
+          <p className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
+            Productos totales
+          </p>
+          <div className="mt-2 flex items-baseline gap-2">
+            <p className="text-2xl font-extrabold text-slate-900 font-mono">
+              {stats.total}
+            </p>
+            <p className="text-xs text-slate-500">{stats.active} activos</p>
+          </div>
+        </div>
       </div>
 
       <Tabs defaultValue="technology" className="w-full">
-        <TabsList className="h-11 rounded-xl bg-slate-100 p-1">
+        <TabsList className="h-12 bg-transparent border-b border-slate-200 w-full justify-start rounded-none p-0">
           <TabsTrigger
             value="technology"
-            className="rounded-lg px-4 text-sm font-semibold data-[state=active]:bg-white data-[state=active]:text-slate-900 data-[state=active]:shadow-sm"
+            className="rounded-none border-b-2 border-transparent px-4 h-full text-sm font-semibold text-slate-500 data-[state=active]:border-blue-600 data-[state=active]:text-blue-700 data-[state=active]:bg-transparent data-[state=active]:shadow-none"
           >
-            <Cpu className="w-4 h-4 mr-2 text-blue-600" />
             Tecnología ({techCategories.length})
           </TabsTrigger>
           <TabsTrigger
             value="library"
-            className="rounded-lg px-4 text-sm font-semibold data-[state=active]:bg-white data-[state=active]:text-slate-900 data-[state=active]:shadow-sm"
+            className="rounded-none border-b-2 border-transparent px-4 h-full text-sm font-semibold text-slate-500 data-[state=active]:border-blue-600 data-[state=active]:text-blue-700 data-[state=active]:bg-transparent data-[state=active]:shadow-none"
           >
-            <BookOpen className="w-4 h-4 mr-2 text-emerald-700" />
             Librería ({libraryCategories.length})
           </TabsTrigger>
         </TabsList>
@@ -291,116 +306,79 @@ function CategoryGrid({
   const customSet = new Set(customs.map((c) => c.name));
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 lg:gap-5 pt-5">
-      {categories.map((cat) => {
-        const info = data.get(cat);
-        const isCustom = customSet.has(cat);
-        const totalForType = statsTotalFrom(data);
-        const pct =
-          totalForType === 0
-            ? 0
-            : Math.round(((info?.count ?? 0) / totalForType) * 100);
+    <div className="overflow-x-auto pt-4">
+      <table className="w-full text-sm text-left">
+        <thead>
+          <tr className="border-b border-slate-200/90 text-[11px] font-bold uppercase tracking-wider text-slate-500">
+            <th className="px-4 py-3 font-medium">Categoría</th>
+            <th className="px-4 py-3 font-medium text-right">Productos</th>
+            <th className="px-4 py-3 font-medium text-right">Activos</th>
+            <th className="px-4 py-3 font-medium w-48">% del catálogo</th>
+            <th className="px-4 py-3 font-medium text-right">Acciones</th>
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-slate-100">
+          {categories.map((cat) => {
+            const info = data.get(cat);
+            const isCustom = customSet.has(cat);
+            const totalForType = statsTotalFrom(data);
+            const rawPct = totalForType === 0 ? 0 : ((info?.count ?? 0) / totalForType) * 100;
+            const pct = Math.round(rawPct);
+            const barWidth = Math.max(pct, info?.count ? 4 : 0); // min 4% if count > 0
 
-        return (
-          <Card
-            key={cat}
-            className={cn(
-              "overflow-hidden border rounded-2xl shadow-sm bg-white flex flex-col justify-between",
-              tone === "blue" ? "border-blue-100" : "border-library-beige/80"
-            )}
-          >
-            <CardHeader
-              className={cn(
-                "px-5 py-4 border-b",
-                tone === "blue"
-                  ? "bg-gradient-to-br from-blue-50/80 to-white border-blue-100"
-                  : "bg-gradient-to-br from-library-cream/70 to-white border-library-beige/70"
-              )}
-            >
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-1.5">
-                  <Badge
-                    className={cn(
-                      "h-6 px-2.5 rounded-md text-[10.5px] font-bold border",
-                      tone === "blue"
-                        ? "bg-blue-600 text-white border-blue-600"
-                        : "bg-library-sage-foreground text-white border-library-sage-foreground"
+            return (
+              <tr key={cat} className="hover:bg-blue-50/50 group transition-colors">
+                <td className="px-4 py-3 whitespace-nowrap">
+                  <div className="flex items-center gap-2">
+                    <span className="font-semibold text-[14px] text-slate-900">{cat}</span>
+                    {isCustom && (
+                      <Badge className="h-5 px-1.5 rounded bg-slate-100 text-slate-600 border-none text-[9px] font-bold">
+                        NUEVA
+                      </Badge>
                     )}
-                  >
-                    {tone === "blue" ? "Tech" : "Librería"}
-                  </Badge>
-                  {isCustom && (
-                    <Badge className="h-6 px-2 rounded-md bg-purple-50 text-purple-700 border border-purple-200 text-[10px] font-bold">
-                      <Sparkles className="w-2.5 h-2.5 mr-1" />
-                      Nueva
-                    </Badge>
-                  )}
-                </div>
-                <span className="text-[11px] font-bold text-slate-500 tabular-nums">
-                  {pct}%
-                </span>
-              </div>
-              <h3 className="font-bodoni text-xl text-slate-900 mt-3 leading-none">
-                {cat}
-              </h3>
-            </CardHeader>
-            <CardContent className="p-5 space-y-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-500">
-                    Productos
-                  </p>
-                  <p className="text-2xl font-black text-slate-900 leading-none mt-1 tabular-nums">
-                    {info?.count ?? 0}
-                  </p>
-                </div>
-                <div className="text-right">
-                  <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-500">
-                    Activos
-                  </p>
-                  <p className="text-lg font-black text-emerald-700 leading-none mt-1 tabular-nums">
-                    {info?.active ?? 0}
-                  </p>
-                </div>
-              </div>
-              <div className="h-2 rounded-full bg-slate-100 overflow-hidden">
-                <div
-                  className={cn(
-                    "h-full rounded-full",
-                    tone === "blue"
-                      ? "bg-gradient-to-r from-blue-600 to-indigo-500"
-                      : "bg-gradient-to-r from-library-sage-foreground to-library-terracotta"
-                  )}
-                  style={{ width: `${Math.max(pct, info?.count ? 8 : 0)}%` }}
-                />
-              </div>
-              <div className="space-y-1.5 pt-1">
-                <Button
-                  asChild
-                  size="sm"
-                  variant="outline"
-                  className="w-full h-9 rounded-xl text-xs font-semibold border-slate-200 text-slate-700 hover:bg-slate-50"
-                >
-                  <Link href={`/admin/productos?type=${type}&category=${encodeURIComponent(cat)}`}>
-                    Ver {info?.count ?? 0} productos
-                    <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
-                  </Link>
-                </Button>
-                <Button
-                  asChild
-                  size="sm"
-                  className="w-full h-9 rounded-xl text-xs font-semibold bg-slate-900 hover:bg-blue-800 text-white"
-                >
-                  <Link href={`/admin/productos/nuevo?type=${type}&category=${encodeURIComponent(cat)}`}>
-                    <Plus className="w-3.5 h-3.5 mr-1.5" />
-                    Agregar producto aquí
-                  </Link>
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        );
-      })}
+                  </div>
+                </td>
+                <td className="px-4 py-3 text-right tabular-nums text-slate-900">
+                  {info?.count ?? 0}
+                </td>
+                <td className="px-4 py-3 text-right tabular-nums text-emerald-700 font-medium">
+                  {info?.active ?? 0}
+                </td>
+                <td className="px-4 py-3 w-48">
+                  <div className="flex items-center gap-3">
+                    <span className="tabular-nums text-slate-600 text-xs min-w-[28px] text-right">
+                      {pct}%
+                    </span>
+                    <div className="flex-1 h-1 rounded-full bg-slate-100 overflow-hidden">
+                      <div
+                        className={cn("h-full rounded-full", tone === "blue" ? "bg-blue-600" : "bg-emerald-600")}
+                        style={{ width: `${barWidth}%` }}
+                      />
+                    </div>
+                  </div>
+                </td>
+                <td className="px-4 py-3 text-right whitespace-nowrap">
+                  <div className="flex items-center justify-end gap-3">
+                    <Link
+                      href={`/admin/productos/nuevo?type=${type}&category=${encodeURIComponent(cat)}`}
+                      className="opacity-0 group-hover:opacity-100 transition-opacity p-1.5 rounded hover:bg-slate-200 text-slate-400 hover:text-slate-900"
+                      title="Agregar producto"
+                    >
+                      <Plus className="w-4 h-4" />
+                    </Link>
+                    <Link
+                      href={`/admin/productos?type=${type}&category=${encodeURIComponent(cat)}`}
+                      className="text-xs font-semibold text-blue-600 hover:text-blue-800"
+                    >
+                      Ver productos
+                    </Link>
+                  </div>
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
     </div>
   );
 }

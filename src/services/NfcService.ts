@@ -160,5 +160,28 @@ export const NfcService = {
       
     if (error) throw error;
     return data;
+  },
+
+  async deleteProfile(id: string) {
+    const supabase = getSupabaseAdmin();
+    // Tarjetas will likely be deleted by CASCADE, or we can explicitly delete them
+    const { error } = await supabase
+      .from("nfc_profiles")
+      .delete()
+      .eq("id", id);
+      
+    if (error) throw error;
+    return true;
+  },
+
+  async deleteCard(cardId: string) {
+    const supabase = getSupabaseAdmin();
+    const { error } = await supabase
+      .from("nfc_cards")
+      .delete()
+      .eq("id", cardId);
+      
+    if (error) throw error;
+    return true;
   }
 };

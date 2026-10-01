@@ -19,7 +19,7 @@ export default function CardManager({ profileId, initialCards }: CardManagerProp
 
   const handleAssignCard = async () => {
     setLoading(true);
-    const result = await assignCardAction(profileId, "Nueva Tarjeta");
+    const result = await assignCardAction(profileId, "Tarjeta Física");
     if (result.success) {
       // Reload is handled by revalidatePath, but we might want to manually sync state if Next.js cache doesn't reflect immediately. 
       // A full page reload guarantees freshness for now.
@@ -78,14 +78,14 @@ export default function CardManager({ profileId, initialCards }: CardManagerProp
           </p>
           <Button onClick={handleAssignCard} disabled={loading} className="bg-blue-600 hover:bg-blue-700">
             <Plus className="w-4 h-4 mr-2" />
-            Asignar Primera Tarjeta
+            Vincular Primera Tarjeta Física
           </Button>
         </div>
       ) : (
         <>
           <div className="flex justify-end">
             <Button onClick={handleAssignCard} disabled={loading} size="sm" className="bg-blue-600 hover:bg-blue-700 text-xs h-8">
-              <Plus className="w-3.5 h-3.5 mr-1" /> Asignar Otra Tarjeta
+              <Plus className="w-3.5 h-3.5 mr-1" /> Vincular Otra Tarjeta Física
             </Button>
           </div>
           
@@ -150,6 +150,24 @@ export default function CardManager({ profileId, initialCards }: CardManagerProp
                         </Button>
                       </>
                     )}
+                    
+                    <Button 
+                      onClick={async () => {
+                        if(confirm("¿Estás seguro de eliminar esta tarjeta física? Esta acción no se puede deshacer.")) {
+                          setLoading(true);
+                          const { deleteCardAction } = await import("../../actions");
+                          const result = await deleteCardAction(card.id, profileId);
+                          if(result.success) window.location.reload();
+                          else { alert(result.error); setLoading(false); }
+                        }
+                      }} 
+                      disabled={loading} 
+                      size="sm" 
+                      variant="outline" 
+                      className="text-red-600 border-red-200 hover:bg-red-50 hover:text-red-700 text-xs h-8 ml-2"
+                    >
+                      <XCircle className="w-3.5 h-3.5 mr-1" /> Eliminar
+                    </Button>
                   </div>
                 </div>
               );

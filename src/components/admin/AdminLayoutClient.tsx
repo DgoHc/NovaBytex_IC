@@ -143,16 +143,14 @@ export default function AdminLayoutClient({
   };
 
   return (
-    <div className="h-screen w-full overflow-hidden bg-slate-50 flex">
+    <div className="bg-slate-50 relative min-h-screen flex">
       {/* DESKTOP SIDEBAR - Deep Dark Navy Blue */}
       <aside
-        className={cn(
-          "hidden lg:flex flex-col bg-[#0B132B] border-r border-slate-800 text-slate-300 transition-[width] duration-300 ease-out h-full shrink-0 select-none shadow-xl z-40",
-          sidebarOpen ? "w-64" : "w-20"
-        )}
+        className="hidden lg:flex flex-col bg-[#0B132B] border-r border-slate-800 text-slate-300 transition-[width] duration-300 ease-out shrink-0 select-none shadow-xl z-40 fixed top-0 left-0 bottom-0 h-screen"
+        style={{ width: sidebarOpen ? "256px" : "80px" }}
       >
         {/* Brand header */}
-        <div className="flex items-center justify-between px-4 h-16 border-b border-slate-800/80 bg-[#080D1F]/50">
+        <div className="shrink-0 flex items-center justify-between px-4 h-16 border-b border-slate-800/80 bg-[#080D1F]/50">
           <Link href="/admin" className="flex items-center gap-3 min-w-0 group">
             <div className="h-9 aspect-[683/450] rounded-xl overflow-hidden border border-slate-700/80 shadow-md shrink-0 transition-transform group-hover:scale-105">
               <img
@@ -171,31 +169,17 @@ export default function AdminLayoutClient({
                   <span className="text-sm font-black tracking-tight text-white leading-none">
                     NovaAdmin
                   </span>
-                  <span className="text-[9px] font-black uppercase px-1.5 py-0.5 rounded bg-blue-500/20 text-cyan-300 border border-blue-400/30">
-                    Pro
-                  </span>
                 </div>
                 <p className="text-[10.5px] font-medium text-slate-400 mt-1 leading-none truncate">
-                  Gestión Corporativa
+                  Gestión
                 </p>
               </motion.div>
             )}
           </Link>
-          <button
-            onClick={() => setSidebarOpen((v) => !v)}
-            className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-white hover:bg-slate-800/80 transition-colors shrink-0"
-            aria-label={sidebarOpen ? "Colapsar menú" : "Expandir menú"}
-          >
-            {sidebarOpen ? (
-              <ChevronLeft className="w-4 h-4" />
-            ) : (
-              <ChevronRight className="w-4 h-4" />
-            )}
-          </button>
         </div>
 
         {/* Navigation list */}
-        <nav className="flex-1 overflow-y-auto p-3 space-y-4 no-scrollbar">
+        <nav className="flex-1 overflow-y-auto min-h-0 p-3 space-y-4 no-scrollbar">
           {navSections.map((section) => (
             <div key={section.title} className="space-y-1">
               {sidebarOpen && (
@@ -221,15 +205,18 @@ export default function AdminLayoutClient({
                     }}
                     title={!sidebarOpen ? item.name : undefined}
                     className={cn(
-                      "flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition-all group",
+                      "flex items-center gap-3 px-3 h-9 rounded-md text-xs font-semibold transition-all group relative",
                       active
-                        ? "bg-blue-600/20 text-white border border-blue-500/40 shadow-[0_0_20px_rgba(59,130,246,0.15)]"
+                        ? "bg-slate-800/40 text-white"
                         : "text-slate-300 hover:text-white hover:bg-slate-800/60"
                     )}
                   >
+                    {active && (
+                      <div className="absolute left-0 top-0 bottom-0 w-[3px] bg-blue-500 rounded-l-md" />
+                    )}
                     <Icon
                       className={cn(
-                        "w-4 h-4 shrink-0 transition-colors",
+                        "w-[18px] h-[18px] shrink-0 transition-colors",
                         active
                           ? "text-cyan-400"
                           : "text-slate-400 group-hover:text-slate-200"
@@ -262,20 +249,6 @@ export default function AdminLayoutClient({
             </div>
           ))}
 
-          {/* Primary Quick Action Button */}
-          <div className="pt-2">
-            <Link
-              href="/admin/productos/nuevo"
-              className={cn(
-                "flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-bold text-white bg-blue-600 hover:bg-blue-500 shadow-sm transition-all group",
-                !sidebarOpen && "justify-center px-0"
-              )}
-              title="Crear Nuevo Producto"
-            >
-              <Plus className="w-4 h-4 shrink-0" />
-              {sidebarOpen && <span>+ Nuevo Producto</span>}
-            </Link>
-          </div>
 
           {/* Excel Bulk Tool Shortcut */}
           <div className="pt-2 border-t border-slate-800/80">
@@ -287,12 +260,12 @@ export default function AdminLayoutClient({
             <button
               onClick={() => setExcelModalOpen(true)}
               className={cn(
-                "w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium text-slate-300 hover:text-white hover:bg-slate-800/80 transition-all",
+                "w-full flex items-center gap-2.5 px-3 h-9 rounded-md text-xs font-medium text-slate-300 hover:text-white hover:bg-slate-800/80 transition-all",
                 !sidebarOpen && "justify-center px-0"
               )}
               title="Cargar / Exportar Excel"
             >
-              <FileSpreadsheet className="w-4 h-4 text-emerald-400 shrink-0" />
+              <FileSpreadsheet className="w-[18px] h-[18px] text-emerald-400 shrink-0" />
               {sidebarOpen && (
                 <span className="flex-1 text-left truncate">Carga Masiva Excel</span>
               )}
@@ -301,23 +274,31 @@ export default function AdminLayoutClient({
         </nav>
 
         {/* Bottom card & store link */}
-        <div className="p-3 border-t border-slate-800/80 bg-[#080D1F]/60">
+        <div className="shrink-0 p-3 border-t border-slate-800/80 bg-[#080D1F]/60 flex flex-col gap-3">
+          <button
+            onClick={() => setSidebarOpen((v) => !v)}
+            className="w-full h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-white hover:bg-slate-800/80 transition-colors"
+            aria-label={sidebarOpen ? "Colapsar menú" : "Expandir menú"}
+          >
+            {sidebarOpen ? (
+              <ChevronLeft className="w-4 h-4" />
+            ) : (
+              <ChevronRight className="w-4 h-4" />
+            )}
+          </button>
           {sidebarOpen ? (
-            <div className="space-y-3">
-              <div className="flex items-center justify-between text-xs text-slate-400">
-                <span className="inline-flex items-center gap-1.5 text-emerald-400 font-medium text-[11px]">
-                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                  Sistema Online
-                </span>
-                <span className="text-[11px] tabular-nums font-mono">
-                  {stats.total} productos
+            <div className="flex flex-col gap-2">
+              <div className="flex items-center justify-between text-slate-400">
+                <span className="inline-flex items-center gap-2 text-emerald-400 font-medium text-[12px]">
+                  <span className="w-2 h-2 rounded-full bg-emerald-400" />
+                  Sistema online
                 </span>
               </div>
               <Link
                 href="/"
-                className="w-full flex items-center justify-center gap-2 h-9 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold transition-all shadow-sm"
+                className="flex items-center gap-2 text-slate-400 hover:text-white text-[12px] font-medium transition-all"
               >
-                <ExternalLink className="w-3.5 h-3.5 text-cyan-400" />
+                <ExternalLink className="w-3.5 h-3.5" />
                 Ir a Tienda Pública
               </Link>
             </div>
@@ -410,14 +391,7 @@ export default function AdminLayoutClient({
                 ))}
 
                 <div className="pt-2 space-y-2">
-                  <Link
-                    href="/admin/productos/nuevo"
-                    onClick={() => setMobileOpen(false)}
-                    className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl text-xs font-bold text-white bg-blue-600 hover:bg-blue-500 shadow-sm"
-                  >
-                    <Plus className="w-4 h-4" />
-                    <span>+ Nuevo Producto</span>
-                  </Link>
+
                   <button
                     onClick={() => {
                       setMobileOpen(false);
@@ -446,9 +420,14 @@ export default function AdminLayoutClient({
       </AnimatePresence>
 
       {/* MAIN CONTENT AREA */}
-      <div className="flex-1 min-w-0 h-full flex flex-col overflow-hidden bg-slate-50">
+      <div 
+        className={cn(
+          "min-w-0 flex-1 flex flex-col bg-slate-50 transition-all duration-300 ease-out",
+          sidebarOpen ? "lg:ml-[256px]" : "lg:ml-[80px]"
+        )}
+      >
         {/* Top Header */}
-        <header className="shrink-0 h-16 bg-white border-b border-slate-200 px-4 lg:px-8 flex items-center justify-between shadow-xs z-30">
+        <header className="shrink-0 h-[var(--topbar-h)] bg-white border-b border-slate-200 px-4 lg:px-8 flex items-center justify-between shadow-xs z-30 sticky top-0 w-full">
           <div className="flex items-center gap-3 min-w-0">
             <button
               onClick={() => setMobileOpen(true)}
@@ -458,46 +437,24 @@ export default function AdminLayoutClient({
               <Menu className="w-5 h-5" />
             </button>
             <div className="min-w-0">
-              <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 leading-none">
-                Consola Administrativa
-              </p>
               <Breadcrumb />
             </div>
           </div>
 
           <div className="flex items-center gap-2.5 shrink-0">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setExcelModalOpen(true)}
-              className="hidden sm:inline-flex h-9 px-3 rounded-xl border-slate-200 bg-white text-emerald-700 hover:bg-emerald-50 text-xs font-semibold shadow-xs"
-            >
-              <FileSpreadsheet className="w-3.5 h-3.5 mr-1.5 text-emerald-600" />
-              Excel
-            </Button>
-            <Button
-              asChild
-              size="sm"
-              className="h-9 px-3.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-sm"
-            >
-              <Link href="/admin/productos/nuevo">
-                <Plus className="w-3.5 h-3.5 mr-1.5" />
-                + Nuevo Producto
-              </Link>
-            </Button>
-            <div className="hidden md:flex items-center gap-1.5 border-l border-slate-200 pl-2.5 ml-1">
+            <div className="hidden md:flex p-1 rounded-lg bg-slate-100 border border-slate-200">
               <Link
-                href="/productos"
-                className="inline-flex items-center gap-1.5 h-8 px-2.5 rounded-lg border border-slate-200 bg-white text-slate-700 text-xs font-medium hover:text-blue-700 hover:border-blue-200 transition-colors"
+                href="/admin/productos?type=technology"
+                className="inline-flex items-center gap-1.5 h-7 px-3 rounded-md text-xs font-medium bg-white text-blue-700 shadow-sm transition-colors"
               >
-                <Cpu className="w-3.5 h-3.5 text-blue-600" />
-                TI
+                <Cpu className="w-4 h-4 text-blue-600" />
+                Tecnología
               </Link>
               <Link
-                href="/libreria"
-                className="inline-flex items-center gap-1.5 h-8 px-2.5 rounded-lg border border-slate-200 bg-white text-slate-700 text-xs font-medium hover:text-emerald-700 hover:border-emerald-200 transition-colors"
+                href="/admin/productos?type=library"
+                className="inline-flex items-center gap-1.5 h-7 px-3 rounded-md text-xs font-medium text-slate-600 hover:text-emerald-700 transition-colors"
               >
-                <BookOpen className="w-3.5 h-3.5 text-emerald-700" />
+                <BookOpen className="w-4 h-4 text-emerald-700" />
                 Librería
               </Link>
             </div>
@@ -505,7 +462,7 @@ export default function AdminLayoutClient({
         </header>
 
         {/* Main Body */}
-        <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 bg-slate-50">
+        <main className="flex-1 p-4 sm:p-6 lg:p-8 bg-slate-50">
           {children}
         </main>
       </div>
@@ -522,32 +479,27 @@ export default function AdminLayoutClient({
 function Breadcrumb() {
   const pathname = usePathname() ?? "";
   const parts = pathname.split("/").filter(Boolean).slice(1);
-  if (parts.length === 0) {
-    return (
-      <p className="text-sm font-bold text-slate-900 mt-1 leading-none">
-        Panel Principal
-      </p>
-    );
-  }
+
   const labels: Record<string, string> = {
     admin: "Admin",
     productos: "Productos",
     nuevo: "Nuevo",
     categorias: "Categorías",
     inventario: "Inventario & Stock",
+    nfc: "NFC",
+    profiles: "Perfiles",
+    cards: "Tarjetas",
   };
+
+  const currentSection = parts.length > 0 
+    ? (labels[parts[0]] ?? decodeURIComponent(parts[0]).replace(/-/g, " "))
+    : "Dashboard";
+
   return (
-    <p className="text-sm font-bold text-slate-900 mt-1 leading-none">
-      {parts.map((p, idx) => (
-        <span key={p + idx}>
-          {idx > 0 && (
-            <span className="mx-1.5 text-slate-300 font-medium">/</span>
-          )}
-          <span className={idx === parts.length - 1 ? "text-slate-900" : "text-slate-500 font-normal"}>
-            {labels[p] ?? decodeURIComponent(p).replace(/-/g, " ")}
-          </span>
-        </span>
-      ))}
+    <p className="text-sm font-semibold text-slate-900 leading-none">
+      <span className="text-slate-500 font-normal">Consola</span>
+      <span className="mx-1.5 text-slate-300 font-medium">/</span>
+      <span>{currentSection}</span>
     </p>
   );
 }

@@ -63,7 +63,7 @@ export const DigitalCardView: React.FC<DigitalCardViewProps> = ({ profile }) => 
   const handleSaveContact = () => {
     const success = downloadVCard(profile);
     if (success) {
-      triggerToast("¡Contacto descargado! Ábrelo para guardarlo en tu teléfono.");
+      triggerToast("¡Contacto descargado! \u00C1brelo para guardarlo en tu teléfono.");
     } else {
       triggerToast("Generando tarjeta de contacto...");
     }
@@ -209,16 +209,16 @@ export const DigitalCardView: React.FC<DigitalCardViewProps> = ({ profile }) => 
                     <div className="absolute inset-0 rounded-full bg-emerald-400 blur-md opacity-40 group-hover:opacity-60 transition-opacity" />
                     <MessageCircle className="w-6 h-6 text-white relative z-10" />
                   </div>
-                  <div className="text-left">
-                    <p className="text-[15px] font-bold text-white leading-tight">
-                      Hablar por WhatsApp
+                  <div className="text-left py-1">
+                    <p className="text-[12px] font-bold text-slate-300 leading-tight mb-0.5">
+                      ¿Quieres una tarjeta inteligente como esta?
                     </p>
-                    <p className="text-[11px] text-emerald-400/90 font-medium">
-                      Atención inmediata
+                    <p className="text-[14px] font-black text-emerald-400">
+                      Solicita la tuya aquí
                     </p>
                   </div>
                 </div>
-                <ArrowRight className="w-4 h-4 text-emerald-400 group-hover:translate-x-1 transition-transform" />
+                <ArrowRight className="w-4 h-4 text-emerald-400 group-hover:translate-x-1 transition-transform shrink-0 ml-1" />
               </motion.a>
             </div>
 
@@ -347,7 +347,7 @@ export const DigitalCardView: React.FC<DigitalCardViewProps> = ({ profile }) => 
           {/* Footer Branding */}
           <motion.footer 
             variants={{ hidden: { opacity: 0 }, visible: { opacity: 1 } }}
-            className="w-full mt-14 pt-8 text-center pb-6"
+            className="w-full mt-14 pt-8 text-center pb-6 border-t border-slate-800/50"
           >
             <div className="flex justify-center mb-4">
               <div className="w-12 h-1 rounded-full bg-slate-800/60" />

@@ -1,7 +1,9 @@
 import { notFound } from "next/navigation";
 import { NfcService } from "@/services/NfcService";
 import { User, Cpu } from "lucide-react";
+import Link from "next/link";
 import CardManager from "./CardManager";
+import ProfileActions from "./ProfileActions";
 
 export const dynamic = "force-dynamic";
 
@@ -41,8 +43,18 @@ export default async function ProfileDetailPage({ params }: { params: Promise<{ 
             <p className="text-slate-500 text-sm mb-4">
               {profile.position} {profile.company && `en ${profile.company}`}
             </p>
-            <div className="text-xs font-mono bg-slate-100 text-slate-500 py-1.5 px-3 rounded-lg inline-block">
+            <div className="text-xs font-mono bg-slate-100 text-slate-500 py-1.5 px-3 rounded-lg inline-block mb-6">
               /{profile.slug}
+            </div>
+            
+            <div className="space-y-3 pt-6 border-t border-slate-100">
+              <Link 
+                href={`/admin/nfc/profiles/${profile.id}/editar`}
+                className="w-full flex items-center justify-center h-10 rounded-md bg-blue-50 hover:bg-blue-100 text-blue-700 font-medium transition-colors text-sm"
+              >
+                Editar Perfil
+              </Link>
+              <ProfileActions profileId={profile.id} />
             </div>
           </div>
         </div>
