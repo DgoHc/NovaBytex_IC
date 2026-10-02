@@ -5,6 +5,35 @@ import { redirect } from "next/navigation";
 import { NfcService } from "@/services/NfcService";
 import type { NfcProfile, CardStatus } from "@/types/nfc";
 
+import { getSupabaseAdmin } from "@/lib/supabase/server";
+
+async function handleImageUpload(file: File | null): Promise<string | null> {
+  if (!file || file.size === 0) return null;
+  
+  const supabase = getSupabaseAdmin();
+  const fileExt = file.name.split('.').pop();
+  const fileName = `${Math.random().toString(36).substring(2, 15)}_${Date.now()}.${fileExt}`;
+  
+  // Asume que el bucket se llama 'nfc-assets'. Si no existe, se debe crear en Supabase.
+  const { data, error } = await supabase.storage
+    .from('nfc-assets')
+    .upload(fileName, file, {
+      cacheControl: '3600',
+      upsert: false
+    });
+
+  if (error) {
+    console.error("Error al subir imagen a Supabase:", error);
+    return null;
+  }
+
+  const { data: { publicUrl } } = supabase.storage
+    .from('nfc-assets')
+    .getPublicUrl(fileName);
+
+  return publicUrl;
+}
+
 export async function createProfileAction(formData: FormData) {
   const name = formData.get("name") as string;
   let slug = formData.get("slug") as string;
@@ -12,6 +41,20 @@ export async function createProfileAction(formData: FormData) {
   if (!slug) {
     slug = name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)+/g, "");
     slug = `${slug}-${Math.floor(Math.random() * 1000)}`;
+  }
+
+  let avatar_url = (formData.get("avatar_url") as string) || null;
+  const avatarFile = formData.get("avatar_file") as File | null;
+  if (avatarFile && avatarFile.size > 0) {
+    const uploadedUrl = await handleImageUpload(avatarFile);
+    if (uploadedUrl) avatar_url = uploadedUrl;
+  }
+
+  let logo_url = (formData.get("logo_url") as string) || null;
+  const logoFile = formData.get("logo_file") as File | null;
+  if (logoFile && logoFile.size > 0) {
+    const uploadedUrl = await handleImageUpload(logoFile);
+    if (uploadedUrl) logo_url = uploadedUrl;
   }
   
   const payload: Partial<NfcProfile> = {
@@ -28,8 +71,8 @@ export async function createProfileAction(formData: FormData) {
     facebook: (formData.get("facebook") as string) || null,
     linkedin: (formData.get("linkedin") as string) || null,
     address: (formData.get("address") as string) || null,
-    avatar_url: (formData.get("avatar_url") as string) || null,
-    logo_url: (formData.get("logo_url") as string) || null,
+    avatar_url,
+    logo_url,
     is_active: formData.get("is_active") === "true",
   };
 
@@ -66,6 +109,20 @@ export async function updateCardStatusAction(cardId: string, status: CardStatus,
 }
 
 export async function updateProfileAction(id: string, formData: FormData) {
+  let avatar_url = (formData.get("avatar_url") as string) || null;
+  const avatarFile = formData.get("avatar_file") as File | null;
+  if (avatarFile && avatarFile.size > 0) {
+    const uploadedUrl = await handleImageUpload(avatarFile);
+    if (uploadedUrl) avatar_url = uploadedUrl;
+  }
+
+  let logo_url = (formData.get("logo_url") as string) || null;
+  const logoFile = formData.get("logo_file") as File | null;
+  if (logoFile && logoFile.size > 0) {
+    const uploadedUrl = await handleImageUpload(logoFile);
+    if (uploadedUrl) logo_url = uploadedUrl;
+  }
+
   const payload: Partial<NfcProfile> = {
     name: formData.get("name") as string,
     slug: formData.get("slug") as string,
@@ -80,8 +137,8 @@ export async function updateProfileAction(id: string, formData: FormData) {
     facebook: (formData.get("facebook") as string) || null,
     linkedin: (formData.get("linkedin") as string) || null,
     address: (formData.get("address") as string) || null,
-    avatar_url: (formData.get("avatar_url") as string) || null,
-    logo_url: (formData.get("logo_url") as string) || null,
+    avatar_url,
+    logo_url,
   };
 
   try {

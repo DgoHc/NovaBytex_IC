@@ -155,18 +155,30 @@ export default function ProfileForm({ initialData, isEdit = false }: ProfileForm
           </div>
           
           <div className="pt-4 border-t border-slate-100">
-            <h3 className="text-sm font-bold text-slate-900 mb-4">Imágenes (URLs)</h3>
+            <h3 className="text-sm font-bold text-slate-900 mb-4">Imágenes (Subir Archivo o URL)</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-2">
-                <Label htmlFor="avatar_url">Foto de Perfil (Avatar URL)</Label>
-                <Input id="avatar_url" name="avatar_url" value={formData.avatar_url} onChange={handleChange} placeholder="https://ejemplo.com/mifoto.jpg" type="url" />
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="avatar_file">Foto de Perfil (Archivo)</Label>
+                  <Input id="avatar_file" name="avatar_file" type="file" accept="image/*" />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="avatar_url" className="text-xs text-slate-500">O ingresa un enlace (URL)</Label>
+                  <Input id="avatar_url" name="avatar_url" value={formData.avatar_url} onChange={handleChange} placeholder="https://ejemplo.com/mifoto.jpg" type="url" />
+                </div>
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="logo_url">Logo de Empresa (URL, Opcional)</Label>
-                <Input id="logo_url" name="logo_url" value={formData.logo_url} onChange={handleChange} placeholder="https://ejemplo.com/milogo.png" type="url" />
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="logo_file">Logo de Empresa (Archivo)</Label>
+                  <Input id="logo_file" name="logo_file" type="file" accept="image/*" />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="logo_url" className="text-xs text-slate-500">O ingresa un enlace (URL)</Label>
+                  <Input id="logo_url" name="logo_url" value={formData.logo_url} onChange={handleChange} placeholder="https://ejemplo.com/milogo.png" type="url" />
+                </div>
               </div>
             </div>
-            <p className="text-xs text-slate-500 mt-2">Puedes alojar las imágenes en servicios como Imgur, Cloudinary, etc., y pegar el enlace directo aquí.</p>
+            <p className="text-xs text-slate-500 mt-4">Nota: Si subes un archivo, este reemplazará a la URL que hayas ingresado. Asegúrate de configurar un bucket llamado "nfc-assets" en tu proyecto de Supabase para que las subidas funcionen.</p>
           </div>
 
           <div className="flex justify-end gap-3 pt-4 border-t border-slate-100">
