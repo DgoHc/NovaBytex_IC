@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { ImageUploader } from "@/components/ui/ImageUploader";
 import ClientDigitalCardView from "@/components/nfc/ClientDigitalCardView";
 import type { NfcProfile } from "@/types/nfc";
 
@@ -39,6 +40,11 @@ export default function ProfileForm({ initialData, isEdit = false }: ProfileForm
     logo_url: initialData?.logo_url || "",
   });
 
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
+  const [logoFile, setLogoFile] = useState<File | null>(null);
+  const [avatarPreview, setAvatarPreview] = useState<string>("");
+  const [logoPreview, setLogoPreview] = useState<string>("");
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -51,6 +57,13 @@ export default function ProfileForm({ initialData, isEdit = false }: ProfileForm
     const data = new FormData(e.currentTarget);
     if (!isEdit) {
       data.append("is_active", "true");
+    }
+
+    if (avatarFile) {
+      data.append("avatar_file", avatarFile);
+    }
+    if (logoFile) {
+      data.append("logo_file", logoFile);
     }
 
     if (isEdit && initialData) {
@@ -158,27 +171,45 @@ export default function ProfileForm({ initialData, isEdit = false }: ProfileForm
             <h3 className="text-sm font-bold text-slate-900 mb-4">Imágenes (Subir Archivo o URL)</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="avatar_file">Foto de Perfil (Archivo)</Label>
-                  <Input id="avatar_file" name="avatar_file" type="file" accept="image/*" />
-                </div>
+                <ImageUploader 
+                  label="Foto de Perfil"
+                  description="Arrastra o haz clic para subir imagen"
+                  value={avatarPreview || formData.avatar_url}
+                  onChange={(val) => {
+                    setAvatarPreview(val);
+                    if (!val) setFormData(prev => ({ ...prev, avatar_url: "" }));
+                  }}
+                  onChangeFile={(file) => {
+                    setAvatarFile(file || null);
+                  }}
+                  aspect="aspect-square"
+                />
                 <div className="space-y-2">
                   <Label htmlFor="avatar_url" className="text-xs text-slate-500">O ingresa un enlace (URL)</Label>
                   <Input id="avatar_url" name="avatar_url" value={formData.avatar_url} onChange={handleChange} placeholder="https://ejemplo.com/mifoto.jpg" type="url" />
                 </div>
               </div>
               <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="logo_file">Logo de Empresa (Archivo)</Label>
-                  <Input id="logo_file" name="logo_file" type="file" accept="image/*" />
-                </div>
+                <ImageUploader 
+                  label="Logo de Empresa"
+                  description="Arrastra o haz clic para subir imagen"
+                  value={logoPreview || formData.logo_url}
+                  onChange={(val) => {
+                    setLogoPreview(val);
+                    if (!val) setFormData(prev => ({ ...prev, logo_url: "" }));
+                  }}
+                  onChangeFile={(file) => {
+                    setLogoFile(file || null);
+                  }}
+                  aspect="aspect-video"
+                />
                 <div className="space-y-2">
                   <Label htmlFor="logo_url" className="text-xs text-slate-500">O ingresa un enlace (URL)</Label>
                   <Input id="logo_url" name="logo_url" value={formData.logo_url} onChange={handleChange} placeholder="https://ejemplo.com/milogo.png" type="url" />
                 </div>
               </div>
             </div>
-            <p className="text-xs text-slate-500 mt-4">Nota: Si subes un archivo, este reemplazará a la URL que hayas ingresado. Asegúrate de configurar un bucket llamado "nfc-assets" en tu proyecto de Supabase para que las subidas funcionen.</p>
+            <p className="text-xs text-slate-500 mt-4">Nota: Si subes un archivo, este reemplazará a la URL que hayas ingresado. Asegúrate de configurar un bucket llamado &quot;nfc-assets&quot; en tu proyecto de Supabase para que las subidas funcionen.</p>
           </div>
 
           <div className="flex justify-end gap-3 pt-4 border-t border-slate-100">
@@ -196,8 +227,15 @@ export default function ProfileForm({ initialData, isEdit = false }: ProfileForm
       <div className="hidden lg:flex w-[400px] xl:w-[450px] border-l border-slate-200 pl-8 shrink-0 flex-col">
         <h3 className="text-sm font-bold text-slate-900 mb-4 shrink-0">Vista Previa</h3>
         <div className="flex-1 relative overflow-hidden flex justify-center items-start pt-4">
-          <div className="rounded-[2.5rem] overflow-hidden border-[8px] border-slate-900 shadow-2xl h-[800px] w-full max-w-[380px] bg-slate-950 scale-[0.80] origin-top">
-            <ClientDigitalCardView profile={formData} isPreview={true} />
+          <div className="rounded-[2.5rem] overflow-y-auto no-scrollbar border-[8px] border-slate-900 shadow-2xl h-[800px] w-full max-w-[380px] bg-slate-950 scale-[0.80] origin-top">
+            <ClientDigitalCardView 
+              profile={{
+                ...formData, 
+                avatar_url: avatarPreview || formData.avatar_url, 
+                logo_url: logoPreview || formData.logo_url
+              }} 
+              isPreview={true} 
+            />
           </div>
         </div>
       </div>

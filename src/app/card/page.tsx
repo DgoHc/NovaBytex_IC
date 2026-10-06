@@ -3,11 +3,11 @@ import { DEFAULT_NOVABYTEX_PROFILE } from "@/lib/nfcProfiles";
 import DigitalCardView from "@/components/nfc/DigitalCardView";
 
 export const metadata: Metadata = {
-  title: "Tarjeta Digital NFC —?Nova Bytex",
+  title: "Tarjeta Digital NFC Nova Bytex",
   description:
     "Tarjeta de contacto digital oficial de Nova Bytex. Infraestructura de redes, servidores, ciberseguridad y suministros corporativos en todo el Perú.",
   openGraph: {
-    title: "Nova Bytex —?Tarjeta Digital NFC",
+    title: "Nova Bytex Tarjeta Digital NFC",
     description:
       "Tarjeta digital interactiva de Nova Bytex. Contacta por WhatsApp, guarda el contacto o conoce nuestros servicios de tecnología y suministros.",
     url: "https://novabytexrj.com/card",
@@ -25,7 +25,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Nova Bytex —?Tarjeta Digital NFC",
+    title: "Nova Bytex Tarjeta Digital NFC",
     description:
       "Tarjeta digital interactiva de Nova Bytex. Contacto directo por WhatsApp y descarga de contacto vCard.",
   },

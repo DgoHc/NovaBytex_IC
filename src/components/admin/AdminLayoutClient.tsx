@@ -21,6 +21,7 @@ import {
   FileSpreadsheet,
   ExternalLink,
   PlusCircle,
+  Ticket,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
@@ -82,6 +83,16 @@ const navSections: NavSection[] = [
         name: "Tarjetas",
         href: "/admin/nfc/cards",
         icon: Cpu,
+      },
+    ],
+  },
+  {
+    title: "SOPORTE",
+    items: [
+      {
+        name: "Tickets",
+        href: "/admin/tickets",
+        icon: Ticket,
       },
     ],
   },
@@ -442,6 +453,18 @@ export default function AdminLayoutClient({
           </div>
 
           <div className="flex items-center gap-2.5 shrink-0">
+            {/* Botones de Tickets (Vista Previa / Sin implementar por ahora) */}
+            <div className="hidden md:flex items-center gap-2 mr-2">
+              <Button type="button" variant="outline" size="sm" className="h-8 px-3 text-xs bg-white text-slate-600 border-slate-200">
+                <Ticket className="w-3.5 h-3.5 mr-1.5 text-slate-500" />
+                Mis Tickets
+              </Button>
+              <Button type="button" size="sm" className="h-8 px-3 text-xs bg-slate-800 text-white hover:bg-slate-700">
+                <PlusCircle className="w-3.5 h-3.5 mr-1.5" />
+                Nuevo Ticket
+              </Button>
+            </div>
+
             <div className="hidden md:flex p-1 rounded-lg bg-slate-100 border border-slate-200">
               <Link
                 href="/admin/productos?type=technology"
@@ -489,6 +512,7 @@ function Breadcrumb() {
     nfc: "NFC",
     profiles: "Perfiles",
     cards: "Tarjetas",
+    tickets: "Tickets",
   };
 
   const currentSection = parts.length > 0 

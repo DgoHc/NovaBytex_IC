@@ -21,7 +21,8 @@ import {
   BookOpen,
   Sparkles,
   Copy,
-  Check
+  Check,
+  Cpu
 } from "lucide-react";
 import type { NFCProfile, NFCServiceItem } from "@/types/nfc";
 import { downloadVCard } from "@/lib/vcard";
@@ -195,30 +196,26 @@ export const DigitalCardView: React.FC<DigitalCardViewProps> = ({ profile }) => 
             {/* WhatsApp (Tarjeta Destacada Glow) */}
             <div className="relative rounded-full p-[1px] overflow-hidden group">
               {/* Animated gradient border */}
-              <div className="absolute inset-0 bg-gradient-to-r from-emerald-400 via-teal-500 to-emerald-400 opacity-60 group-hover:opacity-100 animate-[spin_4s_linear_infinite]" style={{ backgroundSize: '200% 200%' }} />
-              
               <motion.a
                 href={whatsappUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                whileTap={{ scale: 0.98 }}
-                className="relative flex items-center justify-between w-full p-2 pr-5 rounded-full bg-slate-950/90 backdrop-blur-xl transition-all"
+                whileTap={{ scale: 0.97 }}
+                className="relative flex items-center justify-between w-full p-2.5 pr-6 rounded-full bg-[#25D366] hover:bg-[#1ebd5b] transition-all shadow-[0_8px_25px_-5px_rgba(37,211,102,0.5)] hover:shadow-[0_12px_35px_-5px_rgba(37,211,102,0.6)] group overflow-hidden"
               >
-                <div className="flex items-center gap-3">
-                  <div className="w-[52px] h-[52px] rounded-full bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center shrink-0 shadow-[0_0_20px_rgba(16,185,129,0.4)] group-hover:scale-105 transition-transform relative">
-                    <div className="absolute inset-0 rounded-full bg-emerald-400 blur-md opacity-40 group-hover:opacity-60 transition-opacity" />
-                    <MessageCircle className="w-6 h-6 text-white relative z-10" />
+                {/* Highlight effect */}
+                <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />
+                
+                <div className="flex items-center gap-3 relative z-10">
+                  <div className="w-[48px] h-[48px] rounded-full bg-white/20 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                    <MessageCircle className="w-7 h-7 text-white fill-white/10" />
                   </div>
-                  <div className="text-left py-1">
-                    <p className="text-[12px] font-bold text-slate-300 leading-tight mb-0.5">
-                      ¿Quieres una tarjeta inteligente como esta?
-                    </p>
-                    <p className="text-[14px] font-black text-emerald-400">
-                      Solicita la tuya aquí
-                    </p>
+                  <div className="text-left">
+                    <p className="text-[16px] font-extrabold text-white leading-tight tracking-tight">WhatsApp</p>
+                    <p className="text-[12px] text-white/90 font-semibold tracking-wide">Mensaje Directo</p>
                   </div>
                 </div>
-                <ArrowRight className="w-4 h-4 text-emerald-400 group-hover:translate-x-1 transition-transform shrink-0 ml-1" />
+                <ArrowRight className="w-5 h-5 text-white group-hover:translate-x-1.5 transition-transform relative z-10" />
               </motion.a>
             </div>
 
@@ -343,6 +340,38 @@ export const DigitalCardView: React.FC<DigitalCardViewProps> = ({ profile }) => 
             )}
           </motion.div>
 
+          {/* Promo Card: Solicita la tarjeta inteligente */}
+          <motion.div 
+            variants={{ hidden: { opacity: 0, y: 16 }, visible: { opacity: 1, y: 0 } }}
+            className="w-full mb-2 mt-6"
+          >
+            <a 
+              href="https://api.whatsapp.com/send?phone=51912061546&text=Hola%2C%20quisiera%20solicitar%20mi%20tarjeta%20inteligente%20NFC."
+              target="_blank"
+              rel="noopener noreferrer"
+              className="relative rounded-3xl p-[1px] overflow-hidden group block"
+            >
+              <div className="absolute inset-0 bg-gradient-to-r from-emerald-400 via-teal-500 to-emerald-400 opacity-60 group-hover:opacity-100 animate-[spin_4s_linear_infinite]" style={{ backgroundSize: '200% 200%' }} />
+              
+              <div className="relative flex items-center justify-between w-full p-4 rounded-[23px] bg-slate-950/90 backdrop-blur-xl transition-all">
+                <div className="flex items-center gap-4">
+                  <div className="w-[50px] h-[50px] rounded-full bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center shrink-0 shadow-[0_0_20px_rgba(16,185,129,0.4)] relative">
+                    <div className="absolute inset-0 rounded-full bg-emerald-400 blur-md opacity-40 group-hover:opacity-60 transition-opacity" />
+                    <Cpu className="w-6 h-6 text-white relative z-10" />
+                  </div>
+                  <div className="text-left">
+                    <p className="text-[13px] font-bold text-slate-300 leading-tight mb-1">
+                      ¿Quieres una tarjeta inteligente?
+                    </p>
+                    <p className="text-[15px] font-black text-emerald-400 leading-none">
+                      Solicita la tuya aquí
+                    </p>
+                  </div>
+                </div>
+                <ArrowRight className="w-5 h-5 text-emerald-400 group-hover:translate-x-1 transition-transform shrink-0 ml-2" />
+              </div>
+            </a>
+          </motion.div>
 
           {/* Footer Branding */}
           <motion.footer 

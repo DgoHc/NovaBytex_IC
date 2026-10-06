@@ -12,6 +12,7 @@ const ACCEPTED = ["image/jpeg", "image/png", "image/webp", "image/gif"];
 export interface ImageUploaderProps {
   value?: string;
   onChange: (value: string) => void;
+  onChangeFile?: (file: File | null) => void;
   onError?: (error: string) => void;
   label?: string;
   description?: string;
@@ -24,6 +25,7 @@ export interface ImageUploaderProps {
 export function ImageUploader({
   value,
   onChange,
+  onChangeFile,
   onError,
   label = "Imagen del producto",
   description = `Formatos: JPG, PNG, WEBP, GIF · Máximo ${MAX_SIZE_MB} MB.`,
@@ -76,6 +78,7 @@ export function ImageUploader({
     reader.onload = () => {
       const result = reader.result as string;
       onChange(result);
+      if (onChangeFile) onChangeFile(file);
       clearError();
       pushToast({
         title: "Imagen lista",
@@ -160,6 +163,7 @@ export function ImageUploader({
                 onClick={(e) => {
                   e.preventDefault();
                   onChange("");
+                  if (onChangeFile) onChangeFile(null);
                   clearError();
                   if (inputRef.current) inputRef.current.value = "";
                 }}

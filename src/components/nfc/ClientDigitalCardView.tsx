@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -15,6 +15,7 @@ import {
   CheckCircle2,
   ArrowRight,
   ExternalLink,
+  Cpu
 } from "lucide-react";
 import { QRCodeModal } from "./QRCodeModal";
 
@@ -316,6 +317,39 @@ export const ClientDigitalCardView = ({ profile, isPreview = false }: { profile:
                 ))}
               </div>
             )}
+          </motion.div>
+
+          {/* Promo Card: Solicita la tarjeta inteligente */}
+          <motion.div 
+            variants={{ hidden: { opacity: 0, y: 16 }, visible: { opacity: 1, y: 0 } }}
+            className="w-full mb-2 mt-6"
+          >
+            <a 
+              href="https://api.whatsapp.com/send?phone=51912061546&text=Hola%2C%20quisiera%20solicitar%20mi%20tarjeta%20inteligente%20NFC."
+              target="_blank"
+              rel="noopener noreferrer"
+              className="relative rounded-3xl p-[1px] overflow-hidden group block"
+            >
+              <div className="absolute inset-0 bg-gradient-to-r from-emerald-400 via-teal-500 to-emerald-400 opacity-60 group-hover:opacity-100 animate-[spin_4s_linear_infinite]" style={{ backgroundSize: '200% 200%' }} />
+              
+              <div className="relative flex items-center justify-between w-full p-4 rounded-[23px] bg-slate-950/90 backdrop-blur-xl transition-all">
+                <div className="flex items-center gap-4">
+                  <div className="w-[50px] h-[50px] rounded-full bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center shrink-0 shadow-[0_0_20px_rgba(16,185,129,0.4)] relative">
+                    <div className="absolute inset-0 rounded-full bg-emerald-400 blur-md opacity-40 group-hover:opacity-60 transition-opacity" />
+                    <Cpu className="w-6 h-6 text-white relative z-10" />
+                  </div>
+                  <div className="text-left">
+                    <p className="text-[13px] font-bold text-slate-300 leading-tight mb-1">
+                      ¿Quieres una tarjeta inteligente?
+                    </p>
+                    <p className="text-[15px] font-black text-emerald-400 leading-none">
+                      Solicita la tuya aquí
+                    </p>
+                  </div>
+                </div>
+                <ArrowRight className="w-5 h-5 text-emerald-400 group-hover:translate-x-1 transition-transform shrink-0 ml-2" />
+              </div>
+            </a>
           </motion.div>
 
           <motion.footer 
