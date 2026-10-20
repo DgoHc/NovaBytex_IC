@@ -48,7 +48,7 @@ export default function LibreriaPage() {
   const [selectedCategory, setSelectedCategory] = useState("Todos");
   const [searchQuery, setSearchQuery] = useState("");
   const [sortOrder, setSortOrder] = useState<"default" | "asc" | "desc">("default");
-  const [priceRange, setPriceRange] = useState<[number, number]>([0, 500]);
+  const [priceRange, setPriceRange] = useState<[number, number]>([20, 220]);
   const [onlyAvailable, setOnlyAvailable] = useState(true);
   const [mounted, setMounted] = useState(false);
 
@@ -63,8 +63,8 @@ export default function LibreriaPage() {
 
   const priceBounds = useMemo(() => {
     const prices = libraryProducts.map((p) => p.price);
-    const min = prices.length ? Math.floor(Math.min(...prices) / 10) * 10 : 0;
-    const max = prices.length ? Math.ceil(Math.max(...prices) / 10) * 10 : 500;
+    const min = prices.length ? Math.floor(Math.min(...prices)) : 20;
+    const max = prices.length ? Math.ceil(Math.max(...prices)) : 220;
     return [min, max] as [number, number];
   }, [libraryProducts]);
 
@@ -236,7 +236,7 @@ export default function LibreriaPage() {
                         Rango de Precio
                       </Label>
                       <span className="text-[11px] font-semibold text-library-sage-foreground tabular-nums">
-                        S/ {priceRange[0].toLocaleString("es-PE")} — S/{" "}
+                        S/ {priceRange[0].toLocaleString("es-PE")} a S/{" "}
                         {priceRange[1].toLocaleString("es-PE")}
                       </span>
                     </div>
@@ -247,26 +247,28 @@ export default function LibreriaPage() {
                           min={priceBounds[0]}
                           max={priceRange[1]}
                           value={priceRange[0]}
-                          onChange={(e) =>
+                          onChange={(e) => {
+                            const val = Number(e.target.value);
                             setPriceRange([
-                              Math.min(Number(e.target.value) || 0, priceRange[1]),
+                              Math.min(Math.max(val || priceBounds[0], priceBounds[0]), priceRange[1]),
                               priceRange[1],
-                            ])
-                          }
+                            ]);
+                          }}
                           className="h-10 rounded-lg text-sm bg-library-cream/60 border-library-beige/70 text-slate-900"
                         />
-                        <span className="text-slate-400 text-sm">—</span>
+                        <span className="text-slate-400 text-sm">-</span>
                         <Input
                           type="number"
                           min={priceRange[0]}
                           max={priceBounds[1]}
                           value={priceRange[1]}
-                          onChange={(e) =>
+                          onChange={(e) => {
+                            const val = Number(e.target.value);
                             setPriceRange([
                               priceRange[0],
-                              Math.max(Number(e.target.value) || 0, priceRange[0]),
-                            ])
-                          }
+                              Math.max(Math.min(val || priceBounds[1], priceBounds[1]), priceRange[0]),
+                            ]);
+                          }}
                           className="h-10 rounded-lg text-sm bg-library-cream/60 border-library-beige/70 text-slate-900"
                         />
                       </div>
@@ -274,10 +276,10 @@ export default function LibreriaPage() {
                         type="range"
                         min={priceBounds[0]}
                         max={priceBounds[1]}
-                        step={5}
+                        step={1}
                         value={priceRange[1]}
                         onChange={(e) =>
-                          setPriceRange([priceRange[0], Number(e.target.value)])
+                          setPriceRange([priceRange[0], Math.max(Number(e.target.value), priceRange[0])])
                         }
                         className="w-full accent-library-sage"
                       />
@@ -318,7 +320,7 @@ export default function LibreriaPage() {
                       : selectedCategory}
                   </h2>
                   <p className="text-sm text-slate-500 mt-1.5">
-                    Selección curada con entrega inmediata en todo el Perú
+                    Precios en soles. Pide por WhatsApp o en la web.
                   </p>
                 </div>
                 <Button

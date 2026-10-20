@@ -10,30 +10,16 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://novabytex.com"),
+  metadataBase: new URL("https://www.novabytexrj.com"),
   title: {
-    default: "Nova Bytex | Solución, Seguridad y Tecnología para Empresas",
-    template: "%s | Nova Bytex",
+    default: "Nova Bytex S.R.L. | Tecnología, Útiles y Soporte en Cajamarca",
+    template: "%s | Nova Bytex S.R.L.",
   },
   description:
-    "Solución integral, seguridad y tecnología para empresas e instituciones. Suministro confiable de papelería, útiles de oficina y hardware con servicios de ingeniería de software, conectividad y automatización de procesos.",
-  keywords: [
-    "Nova Bytex",
-    "Solución seguridad y tecnología para empresas",
-    "suministros de oficina",
-    "papelería corporativa",
-    "hardware corporativo",
-    "servidores y conectividad",
-    "ingeniería de software",
-    "ciberseguridad gestionada",
-    "automatización de procesos",
-    "IoT y Domótica",
-    "soporte técnico TI empresas",
-    "distribución corporativa Perú",
-  ],
-  authors: [{ name: "Nova Bytex", url: "https://novabytex.com" }],
-  creator: "Nova Bytex",
-  publisher: "Nova Bytex",
+    "Venta de equipos de tecnología, útiles de oficina y papelería en Cajamarca. Brindamos soporte técnico, instalación de redes y asesoría para empresas locales.",
+  authors: [{ name: "Nova Bytex S.R.L.", url: "https://www.novabytexrj.com" }],
+  creator: "Nova Bytex S.R.L.",
+  publisher: "Nova Bytex S.R.L.",
   applicationName: "Nova Bytex Portal",
   category: "technology",
   formatDetection: {
@@ -42,33 +28,33 @@ export const metadata: Metadata = {
     telephone: false,
   },
   icons: {
-    icon: "/assets/branding/logonb.jpeg",
-    shortcut: "/assets/branding/logonb.jpeg",
-    apple: "/assets/branding/logonb.jpeg",
+    icon: "/assets/branding/nb-isotype.png",
+    shortcut: "/assets/branding/nb-isotype.png",
+    apple: "/assets/branding/nb-isotype.png",
   },
   openGraph: {
-    title: "Nova Bytex | Solución, Seguridad y Tecnología para Empresas",
+    title: "Nova Bytex S.R.L. | Tecnología, Útiles y Soporte en Cajamarca",
     description:
-      "Brindamos solución integral, seguridad y tecnología a empresas e instituciones combinando papelería, útiles de oficina y hardware con servicios de ingeniería de software y conectividad.",
-    url: "https://novabytex.com",
-    siteName: "Nova Bytex",
+      "Venta de equipos de tecnología, útiles de oficina y papelería en Cajamarca. Brindamos soporte técnico, instalación de redes y asesoría para empresas locales.",
+    url: "https://www.novabytexrj.com",
+    siteName: "Nova Bytex S.R.L.",
     locale: "es_PE",
     type: "website",
     images: [
       {
-        url: "/assets/branding/logonb.jpeg",
+        url: "/assets/branding/nb-isotype.png",
         width: 800,
         height: 800,
-        alt: "Nova Bytex - Solución, Seguridad y Tecnología",
+        alt: "Logo de Nova Bytex S.R.L.",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Nova Bytex | Solución, Seguridad y Tecnología para Empresas",
+    title: "Nova Bytex S.R.L. | Tecnología, Útiles y Soporte en Cajamarca",
     description:
-      "Suministro confiable de papelería, útiles de oficina y hardware corporativo con ingeniería de software y conectividad.",
-    images: ["/assets/branding/logonb.jpeg"],
+      "Venta de equipos de tecnología, útiles de oficina y papelería en Cajamarca. Brindamos soporte técnico, instalación de redes y asesoría para empresas locales.",
+    images: ["/assets/branding/nb-isotype.png"],
   },
   robots: {
     index: true,
@@ -82,50 +68,44 @@ export const metadata: Metadata = {
     },
   },
   alternates: {
-    canonical: "/",
+    canonical: "https://www.novabytexrj.com",
   },
 };
 
 const jsonLd = {
   "@context": "https://schema.org",
-  "@graph": [
+  "@type": "LocalBusiness",
+  "@id": "https://www.novabytexrj.com/#business",
+  "name": "Nova Bytex S.R.L.",
+  "url": "https://www.novabytexrj.com",
+  "logo": "https://www.novabytexrj.com/assets/branding/nb-isotype.png",
+  "image": "https://www.novabytexrj.com/assets/branding/nb-isotype.png",
+  "description": "Comercialización de productos de tecnología, servicios técnicos y asesoría",
+  "telephone": "+51990804482",
+  "email": "nbytex@gmail.com",
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "Av. Vía Universitaria S/N, Sector La Base II",
+    "addressLocality": "Cajamarca",
+    "addressRegion": "Cajamarca",
+    "addressCountry": "PE",
+  },
+  "sameAs": [
+    "https://www.instagram.com/novabytex/",
+    "https://www.facebook.com/Nova-Bytex-SRL-1708431966134505/",
+  ],
+  "openingHoursSpecification": [
     {
-      "@type": "Organization",
-      "@id": "https://novabytex.com/#organization",
-      name: "Nova Bytex",
-      url: "https://novabytex.com",
-      logo: {
-        "@type": "ImageObject",
-        url: "https://novabytex.com/assets/branding/logonb.jpeg",
-      },
-      slogan: "Solución, seguridad y tecnología para empresas",
-      description:
-        "Brindar solución integral, seguridad y tecnología a las empresas e instituciones, combinando el suministro confiable de papelería, útiles de oficina y hardware con servicios especializados de ingeniería de software, conectividad y automatización de procesos.",
-      foundingDate: "2014",
-      address: {
-        "@type": "PostalAddress",
-        addressCountry: "PE",
-      },
-      contactPoint: {
-        "@type": "ContactPoint",
-        contactType: "customer service",
-        availableLanguage: ["Spanish"],
-      },
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+      "opens": "07:00",
+      "closes": "13:00",
     },
     {
-      "@type": "WebSite",
-      "@id": "https://novabytex.com/#website",
-      url: "https://novabytex.com",
-      name: "Nova Bytex",
-      publisher: {
-        "@id": "https://novabytex.com/#organization",
-      },
-      inLanguage: "es-PE",
-      potentialAction: {
-        "@type": "SearchAction",
-        target: "https://novabytex.com/productos?search={search_term_string}",
-        "query-input": "required name=search_term_string",
-      },
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+      "opens": "15:00",
+      "closes": "19:00",
     },
   ],
 };

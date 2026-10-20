@@ -20,45 +20,39 @@ import Link from "next/link";
 const services = [
   {
     icon: <ShoppingBag className="w-8 h-8 text-blue-500" />,
-    title: "Papelería & Hardware Corporativo",
-    sla: "Entrega Inmediata",
-    description: "Suministro confiable de útiles de oficina, papelería empresarial y hardware de las mejores marcas con garantía oficial y facturación RUC 20.",
-    highlights: ["Garantía de fábrica 100%", "Facturación electrónica inmediata", "Abastecimiento continuo y ágil"]
+    title: "Papelería & Hardware",
+    description: "Venta de útiles de oficina, papelería comercial y equipos de cómputo con boleta o factura.",
+    highlights: ["Suministros de oficina", "Equipos con garantía de marca", "Emisión de comprobantes de pago"]
   },
   {
     icon: <Headphones className="w-8 h-8 text-blue-500" />,
-    title: "Soporte Técnico de Excelencia",
-    sla: "Respuesta < 15 min",
-    description: "Acompañamiento especializado, mantenimiento preventivo y correctivo para garantizar la continuidad operativa diaria de tu organización.",
-    highlights: ["Nivel 1, 2 y 3 especializado", "Monitoreo en tiempo real", "Asistencia remota e in-situ"]
+    title: "Soporte Técnico",
+    description: "Mantenimiento preventivo y correctivo para computadoras, laptops e impresoras en tu oficina.",
+    highlights: ["Mantenimiento preventivo y correctivo", "Asistencia remota y en sitio", "Diagnóstico y cambio de piezas"]
   },
   {
     icon: <Server className="w-8 h-8 text-blue-500" />,
-    title: "Conectividad & Data Center",
-    sla: "99.99% Uptime",
-    description: "Diseño, implementación y cableado de redes seguras, virtualización y servidores para una infraestructura digital robusta.",
-    highlights: ["Redes SD-WAN & Switch 10G", "Virtualización de alta disponibilidad", "Respaldo y recuperación BCP"]
+    title: "Redes y Conectividad",
+    description: "Instalación de cableado estructurado, ordenamiento de racks y configuración de routers y switches.",
+    highlights: ["Instalación de redes y cableado", "Configuración de enrutadores y switches", "Puntos de red y conectividad local"]
   },
   {
     icon: <Layers className="w-8 h-8 text-blue-500" />,
-    title: "Ingeniería de Software & Automatización",
-    sla: "Desarrollo Ágil",
-    description: "Desarrollo a medida, automatización de procesos empresariales y tecnologías inteligentes (IoT y Domótica) para modernizar tu negocio.",
-    highlights: ["Sistemas web y móviles a medida", "Automatización de flujos y procesos", "Integración de tecnologías IoT"]
+    title: "Desarrollo Web y Sistemas",
+    description: "Desarrollo de sitios web comerciales, sistemas básicos de gestión y automatización de tareas.",
+    highlights: ["Páginas web y portales", "Automatización de tareas frecuentes", "Integración de herramientas digitales"]
   },
   {
     icon: <Lightbulb className="w-8 h-8 text-blue-500" />,
-    title: "Asesoría & Auditoría TI",
-    sla: "Informe Ejecutivo",
-    description: "Consultoría estratégica para optimizar costos de licencias, auditorías de ciberseguridad y renovación tecnológica.",
-    highlights: ["Auditoría de vulnerabilidades", "Optimización de costos Cloud/OpEx", "Plan de desarrollo tecnológico"]
+    title: "Asesoría Técnica TI",
+    description: "Orientación en compra de equipamiento tecnológico, renovación de computadoras y software.",
+    highlights: ["Elección de equipos según presupuesto", "Revisión de seguridad de red", "Planes de renovación de hardware"]
   },
   {
     icon: <ShieldCheck className="w-8 h-8 text-blue-500" />,
-    title: "Ciberseguridad Gestionada",
-    sla: "Protección SOC 24/7",
-    description: "Implementación de Next-Gen Firewalls Fortinet, filtrado web, antivirus corporativo EDR/XDR y políticas de Zero Trust.",
-    highlights: ["Defensa perimetral avanzada", "Protección contra Ransomware", "Certificaciones ISO 27001 compliance"]
+    title: "Seguridad Informática",
+    description: "Protección antivirus corporativo, copias de seguridad de datos y configuración de cortafuegos.",
+    highlights: ["Configuración de firewalls", "Copias de seguridad de datos", "Protección contra virus y malware"]
   }
 ];
 
@@ -81,13 +75,13 @@ export const Services = () => {
           className="mx-auto mb-16 max-w-3xl space-y-4 text-center lg:mb-20"
         >
           <Badge className="bg-blue-50 text-blue-700 border border-blue-100 px-3.5 py-1 mb-2 font-medium">
-            Soluciones Integrales 360°
+            Servicios técnicos y asesoría
           </Badge>
           <h2 className="font-editorial text-4xl sm:text-5xl md:text-6xl font-medium leading-[1.2] tracking-[-0.015em] text-slate-900">
-            Nuestros Servicios Especializados
+            Nuestros Servicios
           </h2>
           <p className="text-slate-600 max-w-2xl mx-auto text-base md:text-lg leading-relaxed font-normal">
-            Cubrimos todo el ciclo de vida de la tecnología de tu empresa con personal altamente certificado
+            Atención técnica, equipos y suministros de oficina para empresas y profesionales en Cajamarca.
           </p>
         </motion.div>
 
@@ -107,9 +101,6 @@ export const Services = () => {
                     <div className="w-14 h-14 bg-blue-50 group-hover:bg-blue-50/80 rounded-2xl flex items-center justify-center transition-colors border border-blue-100">
                       {service.icon}
                     </div>
-                    <Badge variant="secondary" className="bg-slate-100 text-slate-700 text-[11px] font-medium rounded-lg px-2.5 py-1">
-                      SLA: {service.sla}
-                    </Badge>
                   </div>
                   <CardTitle className="text-xl font-semibold text-slate-900 group-hover:text-blue-700 transition-colors leading-snug">
                     {service.title}

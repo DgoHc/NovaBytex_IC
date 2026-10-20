@@ -1,6 +1,6 @@
 import { PRODUCTS_DATA, type Product, type CatalogType } from "@/lib/products";
 
-const STORAGE_KEY = "nova:products:v1";
+const STORAGE_KEY = "nova:products:v2";
 
 function generateId(products: Product[]): number {
   const max = products.reduce((acc, p) => (p.id > acc ? p.id : acc), 0);
@@ -45,6 +45,7 @@ const DEFAULT_NEW_PRODUCT: Omit<Product, "id" | "createdAt"> = {
   price: 0,
   previousPrice: undefined,
   image: "",
+  gallery: [],
   inStock: true,
   available: true,
   featured: false,
@@ -62,7 +63,26 @@ export const ProductService = {
 
   list(): Product[] {
     const stored = readFromStorage();
-    if (stored && stored.length > 0) return stored;
+    if (stored && stored.length > 0) {
+      // Sincronizar estado de disponibilidad (available) con los datos base de PRODUCTS_DATA
+      const synced = stored.map((p) => {
+        const seed = PRODUCTS_DATA.find((s) => s.id === p.id);
+        if (seed && seed.available !== p.available) {
+          return { ...p, available: seed.available };
+        }
+        return p;
+      });
+
+      const existingIds = new Set(synced.map((p) => p.id));
+      const missing = PRODUCTS_DATA.filter((p) => !existingIds.has(p.id));
+      if (missing.length > 0) {
+        const merged = [...synced, ...missing];
+        writeToStorage(merged);
+        return merged;
+      }
+      writeToStorage(synced);
+      return synced;
+    }
     const seed = [...PRODUCTS_DATA];
     writeToStorage(seed);
     return seed;

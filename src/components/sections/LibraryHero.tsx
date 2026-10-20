@@ -10,17 +10,17 @@ const features = [
   {
     icon: BookOpen,
     title: "Papelería & Impresión",
-    desc: "Papel bond Report, fólderes y suministros.",
+    desc: "Papel bond Report A4, fólderes y notas adhesivas.",
   },
   {
     icon: Ruler,
     title: "Cuadernos & Archivo",
-    desc: "Cuadernos Stanford, archivadores y notas.",
+    desc: "Cuadernos Stanford 100 hojas y archivadores de palanca.",
   },
   {
     icon: Sparkles,
-    title: "Escritura & Arte",
-    desc: "Lapiceros Faber-Castell, plumones y resaltadores.",
+    title: "Escritura & Oficina",
+    desc: "Lapiceros Faber-Castell y bolígrafos Parker Jotter.",
   },
 ];
 
@@ -62,20 +62,18 @@ export const LibraryHero: React.FC = () => {
               className="h-7 px-3 gap-2 text-[12px] font-semibold tracking-wide border-blue-800/30 text-blue-900 bg-blue-50/60"
             >
               <BookOpen className="w-3.5 h-3.5 text-blue-700" />
-              <span>Nuevo en NovaBytex</span>
+              <span>Librería y papelería en Cajamarca</span>
             </Badge>
 
             <div className="space-y-4">
               <h1 className="font-bodoni text-[44px] leading-[1.05] md:text-6xl lg:text-[72px] font-medium tracking-[-0.02em] text-slate-900">
                 Librería
                 <span className="block text-library-terracotta italic mt-2">
-                  Estudia · Crea · Organiza
+                  Útiles · Cuadernos · Escritura
                 </span>
               </h1>
               <p className="font-sans text-base md:text-lg leading-relaxed text-slate-600 max-w-2xl">
-                Todo lo que necesitas para estudiar, crear y organizar tus ideas.
-                Una selección cuidada de libros, cuadernos y útiles premium, con
-                la misma calidad y confianza de siempre.
+                Marcas como Stanford, Faber-Castell y Parker. Compra en la web, pide por WhatsApp o pasa por la tienda en Cajamarca.
               </p>
             </div>
 
@@ -89,7 +87,7 @@ export const LibraryHero: React.FC = () => {
                     el.scrollIntoView({ behavior: "smooth", block: "start" });
                 }}
               >
-                Explorar Catálogo
+                Ver catálogo
                 <ArrowRight className="w-4 h-4 ml-2" />
               </Button>
               <Button
@@ -147,32 +145,32 @@ export const LibraryHero: React.FC = () => {
                     <span className="w-2.5 h-2.5 rounded-full bg-library-sage" />
                   </div>
                   <span className="font-bodoni italic text-[12px] text-slate-500">
-                    Vol. 01 · Nova Library
+                    Nova Bytex · Librería
                   </span>
                 </div>
 
                 <div className="mt-7 space-y-2">
                   <p className="text-[11px] font-semibold tracking-[0.22em] uppercase text-library-terracotta">
-                    Editorial Collection
+                    PRODUCTOS DESTACADOS
                   </p>
                   <h3 className="font-bodoni text-[30px] leading-[1.1] text-slate-900">
-                    Ideas que
+                    Papel, cuadernos
                     <span className="italic text-library-sage-foreground">
                       {" "}
-                      inspiran
+                      y útiles
                     </span>
                   </h3>
                   <p className="font-bodoni text-[20px] leading-[1.15] text-slate-700 italic">
-                    & páginas que organizan el mañana.
+                    para tu oficina, colegio y estudio.
                   </p>
                 </div>
 
                 <div className="mt-8 space-y-3.5 flex-1">
                   {[
                     { n: "01", title: "Papel Bond Report · A4 75g", cat: "Papelería" },
-                    { n: "02", title: "Cuaderno Stanford · 100h", cat: "Cuadernos" },
-                    { n: "03", title: "Lapiceros Faber-Castell · x12", cat: "Escritura" },
-                    { n: "04", title: "Archivador Palanca · Vinifan", cat: "Archivadores" },
+                    { n: "02", title: "Cuaderno Stanford · 100 hojas", cat: "Cuadernos" },
+                    { n: "03", title: "Lapiceros Faber-Castell · Trilux", cat: "Escritura" },
+                    { n: "04", title: "Archivador Palanca · Vinifan A4", cat: "Archivadores" },
                   ].map((item) => (
                     <div
                       key={item.n}
@@ -201,14 +199,14 @@ export const LibraryHero: React.FC = () => {
                 <div className="mt-6 flex items-end justify-between pt-4 border-t border-library-beige/70">
                   <div>
                     <p className="text-[10px] font-semibold tracking-[0.18em] uppercase text-slate-500">
-                      Curado por
+                      Disponible en
                     </p>
                     <p className="font-bodoni text-[18px] text-slate-900 italic">
-                      NovaBytex
+                      Nova Bytex
                     </p>
                   </div>
                   <Badge className="h-7 px-3 bg-slate-900 text-white rounded-xl text-[11px] font-semibold tracking-wide shadow-md">
-                    120+ artículos
+                    Catálogo activo
                   </Badge>
                 </div>
               </div>

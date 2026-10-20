@@ -1,10 +1,13 @@
 "use client";
 
 import React, { useEffect, useState, useRef } from "react";
+import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { CheckCircle2, AlertCircle, Info, X } from "lucide-react";
 import { CartProvider } from "@/contexts/CartContext";
 import { CatalogProvider, useCatalog } from "@/contexts/CatalogContext";
+import { AuthProvider } from "@/contexts/AuthContext";
+import { WishlistProvider } from "@/contexts/WishlistContext";
 import { CartSidebar } from "@/components/CartSidebar";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
@@ -75,13 +78,12 @@ function ToastContainer() {
   );
 }
 
-import { usePathname } from "next/navigation";
-
 function ShellInner({ children }: { children: React.ReactNode }) {
   const { hydrated, loading } = useCatalog();
   const pathname = usePathname();
   const isAdmin = pathname?.startsWith("/admin");
   const isCard = pathname?.startsWith("/card");
+  const isAccount = pathname?.startsWith("/mi-cuenta");
   const [navigating, setNavigating] = useState(false);
   const isFirstMount = React.useRef(true);
 
@@ -116,7 +118,7 @@ function ShellInner({ children }: { children: React.ReactNode }) {
     );
   }
 
-  if (isAdmin) {
+  if (isAdmin || isAccount) {
     return (
       <>
         {navigating && (
@@ -131,6 +133,7 @@ function ShellInner({ children }: { children: React.ReactNode }) {
         )}
         <NovaLoader visible={showLoader} fadingOut={false} />
         <main className="min-h-screen bg-slate-50">{children}</main>
+        <CartSidebar />
         <ToastContainer />
       </>
     );
@@ -161,9 +164,13 @@ function ShellInner({ children }: { children: React.ReactNode }) {
 export function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <CatalogProvider>
-      <CartProvider>
-        <ShellInner>{children}</ShellInner>
-      </CartProvider>
+      <WishlistProvider>
+        <AuthProvider>
+          <CartProvider>
+            <ShellInner>{children}</ShellInner>
+          </CartProvider>
+        </AuthProvider>
+      </WishlistProvider>
     </CatalogProvider>
   );
 }

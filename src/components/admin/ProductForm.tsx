@@ -13,6 +13,10 @@ import {
   Cpu,
   BookOpen,
   HelpCircle,
+  Plus,
+  X,
+  ImageIcon,
+  Upload,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -102,6 +106,7 @@ export const ProductFormSchema = z
       z.number().min(0, "El precio anterior no puede ser negativo.").optional()
     ),
     image: z.string().optional().or(z.literal("")),
+    gallery: z.array(z.string()).optional(),
     imageType: z.enum(
       imageTypes.map((i) => i.value) as unknown as readonly [
         Product["imageType"],
@@ -183,6 +188,34 @@ export function ProductForm({
   const [specificationsText, setSpecificationsText] = React.useState(() =>
     textFromArray(initial?.specifications)
   );
+  const [galleryList, setGalleryList] = React.useState<string[]>(() => initial?.gallery || []);
+  const [newGalleryUrl, setNewGalleryUrl] = React.useState("");
+  const galleryFileInputRef = React.useRef<HTMLInputElement | null>(null);
+
+  const handleAddGalleryUrl = () => {
+    if (!newGalleryUrl.trim()) return;
+    setGalleryList((prev) => [...prev, newGalleryUrl.trim()]);
+    setNewGalleryUrl("");
+  };
+
+  const handleRemoveGalleryItem = (index: number) => {
+    setGalleryList((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const handleGalleryFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+    const file = files[0];
+    const reader = new FileReader();
+    reader.onload = () => {
+      const result = reader.result as string;
+      if (result) {
+        setGalleryList((prev) => [...prev, result]);
+      }
+    };
+    reader.readAsDataURL(file);
+    e.target.value = "";
+  };
 
   const defaultValues: Partial<ProductFormValues> = useMemo(() => {
     if (mode === "edit" && initial) {
@@ -260,6 +293,7 @@ export function ProductForm({
     reset(defaultValues as ProductFormValues);
     setFeaturesText(textFromArray(initial?.features));
     setSpecificationsText(textFromArray(initial?.specifications));
+    setGalleryList(initial?.gallery || []);
   }, [defaultValues, reset, initial]);
 
   const activeType = watch("type") as CatalogType | undefined;
@@ -322,6 +356,7 @@ export function ProductForm({
             ? values.previousPrice
             : undefined,
         image: values.image ?? "",
+        gallery: galleryList,
         imageType: values.imageType,
         available: values.available,
         inStock: values.inStock,
@@ -355,6 +390,7 @@ export function ProductForm({
             ? values.previousPrice
             : undefined,
         image: values.image ?? "",
+        gallery: galleryList,
         imageType: values.imageType,
         available: values.available,
         inStock: values.inStock,
@@ -551,6 +587,85 @@ export function ProductForm({
                 )}
               />
             </Field>
+          </div>
+
+          {/* Galería de fotos secundarias / perspectivas */}
+          <div className="border border-slate-200 rounded-lg bg-white overflow-hidden shadow-sm p-5 space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-[14px] font-semibold text-slate-900">Fotos de Galería</h2>
+                <p className="text-[11px] text-slate-500">Perspectivas, requisitos o empaque.</p>
+              </div>
+              <Badge variant="outline" className="text-xs font-semibold">
+                {galleryList.length} {galleryList.length === 1 ? "foto" : "fotos"}
+              </Badge>
+            </div>
+
+            {/* Lista de fotos añadidas */}
+            {galleryList.length > 0 && (
+              <div className="grid grid-cols-2 gap-2 max-h-56 overflow-y-auto p-1.5 border border-slate-100 rounded-lg bg-slate-50/70">
+                {galleryList.map((imgUrl, idx) => (
+                  <div
+                    key={idx}
+                    className="relative group rounded-md border border-slate-200 overflow-hidden bg-white aspect-[4/3] flex items-center justify-center p-1"
+                  >
+                    <img src={imgUrl} alt={`Foto ${idx + 1}`} className="w-full h-full object-contain" />
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveGalleryItem(idx)}
+                      className="absolute top-1 right-1 p-1 bg-rose-600/90 text-white rounded-full opacity-80 hover:opacity-100 transition-opacity shadow-sm"
+                      title="Eliminar foto"
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
+                    <span className="absolute bottom-1 left-1 bg-black/70 text-white text-[9px] px-1.5 py-0.5 rounded font-medium">
+                      Foto {idx + 1}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Controles para añadir foto */}
+            <div className="space-y-2 pt-1 border-t border-slate-100">
+              <div className="flex items-center gap-2">
+                <Input
+                  placeholder="URL de foto o perspectiva..."
+                  value={newGalleryUrl}
+                  onChange={(e) => setNewGalleryUrl(e.target.value)}
+                  className="h-9 text-xs"
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={handleAddGalleryUrl}
+                  disabled={!newGalleryUrl.trim()}
+                  className="h-9 text-xs shrink-0"
+                >
+                  <Plus className="w-3.5 h-3.5 mr-1" /> Añadir
+                </Button>
+              </div>
+
+              <div>
+                <input
+                  type="file"
+                  accept="image/*"
+                  ref={galleryFileInputRef}
+                  onChange={handleGalleryFileUpload}
+                  className="hidden"
+                />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => galleryFileInputRef.current?.click()}
+                  className="w-full h-8 text-[11.5px] border border-dashed border-slate-300 text-slate-600 hover:text-slate-900 hover:border-slate-400"
+                >
+                  <Upload className="w-3.5 h-3.5 mr-1.5" /> Subir desde tu equipo
+                </Button>
+              </div>
+            </div>
           </div>
 
           <div className="border border-slate-200 rounded-lg bg-white overflow-hidden shadow-sm p-5 space-y-4">

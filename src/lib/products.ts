@@ -10,6 +10,7 @@ export interface Product {
   price: number;
   previousPrice?: number;
   image: string;
+  gallery?: string[];
   inStock: boolean;
   available: boolean;
   featured: boolean;
@@ -19,12 +20,15 @@ export interface Product {
   warranty: string;
   specifications: string[];
   features: string[];
-  imageType: 'switch' | 'server' | 'firewall' | 'laptop' | 'storage' | 'router' | 'accesspoint' | 'book' | 'notebook' | 'agenda' | 'pen' | 'marker' | 'highlighter' | 'pencil' | 'office' | 'desk' | 'school';
+  imageType: 'switch' | 'server' | 'firewall' | 'laptop' | 'storage' | 'router' | 'accesspoint' | 'book' | 'notebook' | 'agenda' | 'pen' | 'marker' | 'highlighter' | 'pencil' | 'office' | 'desk' | 'school' | 'software';
   type: CatalogType;
+  techSubtype?: 'hardware' | 'license';
   createdAt: string;
 }
 
-export const TECHNOLOGY_CATEGORIES = ["Redes", "Servidores", "Seguridad", "Equipos", "Almacenamiento"];
+export const HARDWARE_CATEGORIES = ["Redes", "Servidores", "Seguridad", "Equipos", "Almacenamiento"];
+export const LICENSE_CATEGORIES = ["Licencias & Software", "Suscripciones Cloud", "Sistemas Operativos", "Seguridad & Antivirus"];
+export const TECHNOLOGY_CATEGORIES = [...HARDWARE_CATEGORIES, ...LICENSE_CATEGORIES];
 export const LIBRARY_CATEGORIES = ["Papelería", "Cuadernos", "Archivadores", "Escritura", "Oficina", "Arte", "Accesorios", "Escolar"];
 export const ALL_CATEGORIES = [...TECHNOLOGY_CATEGORIES, ...LIBRARY_CATEGORIES];
 
@@ -91,7 +95,7 @@ export const PRODUCTS_DATA: Product[] = [
     previousPrice: undefined,
     image: "",
     inStock: true,
-    available: true,
+    available: false,
     featured: true,
     rating: 4.9,
     reviewsCount: 38,
@@ -127,7 +131,7 @@ export const PRODUCTS_DATA: Product[] = [
     previousPrice: undefined,
     image: "",
     inStock: true,
-    available: true,
+    available: false,
     featured: true,
     rating: 5.0,
     reviewsCount: 24,
@@ -163,7 +167,7 @@ export const PRODUCTS_DATA: Product[] = [
     previousPrice: 14299,
     image: "",
     inStock: true,
-    available: true,
+    available: false,
     featured: true,
     rating: 4.8,
     reviewsCount: 42,
@@ -199,7 +203,7 @@ export const PRODUCTS_DATA: Product[] = [
     previousPrice: undefined,
     image: "",
     inStock: true,
-    available: true,
+    available: false,
     featured: true,
     rating: 4.9,
     reviewsCount: 56,
@@ -235,7 +239,7 @@ export const PRODUCTS_DATA: Product[] = [
     previousPrice: undefined,
     image: "",
     inStock: true,
-    available: true,
+    available: false,
     featured: false,
     rating: 4.7,
     reviewsCount: 19,
@@ -271,7 +275,7 @@ export const PRODUCTS_DATA: Product[] = [
     previousPrice: undefined,
     image: "",
     inStock: true,
-    available: true,
+    available: false,
     featured: false,
     rating: 5.0,
     reviewsCount: 12,
@@ -307,7 +311,7 @@ export const PRODUCTS_DATA: Product[] = [
     previousPrice: undefined,
     image: "",
     inStock: true,
-    available: true,
+    available: false,
     featured: true,
     rating: 4.9,
     reviewsCount: 88,
@@ -343,7 +347,7 @@ export const PRODUCTS_DATA: Product[] = [
     previousPrice: 3199,
     image: "",
     inStock: true,
-    available: true,
+    available: false,
     featured: false,
     rating: 4.8,
     reviewsCount: 31,
@@ -368,15 +372,15 @@ export const PRODUCTS_DATA: Product[] = [
   },
   {
     id: 101,
-    name: "Papel Fotocopia Bond Report A4 75g (Empaque 500 Hojas)",
+    name: "Papel Fotocopia Bond Report A4 75g (Caja x 5 Empaques)",
     category: "Papelería",
     brand: "Report",
-    sku: "LIB-PAP-REP-75A4",
+    sku: "LIB-PAP-REP-75A4-CJ",
     warranty: "Garantía de calidad de fábrica",
-    description: "Paquete de 500 hojas de papel bond A4 de 75 gramos de alta blancura y absorción homogénea para impresoras y fotocopiadoras.",
+    description: "Caja con 5 millares (2,500 hojas) de papel bond A4 75g.",
     fullDescription: "El papel bond Report A4 de 75g es el estándar corporativo preferido en oficinas y colegios del Perú. Producido con tecnología que minimiza atascos en impresoras láser, inkjet y fotocopiadoras de alta velocidad, garantizando impresiones nítidas en blanco y negro o color.",
-    price: 16.5,
-    previousPrice: 19.0,
+    price: 85.0,
+    previousPrice: 98.0,
     image: "",
     inStock: true,
     available: true,
@@ -389,7 +393,7 @@ export const PRODUCTS_DATA: Product[] = [
     specifications: [
       "Tamaño: A4 estándar (210 x 297 mm)",
       "Gramaje: 75 g/m²",
-      "Contenido: Empaque termosellado de 500 hojas",
+      "Contenido: Caja con 5 empaques termosellados (2,500 hojas)",
       "Blancura: 98% ISO de alta reflectancia",
       "Uso: Fotocopiado, impresión láser e inyección de tinta",
       "Ecológico: Fabricado con pulpa de celulosa libre de cloro"
@@ -403,14 +407,14 @@ export const PRODUCTS_DATA: Product[] = [
   },
   {
     id: 102,
-    name: "Cuaderno Cuadriculado Stanford Colegial 100 Hojas",
+    name: "Cuaderno Cuadriculado Stanford Colegial 100H (Pack x 5)",
     category: "Cuadernos",
     brand: "Stanford",
-    sku: "LIB-CUA-STAN-100C",
+    sku: "LIB-CUA-STAN-100CX5",
     warranty: "Garantía contra defectos de imprenta",
-    description: "Cuaderno colegial cuadriculado de 100 hojas con carátula plastificada brillante, diseño ergonómico y grapas de seguridad.",
+    description: "Pack de 5 cuadernos cuadriculados de 100 hojas colegial.",
     fullDescription: "El cuaderno Stanford es el tradicional de las aulas y academias en el Perú. Sus hojas cuadriculadas con cuadrícula de 4.5 mm están impresas con líneas guías nítidas en papel bond blanco grueso que no traspasa la tinta de lapiceros ni plumones escolares.",
-    price: 6.5,
+    price: 32.5,
     previousPrice: undefined,
     image: "",
     inStock: true,
@@ -423,11 +427,11 @@ export const PRODUCTS_DATA: Product[] = [
     createdAt: "2025-09-11T10:00:00.000Z",
     specifications: [
       "Formato: Colegial estándar (16 x 21 cm)",
+      "Contenido: Pack x 5 cuadernos",
       "Hojas: 100 hojas bond cuadriculadas 65g",
       "Cuadrícula: 4.5 mm clásica",
       "Encuadernación: Doble grapa metálica reforzada",
-      "Carátula: Cartulina dúplex plastificada con filtro UV",
-      "Incluye: Carátula para datos personales, horario y stickers guías"
+      "Carátula: Cartulina dúplex plastificada con filtro UV"
     ],
     features: [
       "Papel de alta resistencia a borradores",
@@ -438,15 +442,15 @@ export const PRODUCTS_DATA: Product[] = [
   },
   {
     id: 103,
-    name: "Cuaderno Universitario Espiral A4 100 Hojas Stanford",
+    name: "Cuaderno Universitario Espiral A4 100 Hojas Stanford (Pack x 3)",
     category: "Cuadernos",
     brand: "Stanford",
-    sku: "LIB-CUA-STAN-A4ESP",
+    sku: "LIB-CUA-STAN-A4ESPX3",
     warranty: "Garantía de fabricante",
-    description: "Cuaderno espiral universitario tamaño A4 con hojas cuadriculadas de 75g y tapa dura plastificada de alta resistencia.",
+    description: "Pack de 3 cuadernos espiral A4 de 100 hojas Stanford.",
     fullDescription: "Diseñado para universitarios, técnicos y profesionales. Cuenta con anillado espiral metálico continuo que permite abrir 360 grados sin atascos, microperforado para arrancar hojas limpias y bolsillo de plástico transparente para documentos sueltos.",
-    price: 8.5,
-    previousPrice: 10.5,
+    price: 25.5,
+    previousPrice: 30.0,
     image: "",
     inStock: true,
     available: true,
@@ -458,11 +462,11 @@ export const PRODUCTS_DATA: Product[] = [
     createdAt: "2025-09-12T10:00:00.000Z",
     specifications: [
       "Formato: A4 universitario (21.5 x 28 cm)",
+      "Contenido: Pack x 3 cuadernos",
       "Hojas: 100 hojas bond de 75g cuadriculadas",
       "Encuadernación: Espiral metálico con cierre de seguridad",
       "Tapa: Cartón prensado duro con acabado mate y barniz sectorizado",
-      "Bolsillo interior transparente porta-documentos",
-      "Hojas microperforadas de fácil desprendimiento"
+      "Bolsillo interior transparente porta-documentos"
     ],
     features: [
       "Apertura plana total en 180° y 360°",
@@ -473,15 +477,15 @@ export const PRODUCTS_DATA: Product[] = [
   },
   {
     id: 104,
-    name: "Caja de Lapiceros Faber-Castell Trilux 032 Medium x 12 (Azul)",
+    name: "Caja de Lapiceros Faber-Castell Trilux 032 Medium x 50 (Azul)",
     category: "Escritura",
     brand: "Faber-Castell",
-    sku: "LIB-LAP-FC-TRILUX",
+    sku: "LIB-LAP-FC-TRILUX50",
     warranty: "Garantía de tinta indeleble",
-    description: "Caja de 12 bolígrafos clásicos de tinta indeleble suave con cuerpo triangular ergonómico antideslizante y punta metálica 1.0mm.",
+    description: "Caja con 50 bolígrafos punta media 1.0 mm color azul.",
     fullDescription: "El bolígrafo más vendido y reconocido en todo el Perú. Su punta de carburo de tungsteno ofrece un trazo uniforme sin manchar ni gotear. Su forma triangular ergonómica permite escribir durante horas sin fatiga en la mano.",
-    price: 12.0,
-    previousPrice: 15.0,
+    price: 48.0,
+    previousPrice: 55.0,
     image: "",
     inStock: true,
     available: true,
@@ -492,7 +496,7 @@ export const PRODUCTS_DATA: Product[] = [
     type: 'library',
     createdAt: "2025-09-13T10:00:00.000Z",
     specifications: [
-      "Contenido: Caja con 12 bolígrafos",
+      "Contenido: Caja con 50 bolígrafos",
       "Color de tinta: Azul intenso indeleble",
       "Punta: Mediana 1.0 mm de carburo de tungsteno",
       "Cuerpo: Triangular ergonómico antifatiga",
@@ -508,14 +512,14 @@ export const PRODUCTS_DATA: Product[] = [
   },
   {
     id: 105,
-    name: "Archivador de Palanca A4 Lomo Ancho Vinifan",
+    name: "Archivador de Palanca A4 Lomo Ancho Vinifan (Pack x 3)",
     category: "Archivadores",
     brand: "Vinifan",
-    sku: "LIB-ARC-VIN-A4LA",
+    sku: "LIB-ARC-VIN-A4LAX3",
     warranty: "Garantía de mecanismo 1 año",
-    description: "Archivador de palanca tamaño A4 con lomo ancho de 8 cm, cantoneras metálicas de protección y compresor niquelado de alta capacidad.",
+    description: "Pack de 3 archivadores A4 con lomo ancho de 8 cm.",
     fullDescription: "El archivador estándar para contabilidad, administración y archivo general en empresas peruanas. Fabricado en cartón prensado reforzado de gran resistencia, forrado en polipropileno lavable que no absorbe humedad ni grasa.",
-    price: 10.5,
+    price: 31.5,
     previousPrice: undefined,
     image: "",
     inStock: true,
@@ -527,12 +531,11 @@ export const PRODUCTS_DATA: Product[] = [
     type: 'library',
     createdAt: "2025-09-14T10:00:00.000Z",
     specifications: [
+      "Contenido: 3 archivadores palanca A4",
       "Tamaño: A4 (32 x 28.5 cm)",
       "Lomo: Ancho de 80 mm (capacidad ~500 hojas bond)",
       "Mecanismo: Palanca niquelada con seguro compresor",
-      "Protección: Cantoneras metálicas niqueladas en bordes inferiores",
-      "Ojal metálico de extracción en lomo",
-      "Tarjetero con etiqueta intercambiable en el lomo"
+      "Protección: Cantoneras metálicas niqueladas en bordes inferiores"
     ],
     features: [
       "Resistente al uso diario y manipulación continua",
@@ -548,10 +551,10 @@ export const PRODUCTS_DATA: Product[] = [
     brand: "Faber-Castell",
     sku: "LIB-RES-FC-PASTEL",
     warranty: "Garantía de tinta 6 meses",
-    description: "Estuche de 6 resaltadores en tonos pastel suaves a la vista, punta biselada para 3 anchos de trazo y tinta a base de agua.",
+    description: "Estuche de 6 resaltadores en tonos pastel punta bisel.",
     fullDescription: "Resaltadores premium que no fatigan la vista al estudiar o revisar documentos extensos. Su tinta a base de agua no traspasa las hojas finas de papel bond ni apuntes de lapicero, ofreciendo trazos limpios de 1, 2 y 5 mm.",
-    price: 18.5,
-    previousPrice: 22.0,
+    price: 24.5,
+    previousPrice: 28.0,
     image: "",
     inStock: true,
     available: true,
@@ -562,29 +565,28 @@ export const PRODUCTS_DATA: Product[] = [
     type: 'library',
     createdAt: "2025-09-15T10:00:00.000Z",
     specifications: [
-      "Colores: 6 tonos pastel (amarillo vainilla, rosa pastel, lila, menta, turquesa, durazno)",
-      "Punta: Biselada de poliéster de 3 grosores (1 mm, 2 mm y 5 mm)",
+      "Colores: 6 tonos pastel",
+      "Punta: Biselada de poliéster de 3 grosores",
       "Tinta: Base agua ecológica libre de solventes",
-      "Presentación: Estuche plástico reutilizable",
-      "Apto para papel bond, térmico de fax y fotocopias"
+      "Presentación: Estuche plástico reutilizable"
     ],
     features: [
       "No mancha el reverso de la página",
-      "No corre la tinta de bolígrafos ni textos impresos",
+      "No corre la tinta de bolígrafos",
       "Cuerpo ergonómico plano antirodadura",
       "Gran depósito de tinta para larga duración"
     ]
   },
   {
     id: 107,
-    name: "Plumones para Pizarra Acrílica Artesco x 4 Colores Surtidos",
+    name: "Plumones para Pizarra Acrílica Artesco x 8 Colores + Mota",
     category: "Escritura",
     brand: "Artesco",
-    sku: "LIB-PLU-ART-PIZ",
+    sku: "LIB-PLU-ART-PIZ8",
     warranty: "Garantía de fábrica",
-    description: "Pack de 4 plumones recargables de borrado en seco (negro, azul, rojo y verde) con punta redonda acrílica indeformable.",
+    description: "Set de 8 plumones de pizarra surtidos con mota imantada.",
     fullDescription: "Imprescindible en salas de reuniones corporativas, colegios e institutos. Tinta de secado rápido que se borra con facilidad usando franela o borrador de mota sin dejar sombras ni marcas residuales en la pizarra.",
-    price: 14.0,
+    price: 28.0,
     previousPrice: undefined,
     image: "",
     inStock: true,
@@ -596,30 +598,28 @@ export const PRODUCTS_DATA: Product[] = [
     type: 'library',
     createdAt: "2025-09-16T10:00:00.000Z",
     specifications: [
-      "Contenido: 4 unidades (negro, azul, rojo, verde)",
+      "Contenido: 8 plumones + 1 mota magnética",
       "Punta: Redonda resistente de 3.0 mm",
-      "Tinta: Alcohólica de bajo olor y secado ultra rápido",
-      "Superficie: Pizarra blanca acrílica, vidrio y melamina no porosa",
-      "Borrable: En seco con mota o paño suave"
+      "Tinta: Alcohólica de bajo olor y secado ultra rápido"
     ],
     features: [
-      "Colores intensos de alta visibilidad a distancia",
-      "No deja manchas permanentes en la pizarra",
-      "Tapa hermética con clip que previene secado",
+      "Colores intensos de alta visibilidad",
+      "No deja manchas permanentes",
+      "Tapa hermética con clip",
       "Libre de xileno y tolueno"
     ]
   },
   {
     id: 108,
-    name: "Paquete de Fólderes Manila A4 con Faster Artesco x 25",
+    name: "Paquete de Fólderes Manila A4 con Faster Artesco x 50",
     category: "Oficina",
     brand: "Artesco",
-    sku: "LIB-FOL-MAN-A4X25",
+    sku: "LIB-FOL-MAN-A4X50",
     warranty: "Garantía de calidad",
-    description: "Pack de 25 fólderes manila calibre grueso tamaño A4 con pestaña superior y juego de 25 broches faster metálicos.",
-    fullDescription: "El fólder manila clásico utilizado para expedientes, trámites documentarios, licitaciones y legajos de personal en el Perú. Fabricado en cartulina manila pesada de 180 gramos que resiste el uso continuo en mesa de partes.",
-    price: 15.0,
-    previousPrice: 18.0,
+    description: "50 fólderes manila A4 con 50 broches faster metálicos.",
+    fullDescription: "El fólder manila clásico utilizado para expedientes, trámites documentarios, licitaciones y legajos de personal en el Perú.",
+    price: 25.0,
+    previousPrice: 29.0,
     image: "",
     inStock: true,
     available: true,
@@ -630,17 +630,14 @@ export const PRODUCTS_DATA: Product[] = [
     type: 'library',
     createdAt: "2025-09-17T10:00:00.000Z",
     specifications: [
-      "Cantidad: 25 fólderes manila + 25 faster metálicos de 8 cm",
-      "Tamaño: A4 estándar para hojas de 21 x 29.7 cm",
-      "Material: Cartulina manila calibre 180 g/m²",
-      "Pestaña: Superior escalonada para rotulación con marcador o etiqueta",
-      "Perforación: Guías troqueladas para colocación precisa del faster"
+      "Cantidad: 50 fólderes manila + 50 faster metálicos",
+      "Tamaño: A4 estándar",
+      "Material: Cartulina manila calibre 180 g/m²"
     ],
     features: [
       "Cartulina gruesa no quebradiza",
       "Broches faster niquelados anticorrosión",
-      "Ideal para trámites notariales, judiciales y administrativos",
-      "Paquete sellado termoencogido"
+      "Ideal para trámites y archivo"
     ]
   },
   {
@@ -650,10 +647,10 @@ export const PRODUCTS_DATA: Product[] = [
     brand: "Sharpie",
     sku: "LIB-MAR-SHA-FINE12",
     warranty: "Garantía de tinta 1 año",
-    description: "Caja de 12 marcadores permanentes de punta fina con tinta indeleble de alta adherencia sobre cartón, plástico, metal y madera.",
-    fullDescription: "El marcador permanente por excelencia en almacenes, logística y oficinas. Escribe de forma permanente sobre cualquier superficie no grasa, resistente al agua y a la decoloración solar. Certificado AP no tóxico.",
-    price: 42.0,
-    previousPrice: 48.0,
+    description: "Caja con 12 marcadores punta fina 1.0 mm tinta negra.",
+    fullDescription: "El marcador permanente por excelencia en almacenes, logística y oficinas. Escribe de forma permanente sobre cualquier superficie no grasa, resistente al agua y a la decoloración solar.",
+    price: 54.0,
+    previousPrice: 62.0,
     image: "",
     inStock: true,
     available: true,
@@ -666,28 +663,24 @@ export const PRODUCTS_DATA: Product[] = [
     specifications: [
       "Contenido: Caja x 12 unidades color negro",
       "Punta: Fina de fibra sintética 1.0 mm",
-      "Tinta: Base alcohol indeleble permanente",
-      "Secado: Menos de 2 segundos",
-      "Superficies: Cartón corrugado, bolsas plásticas, cintas, madera, metal",
-      "Certificación: AP no tóxico conforme a norma ASTM D-4236"
+      "Tinta: Base alcohol indeleble permanente"
     ],
     features: [
       "Resistente a la intemperie y humedad",
       "Trazo negro intenso que no se decolora",
-      "Cuerpo delgado fácil de manipular",
-      "Imprescindible en empaque, rotulado y logística"
+      "Secado ultra rápido"
     ]
   },
   {
     id: 110,
-    name: "Tacos de Notas Adhesivas 3x3 Artesco Neon x 400 Hojas",
+    name: "Pack Tacos Notas Adhesivas 3x3 Artesco Neon x 6 Unidades",
     category: "Oficina",
     brand: "Artesco",
-    sku: "LIB-NOT-POST-3X3",
+    sku: "LIB-NOT-POST-3X3X6",
     warranty: "Garantía de adhesivo",
-    description: "Taco de notas autoadhesivas reposicionables en 4 colores neón brillantes (76 x 76 mm) que no dejan residuos al despegar.",
-    fullDescription: "Ideales para recordatorios rápidos en pantallas, escritorios, agendas y carpetas. El adhesivo de alta calidad se pega y despega múltiples veces sin rasgar el papel ni dejar huella pegajosa.",
-    price: 9.5,
+    description: "Pack de 6 tacos de 100 notas adhesivas de 76 x 76 mm.",
+    fullDescription: "Ideales para recordatorios rápidos en pantallas, escritorios, agendas y carpetas.",
+    price: 22.0,
     previousPrice: undefined,
     image: "",
     inStock: true,
@@ -699,29 +692,25 @@ export const PRODUCTS_DATA: Product[] = [
     type: 'library',
     createdAt: "2025-09-19T10:00:00.000Z",
     specifications: [
-      "Tamaño: 76 x 76 mm (3 x 3 pulgadas)",
-      "Contenido: 400 hojas (4 bloques de 100 hojas)",
-      "Colores: Amarillo neón, rosado fucsia, verde lima, naranja neón",
-      "Gramaje: 75 g/m² bond coloreado en masa",
-      "Adhesivo: Franja superior reposicionable al agua"
+      "Contenido: 6 tacos de 100 hojas c/u (600 hojas totales)",
+      "Tamaño: 76 x 76 mm",
+      "Colores neón de alta visibilidad"
     ],
     features: [
-      "Se adhiere firmemente a pantallas, escritorios y papel",
-      "Despegado limpio sin manchas",
-      "Colores de alto contraste imposibles de ignorar",
-      "Compatible con lapiceros de gel, bolígrafos y lápiz"
+      "Se adhiere firmemente",
+      "Despegado limpio sin manchas"
     ]
   },
   {
     id: 111,
-    name: "Tijera de Oficina Acero Inoxidable Artesco 7 Pulgadas",
+    name: "Set Tijera de Oficina Acero Inoxidable 8\" + Cúter Metálico",
     category: "Accesorios",
     brand: "Artesco",
-    sku: "LIB-TIJ-ART-7PUL",
+    sku: "LIB-TIJ-CUT-SET",
     warranty: "Garantía de filo 1 año",
-    description: "Tijera de 7 pulgadas con hojas de acero inoxidable templado de filo duradero y mango ergonómico soft-touch para corte preciso.",
-    fullDescription: "Diseñada para uso continuo en oficina y almacén. Corta fácilmente papel, cartón grueso, cintas adhesivas y telas con suavidad gracias a su tornillo central ajustable y mango con recubrimiento de goma antifatiga.",
-    price: 7.5,
+    description: "Tijera de 8 pulgadas en acero más cúter metálico 18 mm.",
+    fullDescription: "Diseñada para uso continuo en oficina y almacén. Corta fácilmente papel, cartón grueso, cintas adhesivas y telas con suavidad.",
+    price: 20.0,
     previousPrice: undefined,
     image: "",
     inStock: true,
@@ -733,30 +722,26 @@ export const PRODUCTS_DATA: Product[] = [
     type: 'library',
     createdAt: "2025-09-20T10:00:00.000Z",
     specifications: [
-      "Medida: 7 pulgadas (17.8 cm)",
-      "Hojas: Acero inoxidable quirúrgico templado",
-      "Mango: Polipropileno con inserción de caucho suave ergonómico",
-      "Punta: Semi-roma de seguridad",
-      "Uso: Ambidiestro"
+      "Tijera: 8 pulgadas en acero inoxidable",
+      "Cúter: Metálico con cuchilla de 18 mm",
+      "Uso rudo para almacén y oficina"
     ],
     features: [
       "Filo rectificado de larga duración",
-      "Corte limpio sin atascos en cinta adhesiva",
-      "Agarre cómodo que evita ampollas o fatiga",
-      "Resistente a la oxidación"
+      "Mango ergonómico antifatiga"
     ]
   },
   {
     id: 112,
-    name: "Engrapadora Metálica de Oficina Artesco 24/6 + Caja de Grapas",
+    name: "Engrapadora Metálica de Oficina Pesada 24/6 + Perforador 2H",
     category: "Oficina",
     brand: "Artesco",
-    sku: "LIB-ENG-ART-246",
+    sku: "LIB-ENG-PERF-KIT",
     warranty: "Garantía 1 año",
-    description: "Engrapadora metálica de sobremesa para hasta 25 hojas bond, con base antideslizante, yunque giratorio y caja de 1000 grapas 26/6.",
-    fullDescription: "Herramienta indispensable en escritorios administrativos. Mecanismo de acero templado con resorte de alta precisión que evita atascos de grapas. Su yunque giratorio permite tanto engrapado cerrado permanente como abierto temporal.",
-    price: 19.5,
-    previousPrice: 24.0,
+    description: "Engrapadora para 30 hojas, perforador y 1,000 grapas.",
+    fullDescription: "Herramienta indispensable en escritorios administrativos. Mecanismo de acero templado con resorte de alta precisión que evita atascos de grapas.",
+    price: 45.0,
+    previousPrice: 52.0,
     image: "",
     inStock: true,
     available: true,
@@ -767,18 +752,515 @@ export const PRODUCTS_DATA: Product[] = [
     type: 'library',
     createdAt: "2025-09-21T10:00:00.000Z",
     specifications: [
-      "Capacidad de grapado: Hasta 25 hojas de 75g",
-      "Compatibilidad: Grapas 24/6 y 26/6",
-      "Cuerpo: Chasis 100% de acero con recubrimiento esmaltado",
-      "Base: Goma antideslizante protectora de mesas",
-      "Mecanismo: Yunque de doble función (engrapado y clavado)",
-      "Incluye: 1 caja de 1,000 grapas de alambre galvanizado 26/6"
+      "Engrapadora para 30 hojas bond",
+      "Perforador metálico con guía A4/Carta",
+      "Incluye caja de 1,000 grapas 26/6"
     ],
     features: [
-      "Mecanismo anti-atasco con resorte guiado",
-      "Recarga rápida superior",
-      "Construcción duradera de uso pesado",
-      "Diseño compacto y elegante para escritorio"
+      "Mecanismo anti-atasco",
+      "Construcción 100% metálica pesada"
+    ]
+  },
+  {
+    id: 113,
+    name: "Set Pluma Estilográfica & Bolígrafo Parker Jotter Premium",
+    category: "Escritura",
+    brand: "Parker",
+    sku: "LIB-PAR-JOTT-SET",
+    warranty: "Garantía oficial Parker de por vida",
+    description: "Juego de pluma y bolígrafo Parker Jotter en estuche.",
+    fullDescription: "El regalo y artículo de distinción ejecutiva por excelencia. Fabricado con cuerpo de acero inoxidable cepillado, clip icónico en forma de flecha y plumín de acero inoxidable con trazo medio perfecto para firmas y acuerdos.",
+    price: 220.0,
+    previousPrice: 250.0,
+    image: "",
+    inStock: true,
+    available: true,
+    featured: true,
+    rating: 5.0,
+    reviewsCount: 84,
+    imageType: 'pen',
+    type: 'library',
+    createdAt: "2025-09-22T10:00:00.000Z",
+    specifications: [
+      "Incluye: 1 Pluma estilográfica Parker + 1 Bolígrafo Parker Jotter",
+      "Material: Acero inoxidable cepillado con detalles cromados",
+      "Punta: Mediana (M) con flujo continuo Quink",
+      "Presentación: Estuche original de regalo acolchado"
+    ],
+    features: [
+      "Escritura suave e indeleble",
+      "Icono de diseño profesional internacional",
+      "Clip metálico flexible de máxima resistencia"
+    ]
+  },
+  // ==============================================================
+  // LICENCIAS Y SUSCRIPCIONES DIGITALES (14 PRODUCTOS NUEVOS)
+  // ==============================================================
+  {
+    id: 201,
+    name: "Adobe Acrobat PRO (Licencia Permanente)",
+    category: "Licencias & Software",
+    brand: "Adobe",
+    sku: "LIC-ADOBE-ACROBAT-PERM",
+    warranty: "Activación Digital Permanente Garantizada",
+    description: "Licencia digital de por vida para Adobe Acrobat PRO. Edición avanzada de documentos PDF.",
+    fullDescription: "Licencia permanente original para Adobe Acrobat PRO. Permite crear, editar, firmar, convertir y proteger archivos PDF con herramientas profesionales completas sin mensualidades.",
+    price: 60.0,
+    previousPrice: 85.0,
+    image: "/assets/Licencias, subs/Adobe Acrobat PRO (Licencia Permanente) - 60.00.jpg",
+    inStock: true,
+    available: true,
+    featured: true,
+    rating: 4.9,
+    reviewsCount: 42,
+    imageType: "software",
+    type: "technology",
+    techSubtype: "license",
+    createdAt: "2026-10-20T10:00:00.000Z",
+    specifications: [
+      "Activación digital inmediata",
+      "Licencia para 1 equipo",
+      "Válido para Windows / MacOS",
+      "Sin pagos recurrentes ni suscripción mensual"
+    ],
+    features: [
+      "Edición de texto e imágenes en PDF",
+      "Exportación a Word, Excel y PowerPoint",
+      "Firma electrónica segura",
+      "Protección por contraseña y censura"
+    ]
+  },
+  {
+    id: 202,
+    name: "Adobe Acrobat PRO DC Windows (Preactivado)",
+    category: "Licencias & Software",
+    brand: "Adobe",
+    sku: "LIC-ADOBE-DC-WIN",
+    warranty: "Soporte de instalación garantizado",
+    description: "Versión preactivada de Adobe Acrobat PRO DC lista para instalar en Windows.",
+    fullDescription: "Adobe Acrobat PRO DC para entornos de trabajo Windows. Instalador preactivado con todas las funciones de edición y organización de PDF habilitadas.",
+    price: 15.0,
+    previousPrice: 25.0,
+    image: "/assets/Licencias, subs/Adobe Acrobat PRO DC (Windows)  Preactivado - 15.00.jpg",
+    inStock: true,
+    available: true,
+    featured: false,
+    rating: 4.7,
+    reviewsCount: 18,
+    imageType: "software",
+    type: "technology",
+    techSubtype: "license",
+    createdAt: "2026-10-20T10:00:00.000Z",
+    specifications: [
+      "Compatible con Windows 10 y 11",
+      "Instalación offline guiada",
+      "Herramientas OCR completas",
+      "Entrega inmediata por enlace digital"
+    ],
+    features: [
+      "Edición de PDF fluida",
+      "Combinar y organizar archivos",
+      "Reconocimiento óptico de caracteres (OCR)"
+    ]
+  },
+  {
+    id: 203,
+    name: "ESET NOD32 Internet Security",
+    category: "Seguridad & Antivirus",
+    brand: "ESET",
+    sku: "LIC-ESET-IS",
+    warranty: "Garantía oficial ESET por el periodo contratado",
+    description: "Seguridad avanzada para navegación web, banca en línea y protección integral contra malware.",
+    fullDescription: "ESET Internet Security brinda protección completa para tu vida digital: escudo contra ransomware, protección de banca online y firewall personal con consumo mínimo de recursos.",
+    price: 65.0,
+    previousPrice: 85.0,
+    image: "/assets/Licencias, subs/Eset Nod32 internet Security - 65.00.jpg",
+    inStock: true,
+    available: true,
+    featured: true,
+    rating: 5.0,
+    reviewsCount: 65,
+    imageType: "software",
+    type: "technology",
+    techSubtype: "license",
+    createdAt: "2026-10-20T10:00:00.000Z",
+    specifications: [
+      "Licencia original activable en servidores de ESET",
+      "Protección proactiva en tiempo real",
+      "Firewall bidireccional y control parental",
+      "Consumo ultraligero de memoria RAM"
+    ],
+    features: [
+      "Banca y pagos seguros",
+      "Protección contra botnets y redes maliciosas",
+      "Antiphishing proactivo",
+      "Escudo anti-ransomware"
+    ]
+  },
+  {
+    id: 204,
+    name: "ESET NOD32 Antivirus x 1 Año",
+    category: "Seguridad & Antivirus",
+    brand: "ESET",
+    sku: "LIC-ESET-NOD32-1Y",
+    warranty: "1 Año de protección oficial",
+    description: "El legendario antivirus rápido y liviano para gamers y profesionales por 12 meses.",
+    fullDescription: "Protección galardonada que no ralentiza tu equipo. Incluye modo jugador para sesiones sin interrupciones y detección heurística líder en la industria.",
+    price: 50.0,
+    previousPrice: 70.0,
+    image: "/assets/Licencias, subs/Eset Nod32 x 1año - 50.00.jpg",
+    inStock: true,
+    available: true,
+    featured: false,
+    rating: 4.8,
+    reviewsCount: 39,
+    imageType: "software",
+    type: "technology",
+    techSubtype: "license",
+    createdAt: "2026-10-20T10:00:00.000Z",
+    specifications: [
+      "Vigencia de 365 días",
+      "1 Dispositivo con Windows",
+      "Actualizaciones automáticas diarias de firmas de virus",
+      "Soporte técnico directo"
+    ],
+    features: [
+      "Antivirus y antispyware en tiempo real",
+      "Exploración basada en la nube",
+      "Bloqueador de exploits avanzado",
+      "Bajo consumo de batería en laptops"
+    ]
+  },
+  {
+    id: 205,
+    name: "Kaspersky Plus + VPN (1 Año / 1 PC)",
+    category: "Seguridad & Antivirus",
+    brand: "Kaspersky",
+    sku: "LIC-KASP-PLUS-1Y",
+    warranty: "Licencia oficial Kaspersky 12 meses",
+    description: "Ciberseguridad de última generación con VPN ilimitada y optimizador de rendimiento del sistema.",
+    fullDescription: "Kaspersky Plus ofrece defensa total contra virus, malware y troyanos, combinada con VPN ultrarrápida ilimitada para navegación privada y herramientas de limpieza del disco duro.",
+    price: 75.0,
+    previousPrice: 95.0,
+    image: "/assets/Licencias, subs/kaspersky Plus VPN 1 año PC - 75.00.jpg",
+    inStock: true,
+    available: true,
+    featured: true,
+    rating: 4.9,
+    reviewsCount: 52,
+    imageType: "software",
+    type: "technology",
+    techSubtype: "license",
+    createdAt: "2026-10-20T10:00:00.000Z",
+    specifications: [
+      "1 Año de vigencia para 1 PC",
+      "VPN de velocidad ilimitada incluida",
+      "Gestor de contraseñas premium",
+      "Herramientas de optimización y limpieza de PC"
+    ],
+    features: [
+      "Detección de amenazas en tiempo real",
+      "Navegación web cifrada de grado bancario",
+      "Comprobador de fugas de datos y credenciales",
+      "Protección y bloqueo de webcam no autorizada"
+    ]
+  },
+  {
+    id: 206,
+    name: "McAfee Total Protection (2 Años)",
+    category: "Seguridad & Antivirus",
+    brand: "McAfee",
+    sku: "LIC-MCAFEE-2Y",
+    warranty: "2 Años de garantía y soporte oficial",
+    description: "Protección antivirus completa para dispositivos con firewall, destructor de archivos y protección web.",
+    fullDescription: "McAfee Total Protection brinda seguridad premium durante 2 años contra virus, ransomware y amenazas en la web con una puntuación de protección del 100%.",
+    price: 40.0,
+    previousPrice: 65.0,
+    image: "/assets/Licencias, subs/Mc Afee Total x 2 años - 40.00.jpg",
+    inStock: true,
+    available: true,
+    featured: false,
+    rating: 4.7,
+    reviewsCount: 31,
+    imageType: "software",
+    type: "technology",
+    techSubtype: "license",
+    createdAt: "2026-10-20T10:00:00.000Z",
+    specifications: [
+      "2 Años completos de protección",
+      "Instalación en PC / Laptop",
+      "Firewall personal inteligente",
+      "Actualizaciones continuas en la nube"
+    ],
+    features: [
+      "Destructor de archivos confidenciales",
+      "Protección de identidad y privacidad",
+      "Asesor de navegación web segura"
+    ]
+  },
+  {
+    id: 207,
+    name: "McAfee Protection Multidispositivo (5 Años)",
+    category: "Seguridad & Antivirus",
+    brand: "McAfee",
+    sku: "LIC-MCAFEE-5Y",
+    warranty: "5 Años de suscripción garantizada",
+    description: "La máxima tranquilidad a largo plazo con 5 años de seguridad completa para tus equipos.",
+    fullDescription: "Plan extendido de 5 años para despreocuparte de renovaciones antivirus. Defiende tus equipos contra el robo de identidad, malware y sitios web fraudulentos.",
+    price: 80.0,
+    previousPrice: 120.0,
+    image: "/assets/Licencias, subs/Mc Afee x 5 años - 80.00.jpg",
+    inStock: true,
+    available: true,
+    featured: true,
+    rating: 4.9,
+    reviewsCount: 44,
+    imageType: "software",
+    type: "technology",
+    techSubtype: "license",
+    createdAt: "2026-10-20T10:00:00.000Z",
+    specifications: [
+      "Válido por 5 años (1825 días)",
+      "Protección multidispositivo",
+      "Consola de administración unificada",
+      "Compatibilidad total Windows / Android"
+    ],
+    features: [
+      "Seguridad galardonada en pruebas independientes",
+      "Bloqueo inmediato de ransomware",
+      "Gestor de contraseñas de alta seguridad"
+    ]
+  },
+  {
+    id: 208,
+    name: "Microsoft 365 Personal (1TB Cloud - 1 PC/Mac)",
+    category: "Suscripciones Cloud",
+    brand: "Microsoft",
+    sku: "SUB-MS365-1TB-1PC",
+    warranty: "1 Año de suscripción oficial Microsoft",
+    description: "Suscripción anual a Word, Excel, PowerPoint y 1000 GB (1TB) de almacenamiento en la nube OneDrive.",
+    fullDescription: "Todo lo que necesitas para tu trabajo diario y estudio. Accede a las aplicaciones premium de Office con las últimas funciones de Inteligencia Artificial y sincronización automática en la nube.",
+    price: 70.0,
+    previousPrice: 95.0,
+    image: "/assets/Licencias, subs/Microsoft 365 1TB 1PC - 70.00.jpg",
+    inStock: true,
+    available: true,
+    featured: true,
+    rating: 5.0,
+    reviewsCount: 88,
+    imageType: "software",
+    type: "technology",
+    techSubtype: "license",
+    createdAt: "2026-10-20T10:00:00.000Z",
+    specifications: [
+      "Suscripción oficial por 12 meses",
+      "1 Usuario (1 PC/Mac + 1 Celular/Tablet)",
+      "1 TB (1,000 GB) de almacenamiento OneDrive",
+      "Actualizaciones automáticas a las últimas versiones"
+    ],
+    features: [
+      "Aplicaciones completas: Word, Excel, PowerPoint, Outlook",
+      "Seguridad avanzada contra ransomware en OneDrive",
+      "Soporte técnico continuo directo de Microsoft"
+    ]
+  },
+  {
+    id: 209,
+    name: "Nitro PRO PDF (Licencia Digital)",
+    category: "Licencias & Software",
+    brand: "Nitro",
+    sku: "LIC-NITRO-PRO",
+    warranty: "Licencia digital perpetua",
+    description: "Software profesional líder para crear, editar, combinar y firmar archivos PDF de forma rápida.",
+    fullDescription: "Alternativa potente y ligera a Adobe Acrobat. Permite transformar documentos escaneados en archivos editables mediante OCR, proteger con contraseña y firmar contratos digitales con facilidad.",
+    price: 15.0,
+    previousPrice: 28.0,
+    image: "/assets/Licencias, subs/Nitro PRO - 15.00.jpg",
+    inStock: true,
+    available: true,
+    featured: false,
+    rating: 4.6,
+    reviewsCount: 22,
+    imageType: "software",
+    type: "technology",
+    techSubtype: "license",
+    createdAt: "2026-10-20T10:00:00.000Z",
+    specifications: [
+      "Licencia permanente sin mensualidad",
+      "Activación directa en Windows",
+      "Motor OCR de alta precisión para escaneos",
+      "Interfaz estilo Microsoft Office intuitiva"
+    ],
+    features: [
+      "Edición fluida de texto e imágenes en PDF",
+      "Conversión precisa a Word, Excel y PowerPoint",
+      "Comparación visual de versiones de documentos"
+    ]
+  },
+  {
+    id: 210,
+    name: "Microsoft Office 2024 Profesional (Permanente)",
+    category: "Licencias & Software",
+    brand: "Microsoft",
+    sku: "LIC-OFFICE-2024-PRO",
+    warranty: "Activación Digital Permanente Oficial",
+    description: "Licencia definitiva de Office 2024. Compra única para siempre sin suscripciones ni mensualidades.",
+    fullDescription: "La versión más moderna y completa de Office para empresas y profesionales. Incluye Word 2024, Excel 2024, PowerPoint 2024, Outlook 2024 y Access 2024 con activación enlazable a tu equipo.",
+    price: 50.0,
+    previousPrice: 85.0,
+    image: "/assets/Licencias, subs/Office 2024 Permanente - 50.00.jpg",
+    inStock: true,
+    available: true,
+    featured: true,
+    rating: 5.0,
+    reviewsCount: 97,
+    imageType: "software",
+    type: "technology",
+    techSubtype: "license",
+    createdAt: "2026-10-20T10:00:00.000Z",
+    specifications: [
+      "Licencia perpetua de por vida sin vencimiento",
+      "Activación online oficial",
+      "1 Equipo con Windows 10 u 11",
+      "Todas las aplicaciones profesionales de escritorio"
+    ],
+    features: [
+      "Word 2024, Excel 2024, PowerPoint 2024, Outlook 2024, Access 2024",
+      "Nuevas fórmulas dinámicas y gráficos mejorados",
+      "Modo oscuro optimizado y compatibilidad ODF 1.4"
+    ]
+  },
+  {
+    id: 211,
+    name: "Office 365 Familia x 1 Año (1TB para 5 Dispositivos)",
+    category: "Suscripciones Cloud",
+    brand: "Microsoft",
+    sku: "SUB-OFFICE365-5PC-1TB",
+    warranty: "1 Año de suscripción multiusuario",
+    description: "El plan más completo para hogares y oficinas pequeñas. Hasta 5 dispositivos con 1 TB de nube cada uno.",
+    fullDescription: "Comparte todos los beneficios de Microsoft 365 con tu familia o equipo. Cada persona disfruta de 1 TB de almacenamiento independiente y las aplicaciones de Office en computadoras, tablets y teléfonos.",
+    price: 120.0,
+    previousPrice: 160.0,
+    image: "/assets/Licencias, subs/Office 365 x 1 año con almacenamiento 1TB para 5PC - 120.00.jpg",
+    inStock: true,
+    available: true,
+    featured: true,
+    rating: 5.0,
+    reviewsCount: 64,
+    imageType: "software",
+    type: "technology",
+    techSubtype: "license",
+    createdAt: "2026-10-20T10:00:00.000Z",
+    specifications: [
+      "Vigencia 1 Año (365 días)",
+      "Habilitado para hasta 5 dispositivos/cuentas",
+      "1 TB de almacenamiento en la nube por usuario (5 TB en total)",
+      "Seguridad avanzada Family Safety"
+    ],
+    features: [
+      "Acceso a Word, Excel, PowerPoint, OneNote",
+      "Almacenamiento masivo seguro",
+      "Uso simultáneo sin interferencias"
+    ]
+  },
+  {
+    id: 212,
+    name: "Office 365 x 1 Año sin Almacenamiento (5 Dispositivos)",
+    category: "Suscripciones Cloud",
+    brand: "Microsoft",
+    sku: "SUB-OFFICE365-5PC-NO1TB",
+    warranty: "1 Año de activación garantizada",
+    description: "Plan económico de aplicaciones de Office para 5 equipos sin costo extra de almacenamiento cloud.",
+    fullDescription: "Ideal para colegios, academias o pequeñas empresas que solo necesitan el paquete ofimático Office en sus máquinas sin contratar espacio adicional en la nube.",
+    price: 35.0,
+    previousPrice: 55.0,
+    image: "/assets/Licencias, subs/Office 365 x 1 año sin almacenamiento para 5PC - 35.00.jpg",
+    inStock: true,
+    available: true,
+    featured: false,
+    rating: 4.8,
+    reviewsCount: 29,
+    imageType: "software",
+    type: "technology",
+    techSubtype: "license",
+    createdAt: "2026-10-20T10:00:00.000Z",
+    specifications: [
+      "Vigencia 12 meses",
+      "Instalación en hasta 5 computadoras",
+      "Actualizaciones mensuales incluidas",
+      "Soporte multiidioma oficial"
+    ],
+    features: [
+      "Word, Excel, PowerPoint y Access",
+      "Activación directa por cuenta",
+      "Excelente relación costo-beneficio"
+    ]
+  },
+  {
+    id: 213,
+    name: "Windows 10 / 11 Pro & Home OEM (Activación Digital)",
+    category: "Sistemas Operativos",
+    brand: "Microsoft",
+    sku: "LIC-WIN-OEM",
+    warranty: "Garantía de activación digital de por vida",
+    description: "Licencia digital genuina OEM para ensambladores y computadoras personales o de oficina.",
+    fullDescription: "Activa Windows 10 Pro o Windows 11 Pro de manera legal y definitiva. Se enlaza al hardware de la placa madre y permite recibir todas las actualizaciones oficiales de seguridad de Microsoft.",
+    price: 35.0,
+    previousPrice: 50.0,
+    image: "/assets/Licencias, subs/Win 10 11 PRO Home OEM - 35.00.jpg",
+    inStock: true,
+    available: true,
+    featured: true,
+    rating: 4.9,
+    reviewsCount: 110,
+    imageType: "software",
+    type: "technology",
+    techSubtype: "license",
+    createdAt: "2026-10-20T10:00:00.000Z",
+    specifications: [
+      "Licencia OEM vinculada a la placa madre",
+      "32 y 64 bits",
+      "Válida para Windows 10 y Windows 11",
+      "Activación digital instantánea"
+    ],
+    features: [
+      "BitLocker para cifrado de discos",
+      "Escritorio remoto habilitado",
+      "Hyper-V y Sandbox para virtualización",
+      "Windows Defender integrado"
+    ]
+  },
+  {
+    id: 214,
+    name: "Windows 10 / 11 Pro Retail (Transferible)",
+    category: "Sistemas Operativos",
+    brand: "Microsoft",
+    sku: "LIC-WIN-RETAIL",
+    warranty: "Licencia perpetua oficial Microsoft Retail",
+    description: "Licencia Retail transferible. Si cambias de equipo o componentes, mantienes tu clave de activación.",
+    fullDescription: "La máxima categoría de licencia para Windows. Permite ser transferida a una nueva computadora en el futuro si renuevas tu hardware, brindando la máxima inversión y durabilidad.",
+    price: 50.0,
+    previousPrice: 75.0,
+    image: "/assets/Licencias, subs/Win 10 11 PRO Retail - 50.00.jpg",
+    inStock: true,
+    available: true,
+    featured: true,
+    rating: 5.0,
+    reviewsCount: 76,
+    imageType: "software",
+    type: "technology",
+    techSubtype: "license",
+    createdAt: "2026-10-20T10:00:00.000Z",
+    specifications: [
+      "Licencia Retail oficial transferible",
+      "Soporte oficial directo de Microsoft",
+      "Válida para instalaciones limpias y actualizaciones",
+      "Multilenguaje mundial"
+    ],
+    features: [
+      "Transferencia a nuevo hardware permitida",
+      "Todas las funciones Pro corporativas",
+      "Protección contra amenazas de red avanzadas"
     ]
   }
 ];

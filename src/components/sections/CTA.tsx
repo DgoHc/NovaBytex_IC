@@ -15,8 +15,8 @@ export const CTA = () => {
   }, []);
 
   const openWhatsApp = () => {
-    const message = encodeURIComponent("¡Hola! Me gustaría cotizar soluciones de tecnología para mi empresa.");
-    window.open(`https://wa.me/51999999999?text=${message}`, "_blank");
+    const message = encodeURIComponent("Hola, deseo solicitar una cotización de productos o servicios.");
+    window.open(`https://wa.me/51990804482?text=${message}`, "_blank");
   };
 
   return (
@@ -49,10 +49,10 @@ export const CTA = () => {
             <Badge className="border border-white/20 bg-white/10 px-4 py-1.5 font-medium text-white shadow-sm inline-flex items-center gap-2">
               <img
                 src="/assets/branding/nb-isotype.png"
-                alt="Nova Bytex"
+                alt="Isotipo de Nova Bytex S.R.L."
                 className="h-4 w-auto object-contain brightness-110"
               />
-              <span>Solución, Seguridad y Tecnología para Empresas</span>
+              <span>Tecnología y papelería en Cajamarca</span>
             </Badge>
           </motion.div>
 
@@ -63,7 +63,7 @@ export const CTA = () => {
             transition={{ duration: 1.0, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
             className="font-editorial text-4xl font-medium leading-[1.18] tracking-[-0.015em] text-white sm:text-5xl lg:text-6xl"
           >
-            ¿Listo para Impulsar la Tecnología y Suministros de tu Empresa?
+            ¿Necesitas cotizar equipos, papelería o soporte?
           </motion.h2>
 
           <motion.p
@@ -73,7 +73,7 @@ export const CTA = () => {
             transition={{ duration: 1.0, delay: 0.28, ease: [0.22, 1, 0.36, 1] }}
             className="mx-auto max-w-2xl text-base leading-relaxed text-blue-100 sm:text-lg"
           >
-            Atendemos desde el requerimiento más urgente de papelería y útiles de oficina hasta infraestructura, redes, ciberseguridad y software con soporte técnico de excelencia.
+            Escríbenos por WhatsApp y te respondemos en el horario de atención.
           </motion.p>
 
           <motion.div

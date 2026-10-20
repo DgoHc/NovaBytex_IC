@@ -36,7 +36,7 @@ export const ProductImage: React.FC<ProductImageProps> = ({ type, name, classNam
   if (image && image.trim().length > 0) {
     return (
       <div
-        className={`w-full h-full min-h-[160px] rounded-xl p-1 bg-slate-50 border border-slate-200 overflow-hidden flex items-center justify-center relative group ${className}`}
+        className={`w-full h-full min-h-[160px] rounded-xl p-1 bg-transparent border-0 overflow-hidden flex items-center justify-center relative group ${className}`}
       >
         <img
           src={image}

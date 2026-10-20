@@ -32,3 +32,19 @@ export async function logoutAction() {
   cookieStore.delete("admin_session");
   redirect("/login");
 }
+
+export async function setAdminSessionCookie() {
+  const cookieStore = await cookies();
+  cookieStore.set("admin_session", "authenticated", {
+    path: "/",
+    maxAge: 60 * 60 * 24, // 1 día
+    sameSite: "lax",
+  });
+  return { success: true };
+}
+
+export async function clearAdminSessionCookie() {
+  const cookieStore = await cookies();
+  cookieStore.delete("admin_session");
+  return { success: true };
+}

@@ -3,15 +3,16 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 
+// Mostrar niveles de partner solo si están documentados y vigentes
 const partners = [
-  { name: "Cisco Systems", tag: "Gold Partner" },
-  { name: "Dell Technologies", tag: "Platinum" },
-  { name: "Fortinet", tag: "Expert Security" },
-  { name: "HP Aruba Networks", tag: "Enterprise" },
-  { name: "Lenovo ThinkPad", tag: "Authorized" },
-  { name: "Mikrotik RouterOS", tag: "Certified" },
-  { name: "Ubiquiti UniFi", tag: "Enterprise" },
-  { name: "VMware Broadcom", tag: "Cloud Virtualization" }
+  { name: "Cisco Systems" },
+  { name: "Dell Technologies" },
+  { name: "Fortinet" },
+  { name: "HP Aruba Networks" },
+  { name: "Lenovo ThinkPad" },
+  { name: "Mikrotik RouterOS" },
+  { name: "Ubiquiti UniFi" },
+  { name: "VMware Broadcom" }
 ];
 
 export const Partners = () => {
@@ -32,10 +33,10 @@ export const Partners = () => {
           transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
           className="mb-3 font-editorial text-3xl font-medium leading-[1.25] tracking-[-0.015em] text-white md:text-4xl"
         >
-          Alianzas Estratégicas &amp; Marcas Globales
+          Marcas que distribuimos
         </motion.h2>
         <p className="text-sm font-normal leading-relaxed text-slate-400 md:text-base">
-          Distribución autorizada con soporte y certificación oficial de fábrica
+          Equipos de Cisco, Dell, Fortinet, HP Aruba, Lenovo, Mikrotik, Ubiquiti y VMware.
         </p>
       </div>
 
@@ -51,9 +52,6 @@ export const Partners = () => {
             >
               <span className="text-lg font-semibold tracking-tight text-slate-200 transition-colors duration-300 hover:text-blue-400">
                 {partner.name}
-              </span>
-              <span className="mt-1.5 text-[10px] font-medium uppercase tracking-[0.22em] text-blue-400/80">
-                {partner.tag}
               </span>
             </div>
           ))}

@@ -9,7 +9,7 @@ import Link from "next/link";
 const heroServices = [
   {
     title: "Tarjetas Digitales NFC",
-    description: "Comparte tu contacto al instante. Ecológica, moderna y personalizable para tu empresa.",
+    description: "Comparte tu contacto al instante. Moderna y personalizable para tu empresa o negocio.",
     icon: <CreditCard className="w-8 h-8 text-white" />,
     features: ["Contacto directo", "Sin apps adicionales"],
     gradient: "from-blue-600 to-indigo-700",
@@ -17,25 +17,25 @@ const heroServices = [
   },
   {
     title: "Papelería & Hardware",
-    description: "Suministro confiable de útiles de oficina y hardware de las mejores marcas.",
+    description: "Venta de útiles de oficina, papelería y equipos para empresas e instituciones.",
     icon: <ShoppingBag className="w-8 h-8 text-white" />,
-    features: ["Entrega inmediata", "Garantía oficial"],
+    features: ["Stock local", "Garantía de marca"],
     gradient: "from-cyan-500 to-blue-600",
     shadow: "shadow-cyan-500/30"
   },
   {
     title: "Soporte Técnico",
-    description: "Acompañamiento especializado para garantizar la continuidad operativa de tu empresa.",
+    description: "Asistencia técnica para computadoras, impresoras y sistemas en tu oficina o negocio.",
     icon: <Headphones className="w-8 h-8 text-white" />,
-    features: ["Respuesta < 15 min", "Monitoreo 24/7"],
+    features: ["Mantenimiento preventivo", "Atención presencial y remota"],
     gradient: "from-violet-500 to-purple-600",
     shadow: "shadow-purple-500/30"
   },
   {
-    title: "Data Center & Redes",
-    description: "Diseño, implementación y cableado de redes seguras, virtualización y servidores.",
+    title: "Redes y Conectividad",
+    description: "Instalación de redes locales, cableado estructurado y configuración de equipos.",
     icon: <Server className="w-8 h-8 text-white" />,
-    features: ["99.99% Uptime", "Redes robustas"],
+    features: ["Cableado estructurado", "Configuración de routers"],
     gradient: "from-emerald-500 to-teal-600",
     shadow: "shadow-emerald-500/30"
   }
@@ -95,10 +95,10 @@ export const Hero = () => {
             >
               <img
                 src="/assets/branding/nb-isotype.png"
-                alt="Nova Bytex"
+                alt="Isotipo de Nova Bytex S.R.L."
                 className="h-4 w-auto object-contain shrink-0"
               />
-              <span className="font-semibold">Solución, seguridad y tecnología para empresas</span>
+              <span className="font-semibold">Tecnología y papelería en Cajamarca</span>
             </motion.div>
 
             <motion.h1
@@ -107,9 +107,9 @@ export const Hero = () => {
               variants={reveal(0.18, 1)}
               className="font-editorial text-5xl font-medium leading-[1.05] tracking-[-0.015em] text-slate-900 sm:text-6xl md:text-7xl lg:text-[88px]"
             >
-              Tecnología que{" "}
-              <span className="font-medium italic text-blue-700">Transforma</span>{" "}
-              e Impulsa tu Empresa
+              Tecnología, útiles de oficina y{" "}
+              <span className="font-medium italic text-blue-700">soporte técnico</span>{" "}
+              en Cajamarca
             </motion.h1>
 
             <motion.p
@@ -118,7 +118,7 @@ export const Hero = () => {
               variants={reveal(0.24, 1)}
               className="mx-auto max-w-2xl text-base leading-relaxed text-slate-600 md:text-lg lg:mx-0"
             >
-              Suministro confiable de papelería, útiles de oficina y hardware con servicios especializados de ingeniería de software, conectividad y automatización de procesos.
+              Vendemos equipos, papelería y útiles de oficina. También damos soporte técnico, redes y asesoría para empresas e instituciones.
             </motion.p>
 
             <motion.div
@@ -129,14 +129,14 @@ export const Hero = () => {
             >
               <Button asChild size="lg" className="h-14 w-full rounded-2xl bg-blue-700 px-8 text-sm font-semibold text-white shadow-lg shadow-blue-700/20 transition-all duration-300 hover:-translate-y-0.5 hover:bg-blue-800 sm:w-auto">
                 <Link href="/productos">
-                  Explorar Catálogo <ShoppingBag className="ml-2 h-4 w-4" />
+                  Ver catálogo <ShoppingBag className="ml-2 h-4 w-4" />
                 </Link>
               </Button>
 
               <Button asChild size="lg" variant="outline" className="h-14 w-full rounded-2xl border-slate-200 bg-white px-8 text-sm font-semibold text-slate-800 shadow-sm transition-all duration-300 hover:bg-slate-50 sm:w-auto">
-                <Link href="/contacto">
-                  Solicitar Cotización <PhoneCall className="ml-2 h-4 w-4 text-blue-700" />
-                </Link>
+                <a href="https://wa.me/51990804482?text=Hola,%20deseo%20solicitar%20una%20cotizaci%C3%B3n" target="_blank" rel="noopener noreferrer">
+                  Cotizar por WhatsApp <PhoneCall className="ml-2 h-4 w-4 text-blue-700" />
+                </a>
               </Button>
             </motion.div>
 
@@ -147,9 +147,9 @@ export const Hero = () => {
               className="mx-auto grid max-w-lg grid-cols-3 gap-6 border-t border-slate-200/70 pt-10 lg:mx-0"
             >
               {[
-                { value: "+500", label: "Clientes Corporativos" },
-                { value: "99.9%", label: "Uptime & Garantía", highlight: true },
-                { value: "24/7", label: "Soporte Técnico" }
+                { value: "Cajamarca", label: "Tienda física" },
+                { value: "L a V", label: "7:00 a. m. a 7:00 p. m.", highlight: true },
+                { value: "WhatsApp", label: "Cotizaciones directas" }
               ].map((stat) => (
                 <div key={stat.label} className="text-center lg:text-left">
                   <div
@@ -179,7 +179,7 @@ export const Hero = () => {
                 <div className="w-full h-full rounded-[1.9rem] bg-slate-950 p-3 flex items-center justify-center overflow-hidden -rotate-3 relative z-10">
                   <img
                     src="/assets/branding/nb-isotype.png"
-                    alt="Nova Bytex"
+                    alt="Isotipo de Nova Bytex S.R.L."
                     className="w-full h-full object-contain"
                   />
                 </div>

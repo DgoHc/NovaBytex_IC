@@ -9,27 +9,23 @@ const benefits = [
   {
     icon: <ShieldCheck className="w-8 h-8 text-blue-500" />,
     title: "Garantía Oficial",
-    description: "Equipos 100% originales con respaldo de fábrica y reemplazo rápido."
+    description: "Equipos y útiles de marcas reconocidas con respaldo y garantía de fábrica."
   },
   {
     icon: <Building2 className="w-8 h-8 text-blue-500" />,
     title: "Empresa Formal",
-    description: "Facturación electrónica RUC 20 y pleno cumplimiento fiscal."
+    description: "Facturación electrónica con boleta o factura para empresas y personas."
   },
   {
     icon: <Headphones className="w-8 h-8 text-blue-500" />,
-    title: "Soporte Continuo",
-    description: "Ingenieros certificados listos para atender emergencias 24/7."
+    title: "Soporte técnico",
+    description: "Atención de lunes a viernes, de 7:00 a. m. a 7:00 p. m."
   },
-  {
-    icon: <Award className="w-8 h-8 text-blue-500" />,
-    title: "Personal Certificado",
-    description: "Especialistas Cisco CCNA/CCNP, Dell EMC y Fortinet NSE."
-  },
+  // Tarjeta "Personal Certificado" oculta hasta confirmar certificaciones reales
   {
     icon: <HeartHandshake className="w-8 h-8 text-blue-500" />,
-    title: "Atención a Medida",
-    description: "Asesoría personalizada para optimizar el presupuesto de tu empresa."
+    title: "Atención personalizada",
+    description: "Cotizaciones personalizadas por WhatsApp."
   }
 ];
 
@@ -53,17 +49,17 @@ export const Benefits = () => {
         >
           <Badge className="bg-blue-500/10 text-blue-400 border border-blue-500/20 px-3.5 py-1 mb-2 font-medium">
             <CheckCircle2 className="w-3.5 h-3.5 mr-1.5 inline text-blue-400" />
-            Valor Agregado Corporativo
+            Por qué elegirnos
           </Badge>
           <h2 className="font-editorial text-4xl sm:text-5xl md:text-6xl font-medium leading-[1.2] tracking-[-0.015em] text-white">
             ¿Por qué elegir Nova Bytex?
           </h2>
           <p className="text-slate-400 max-w-2xl mx-auto text-base md:text-lg leading-relaxed font-normal">
-            Nuestros pilares fundamentales garantizan tranquilidad, seguridad y continuidad operativa a tu negocio
+            Brindamos atención directa, comprobantes de pago y productos de marcas confiables en Cajamarca.
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5 lg:gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 lg:gap-6">
           {benefits.map((benefit, index) => (
             <motion.div
               key={benefit.title}

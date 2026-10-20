@@ -41,13 +41,13 @@ export const FeaturedProducts = () => {
         >
           <Badge className="bg-blue-50 text-blue-700 border border-blue-100 px-3.5 py-1 mb-2 font-medium">
             <Sparkles className="w-3.5 h-3.5 mr-1.5 inline text-blue-700" />
-            Catálogo Estrellas
+            Productos destacados
           </Badge>
           <h2 className="font-editorial text-4xl sm:text-5xl md:text-6xl font-medium leading-[1.2] tracking-[-0.015em] text-slate-900">
-            Productos Corporativos Destacados
+            Equipos y suministros destacados
           </h2>
           <p className="text-slate-600 text-base md:text-lg leading-relaxed font-normal">
-            Hardware empresarial de alto rendimiento con garantía directa y entrega inmediata en todo el Perú
+            Laptops, impresoras y accesorios con garantía comercial para tu oficina en Cajamarca.
           </p>
         </motion.div>
 
@@ -70,7 +70,7 @@ export const FeaturedProducts = () => {
             className="border-slate-200 text-blue-700 hover:bg-blue-50 hover:border-blue-200 font-semibold px-8 h-12 rounded-2xl text-sm"
           >
             <Link href="/productos">
-              Ver Catálogo Corporativo ({techProducts.length} Equipos)
+              Ver catálogo de productos ({techProducts.length} ítems)
             </Link>
           </Button>
         </div>

@@ -22,11 +22,13 @@ import {
   ExternalLink,
   PlusCircle,
   Ticket,
+  Users,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useCatalog } from "@/contexts/CatalogContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { ExcelManagerModal } from "@/components/admin/ExcelManagerModal";
 
 interface NavLinkItem {
@@ -96,6 +98,16 @@ const navSections: NavSection[] = [
       },
     ],
   },
+  {
+    title: "CLIENTES",
+    items: [
+      {
+        name: "Clientes Registrados",
+        href: "/admin/clientes",
+        icon: Users,
+      },
+    ],
+  },
 ];
 
 export default function AdminLayoutClient({
@@ -109,6 +121,7 @@ export default function AdminLayoutClient({
   const [mobileOpen, setMobileOpen] = useState(false);
   const [excelModalOpen, setExcelModalOpen] = useState(false);
   const { stats } = useCatalog();
+  const { signOut } = useAuth();
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -312,15 +325,33 @@ export default function AdminLayoutClient({
                 <ExternalLink className="w-3.5 h-3.5" />
                 Ir a Tienda Pública
               </Link>
+              <button
+                type="button"
+                onClick={() => signOut()}
+                className="flex items-center gap-2 text-rose-400 hover:text-rose-300 text-[12px] font-medium transition-all text-left"
+              >
+                <LogOut className="w-3.5 h-3.5" />
+                Cerrar Sesión
+              </button>
             </div>
           ) : (
-            <Link
-              href="/"
-              title="Ir a Tienda Pública"
-              className="w-10 h-10 rounded-xl bg-slate-800 hover:bg-slate-700 text-white flex items-center justify-center mx-auto transition-all"
-            >
-              <ExternalLink className="w-4 h-4 text-cyan-400" />
-            </Link>
+            <div className="flex flex-col gap-2 items-center">
+              <Link
+                href="/"
+                title="Ir a Tienda Pública"
+                className="w-10 h-10 rounded-xl bg-slate-800 hover:bg-slate-700 text-white flex items-center justify-center transition-all"
+              >
+                <ExternalLink className="w-4 h-4 text-cyan-400" />
+              </Link>
+              <button
+                type="button"
+                onClick={() => signOut()}
+                title="Cerrar Sesión"
+                className="w-10 h-10 rounded-xl bg-rose-950/40 border border-rose-500/30 hover:bg-rose-900/50 text-rose-400 flex items-center justify-center transition-all"
+              >
+                <LogOut className="w-4 h-4" />
+              </button>
+            </div>
           )}
         </div>
       </aside>
@@ -416,7 +447,7 @@ export default function AdminLayoutClient({
                 </div>
               </nav>
 
-              <div className="p-3 border-t border-slate-800 bg-[#080D1F]">
+              <div className="p-3 border-t border-slate-800 bg-[#080D1F] space-y-2">
                 <Link
                   href="/"
                   className="w-full flex items-center justify-center gap-2 h-10 rounded-xl bg-slate-800 text-white text-xs font-bold"
@@ -424,6 +455,14 @@ export default function AdminLayoutClient({
                   <ExternalLink className="w-3.5 h-3.5 text-cyan-400" />
                   Ir a Tienda Pública
                 </Link>
+                <button
+                  type="button"
+                  onClick={() => signOut()}
+                  className="w-full flex items-center justify-center gap-2 h-9 rounded-xl border border-rose-500/30 bg-rose-950/40 text-rose-300 text-xs font-semibold hover:bg-rose-900/50"
+                >
+                  <LogOut className="w-3.5 h-3.5" />
+                  Cerrar Sesión
+                </button>
               </div>
             </motion.aside>
           </>
@@ -480,6 +519,18 @@ export default function AdminLayoutClient({
                 <BookOpen className="w-4 h-4 text-emerald-700" />
                 Librería
               </Link>
+            </div>
+
+            <div className="flex items-center gap-2 pl-2 border-l border-slate-200">
+              <button
+                type="button"
+                onClick={() => signOut()}
+                className="inline-flex items-center gap-1.5 h-8 px-2.5 rounded-lg text-xs font-semibold text-rose-600 hover:bg-rose-50 hover:text-rose-700 transition-colors"
+                title="Cerrar sesión administrativa"
+              >
+                <LogOut className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Cerrar Sesión</span>
+              </button>
             </div>
           </div>
         </header>
