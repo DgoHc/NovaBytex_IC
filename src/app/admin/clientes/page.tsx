@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import {
   Users,
   Search,
@@ -17,12 +17,20 @@ import {
   Gift,
   ArrowUpDown,
   Filter,
+  RotateCcw,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Card } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   Dialog,
   DialogContent,
@@ -34,36 +42,66 @@ import {
   RegisteredClient,
   calculateLoyalty,
 } from "@/services/ClientService";
+import { AffiliateService } from "@/services/AffiliateService";
 import { useCatalog } from "@/contexts/CatalogContext";
 
 export default function AdminClientesPage() {
   const [clients, setClients] = useState<RegisteredClient[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [providerFilter, setProviderFilter] = useState<"all" | "google" | "otp" | "password">("all");
+  type ClientSortOption = "newest" | "name_asc" | "purchases_desc" | "spent_desc";
+  const [sortKey, setSortKey] = useState<ClientSortOption>("newest");
   const [selectedClient, setSelectedClient] = useState<RegisteredClient | null>(null);
   const [detailsOpen, setDetailsOpen] = useState(false);
   const { pushToast } = useCatalog();
 
   const loadClients = () => {
     const list = ClientService.list();
-    setClients(list);
+    const affiliates = AffiliateService.getStoredAffiliates();
+    const affiliateEmails = new Set(affiliates.map((a) => a.email.toLowerCase()));
+
+    // Excluir cuentas de socios afiliados para mantener exclusivamente clientes compradores
+    const regularClients = list.filter(
+      (c) => c.role !== "affiliate" && !affiliateEmails.has(c.email.toLowerCase())
+    );
+    setClients(regularClients);
   };
 
   useEffect(() => {
     loadClients();
   }, []);
 
-  const filteredClients = clients.filter((c) => {
-    const matchesSearch =
-      c.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      c.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (c.phone && c.phone.includes(searchTerm));
+  const filteredClients = useMemo(() => {
+    const list = clients.filter((c) => {
+      const matchesSearch =
+        c.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        c.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (c.phone && c.phone.includes(searchTerm));
 
-    const matchesProvider =
-      providerFilter === "all" ? true : c.provider === providerFilter;
+      const matchesProvider =
+        providerFilter === "all" ? true : c.provider === providerFilter;
 
-    return matchesSearch && matchesProvider;
-  });
+      return matchesSearch && matchesProvider;
+    });
+
+    switch (sortKey) {
+      case "name_asc":
+        list.sort((a, b) => a.name.localeCompare(b.name));
+        break;
+      case "purchases_desc":
+        list.sort((a, b) => (b.purchasesCount || 0) - (a.purchasesCount || 0));
+        break;
+      case "spent_desc":
+        list.sort((a, b) => (b.totalSpent || 0) - (a.totalSpent || 0));
+        break;
+      case "newest":
+      default:
+        list.sort((a, b) => (b.registeredAt || "").localeCompare(a.registeredAt || ""));
+        break;
+    }
+
+    return list;
+  }, [clients, searchTerm, providerFilter, sortKey]);
 
   const totalClients = clients.length;
   const totalPurchases = clients.reduce((acc, c) => acc + (c.purchasesCount || 0), 0);
@@ -174,65 +212,101 @@ export default function AdminClientesPage() {
         </Card>
       </div>
 
-      {/* Filters and Search Bar */}
-      <Card className="p-4 bg-white border-slate-200 rounded-xl shadow-xs">
-        <div className="flex flex-col sm:flex-row gap-3 items-center justify-between">
-          <div className="relative w-full sm:w-80">
-            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-            <Input
-              placeholder="Buscar por nombre, correo o teléfono..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-9 h-9 text-xs rounded-lg border-slate-200 bg-slate-50/50"
-            />
-          </div>
+      {/* Main Table Card - STRICT TABLE & ZERO OVERFLOW */}
+      <Card className="overflow-hidden border-slate-200/90 rounded-xl bg-white shadow-2xs">
+        {/* Clean Filter Controls (todos h-10, gap de 12px, alineados en una sola fila) */}
+        <CardContent className="p-3 lg:px-4 lg:py-2.5 border-b border-slate-100 bg-slate-50/50">
+          <div className="flex flex-wrap lg:flex-nowrap items-center gap-3 w-full">
+            {/* Buscador con lupa de 16px en position absolute left 12px y padding-left de 38px */}
+            <div className="relative flex-1 min-w-[220px]">
+              <Search
+                size={16}
+                style={{ width: 16, height: 16 }}
+                className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none shrink-0"
+              />
+              <Input
+                placeholder="Buscar por nombre, correo o teléfono..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-[38px] h-10 rounded-lg bg-white border-slate-200 text-xs text-slate-900 placeholder:text-slate-400 focus:border-blue-500 w-full"
+              />
+            </div>
 
-          <div className="flex items-center gap-2 w-full sm:w-auto">
-            <span className="text-xs text-slate-500 font-medium whitespace-nowrap">Método:</span>
-            <div className="flex rounded-lg bg-slate-100 p-1 text-xs">
-              <button
-                type="button"
-                onClick={() => setProviderFilter("all")}
-                className={`px-2.5 py-1 rounded-md font-medium transition-all ${
-                  providerFilter === "all" ? "bg-white text-slate-900 shadow-xs" : "text-slate-600 hover:text-slate-900"
-                }`}
+            {/* Provider Filter Select */}
+            <div className="w-full sm:w-[190px] shrink-0 min-w-[160px]">
+              <Select
+                value={providerFilter}
+                onValueChange={(v) => setProviderFilter(v as any)}
               >
-                Todos
-              </button>
-              <button
-                type="button"
-                onClick={() => setProviderFilter("google")}
-                className={`px-2.5 py-1 rounded-md font-medium transition-all ${
-                  providerFilter === "google" ? "bg-white text-blue-700 shadow-xs" : "text-slate-600 hover:text-slate-900"
-                }`}
+                <SelectTrigger className="h-10 rounded-lg bg-white border-slate-200 text-xs w-full min-w-[160px]">
+                  <SelectValue placeholder="Método de acceso" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all" className="text-xs">Método: Todos</SelectItem>
+                  <SelectItem value="google" className="text-xs">Google</SelectItem>
+                  <SelectItem value="otp" className="text-xs">Código OTP</SelectItem>
+                  <SelectItem value="password" className="text-xs">Contraseña</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Sort Button */}
+            <div className="w-full sm:w-[170px] shrink-0 min-w-[150px]">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() =>
+                  setSortKey((prev) => {
+                    const order: ClientSortOption[] = [
+                      "newest",
+                      "name_asc",
+                      "purchases_desc",
+                      "spent_desc",
+                    ];
+                    const idx = order.indexOf(prev);
+                    return order[(idx + 1) % order.length];
+                  })
+                }
+                className="w-full h-10 justify-start gap-2 rounded-lg border-slate-200 bg-white text-slate-700 hover:bg-slate-50 text-xs font-medium px-3"
               >
-                Google
-              </button>
-              <button
-                type="button"
-                onClick={() => setProviderFilter("otp")}
-                className={`px-2.5 py-1 rounded-md font-medium transition-all ${
-                  providerFilter === "otp" ? "bg-white text-purple-700 shadow-xs" : "text-slate-600 hover:text-slate-900"
-                }`}
-              >
-                Código OTP
-              </button>
-              <button
-                type="button"
-                onClick={() => setProviderFilter("password")}
-                className={`px-2.5 py-1 rounded-md font-medium transition-all ${
-                  providerFilter === "password" ? "bg-white text-slate-900 shadow-xs" : "text-slate-600 hover:text-slate-900"
-                }`}
-              >
-                Contraseña
-              </button>
+                <ArrowUpDown size={16} style={{ width: 16, height: 16 }} className="w-4 h-4 text-blue-600 shrink-0" />
+                <span className="truncate">
+                  {sortKey === "newest"
+                    ? "Más recientes"
+                    : sortKey === "name_asc"
+                    ? "Nombre A-Z"
+                    : sortKey === "purchases_desc"
+                    ? "Más compras"
+                    : "Mayor gasto"}
+                </span>
+              </Button>
             </div>
           </div>
-        </div>
-      </Card>
+        </CardContent>
 
-      {/* Table of Registered Clients */}
-      <div className="border border-slate-200 rounded-2xl bg-white overflow-hidden shadow-xs">
+        {/* Counter & Reset Bar */}
+        <div className="px-4 py-2 text-xs text-slate-500 flex items-center justify-between border-b border-slate-100 bg-white">
+          <div className="flex items-center gap-2">
+            <span>
+              Mostrando <strong className="text-slate-800 font-semibold">{filteredClients.length}</strong> de {clients.length} clientes
+            </span>
+            {(searchTerm.trim() || providerFilter !== "all") && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  setSearchTerm("");
+                  setProviderFilter("all");
+                }}
+                className="h-6 px-2 text-[11px] text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-md"
+              >
+                <RotateCcw size={12} style={{ width: 12, height: 12 }} className="w-3 h-3 mr-1 shrink-0" /> Restablecer filtros
+              </Button>
+            )}
+          </div>
+        </div>
+
+        {/* Table of Registered Clients */}
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
             <thead className="bg-slate-50/80 border-b border-slate-200 text-slate-600 uppercase font-semibold text-[11px] tracking-wider">
@@ -373,7 +447,7 @@ export default function AdminClientesPage() {
             </tbody>
           </table>
         </div>
-      </div>
+      </Card>
 
       {/* Client Detail Dialog */}
       <Dialog open={detailsOpen} onOpenChange={setDetailsOpen}>

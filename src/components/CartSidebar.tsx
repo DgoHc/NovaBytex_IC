@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   X,
@@ -24,13 +24,17 @@ import { Badge } from "@/components/ui/badge";
 import { PRODUCTS_DATA } from "@/lib/products";
 import { ProductImage } from "@/components/ui/ProductImage";
 import { useCatalog } from "@/contexts/CatalogContext";
+import { useAuth } from "@/contexts/AuthContext";
+import { getActiveReferralCode } from "@/lib/affiliateTracking";
+import { AffiliateService } from "@/services/AffiliateService";
 
 const openWhatsAppOrder = (
   cart: CartItem[],
   subtotal: number,
   appliedCoupon: Coupon | null,
   discountAmount: number,
-  finalTotal: number
+  finalTotal: number,
+  referralCode?: string | null
 ) => {
   let message = "¡Hola Nova Bytex! Quisiera solicitar la cotización de los siguientes productos:\n\n";
 
@@ -50,6 +54,10 @@ const openWhatsAppOrder = (
 
   message += `\nIGV (18%): S/ ${igv.toLocaleString("es-PE")}`;
   message += `\nTotal Estimado: S/ ${finalTotal.toLocaleString("es-PE")}`;
+
+  if (referralCode) {
+    message += `\nCódigo de Afiliado: ${referralCode}`;
+  }
 
   const encodedMessage = encodeURIComponent(message);
   window.open(`https://wa.me/51990804482?text=${encodedMessage}`, "_blank");
@@ -72,6 +80,15 @@ export function CartSidebar() {
     applyCoupon,
     removeCoupon,
   } = useCart();
+
+  const { user } = useAuth();
+  const [activeRefCode, setActiveRefCode] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (isCartOpen) {
+      setActiveRefCode(getActiveReferralCode());
+    }
+  }, [isCartOpen]);
 
   const [couponsDropdownOpen, setCouponsDropdownOpen] = useState(false);
   const [couponFeedback, setCouponFeedback] = useState<string | null>(null);
@@ -360,18 +377,42 @@ export function CartSidebar() {
                   </div>
                 </div>
 
+                {activeRefCode && (
+                  <div className="flex items-center justify-between px-3 py-1.5 rounded-lg bg-blue-500/10 border border-blue-500/20 text-xs text-blue-300">
+                    <span className="flex items-center gap-1.5">
+                      <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
+                      Ref: <strong className="font-mono">{activeRefCode}</strong>
+                    </span>
+                    <span className="text-[10px] text-blue-400">Atribuido</span>
+                  </div>
+                )}
+
                 <div className="space-y-2">
                   <Button
                     className="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-sm h-12 rounded-xl shadow-lg shadow-emerald-500/20"
-                    onClick={() =>
+                    onClick={async () => {
+                      const refCode = getActiveReferralCode();
+                      if (refCode && cart.length > 0) {
+                        const summary = cart.map((i) => `${i.quantity}x ${i.name}`).join(", ");
+                        const orderId = `NB-ORD-${Math.floor(1000 + Math.random() * 9000)}`;
+                        await AffiliateService.createReferral({
+                          affiliateCode: refCode,
+                          orderId,
+                          finalPaidAmount: finalTotal,
+                          productSummary: summary,
+                          buyerEmail: user?.email,
+                          buyerId: user?.id,
+                        });
+                      }
                       openWhatsAppOrder(
                         cart,
                         cartTotal,
                         appliedCoupon,
                         discountAmount,
-                        finalTotal
-                      )
-                    }
+                        finalTotal,
+                        refCode
+                      );
+                    }}
                   >
                     <MessageCircle className="w-4 h-4 mr-2" />
                     Enviar Cotización a WhatsApp

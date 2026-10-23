@@ -1,6 +1,28 @@
 import { PRODUCTS_DATA, type Product, type CatalogType } from "@/lib/products";
 
 const STORAGE_KEY = "nova:products:v2";
+const DELETED_KEY = "nova:deleted_product_ids:v1";
+
+function readDeletedIds(): Set<number> {
+  if (typeof window === "undefined") return new Set();
+  try {
+    const raw = window.localStorage.getItem(DELETED_KEY);
+    if (!raw) return new Set();
+    const parsed = JSON.parse(raw);
+    return new Set(Array.isArray(parsed) ? parsed : []);
+  } catch {
+    return new Set();
+  }
+}
+
+function writeDeletedIds(ids: Set<number>): void {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.setItem(DELETED_KEY, JSON.stringify(Array.from(ids)));
+  } catch {
+    // ignore
+  }
+}
 
 function generateId(products: Product[]): number {
   const max = products.reduce((acc, p) => (p.id > acc ? p.id : acc), 0);
@@ -62,10 +84,14 @@ export const ProductService = {
   DEFAULT_NEW_PRODUCT,
 
   list(): Product[] {
+    const deletedIds = readDeletedIds();
     const stored = readFromStorage();
     if (stored && stored.length > 0) {
+      // Filtrar cualquier producto eliminado
+      const activeStored = stored.filter((p) => !deletedIds.has(p.id));
+
       // Sincronizar estado de disponibilidad (available) con los datos base de PRODUCTS_DATA
-      const synced = stored.map((p) => {
+      const synced = activeStored.map((p) => {
         const seed = PRODUCTS_DATA.find((s) => s.id === p.id);
         if (seed && seed.available !== p.available) {
           return { ...p, available: seed.available };
@@ -74,8 +100,9 @@ export const ProductService = {
       });
 
       const existingIds = new Set(synced.map((p) => p.id));
-      const missing = PRODUCTS_DATA.filter((p) => !existingIds.has(p.id));
-      if (missing.length > 0) {
+      // Solo incorporar productos base si NO fueron eliminados explícitamente
+      const missing = PRODUCTS_DATA.filter((p) => !existingIds.has(p.id) && !deletedIds.has(p.id));
+      if (missing.length > 0 || activeStored.length !== stored.length) {
         const merged = [...synced, ...missing];
         writeToStorage(merged);
         return merged;
@@ -83,7 +110,7 @@ export const ProductService = {
       writeToStorage(synced);
       return synced;
     }
-    const seed = [...PRODUCTS_DATA];
+    const seed = PRODUCTS_DATA.filter((p) => !deletedIds.has(p.id));
     writeToStorage(seed);
     return seed;
   },
@@ -159,14 +186,20 @@ export const ProductService = {
   },
 
   remove(id: number): boolean {
+    const deletedIds = readDeletedIds();
+    deletedIds.add(id);
+    writeDeletedIds(deletedIds);
+
     const current = ProductService.list();
     const next = current.filter((p) => p.id !== id);
-    if (next.length === current.length) return false;
     writeToStorage(next);
     return true;
   },
 
   resetToSeed(): Product[] {
+    if (typeof window !== "undefined") {
+      window.localStorage.removeItem(DELETED_KEY);
+    }
     writeToStorage([...PRODUCTS_DATA]);
     return PRODUCTS_DATA;
   },

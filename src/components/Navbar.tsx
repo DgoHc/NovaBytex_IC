@@ -20,6 +20,7 @@ import {
   Sparkles,
   KeyRound,
   Layers,
+  Share2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -266,10 +267,12 @@ export const Navbar = () => {
                         "text-[9px] font-bold uppercase",
                         isAdmin
                           ? "bg-amber-500/20 text-amber-300 border border-amber-500/40"
+                          : user?.role === "affiliate"
+                          ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/40"
                           : "bg-blue-500/20 text-blue-300 border border-blue-500/40"
                       )}
                     >
-                      {isAdmin ? "Admin" : "Cliente"}
+                      {isAdmin ? "Admin" : user?.role === "affiliate" ? "Afiliado" : "Cliente"}
                     </Badge>
                   </div>
                   <p className="text-[11px] text-slate-400 truncate mt-0.5">{user?.email}</p>
@@ -298,6 +301,13 @@ export const Navbar = () => {
                       <Link href="/mi-cuenta" className="flex items-center gap-2 cursor-pointer py-2">
                         <LayoutDashboard className="h-3.5 w-3.5 text-blue-400" />
                         <span>Mi Dashboard</span>
+                      </Link>
+                    </DropdownMenuItem>
+
+                    <DropdownMenuItem asChild>
+                      <Link href="/afiliados" className="flex items-center gap-2 cursor-pointer py-2 text-cyan-300 focus:text-cyan-200">
+                        <Share2 className="h-3.5 w-3.5 text-cyan-400" />
+                        <span>Portal de Afiliados</span>
                       </Link>
                     </DropdownMenuItem>
 
@@ -503,14 +513,24 @@ export const Navbar = () => {
                     Panel Admin
                   </a>
                 ) : (
-                  <Link
-                    href="/mi-cuenta?tab=deseados"
-                    onClick={() => setIsMenuOpen(false)}
-                    className="flex h-9 items-center justify-center gap-1.5 rounded-lg border border-slate-800 bg-slate-900 text-xs text-rose-300"
-                  >
-                    <Heart className="h-3.5 w-3.5" />
-                    Deseados ({wishlistCount})
-                  </Link>
+                  <>
+                    <Link
+                      href="/afiliados"
+                      onClick={() => setIsMenuOpen(false)}
+                      className="flex h-9 items-center justify-center gap-1.5 rounded-lg border border-cyan-500/30 bg-cyan-950/30 text-xs text-cyan-300"
+                    >
+                      <Share2 className="h-3.5 w-3.5 text-cyan-400" />
+                      Afiliados
+                    </Link>
+                    <Link
+                      href="/mi-cuenta?tab=deseados"
+                      onClick={() => setIsMenuOpen(false)}
+                      className="flex h-9 items-center justify-center gap-1.5 rounded-lg border border-slate-800 bg-slate-900 text-xs text-rose-300"
+                    >
+                      <Heart className="h-3.5 w-3.5" />
+                      Deseados ({wishlistCount})
+                    </Link>
+                  </>
                 )}
                 <button
                   onClick={() => {

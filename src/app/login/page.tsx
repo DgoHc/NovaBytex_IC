@@ -29,12 +29,16 @@ function LoginForm() {
   const searchParams = useSearchParams();
   const isSwitching = searchParams.get("switch") === "1";
   const {
+    user,
     isAuthenticated,
     isAdmin,
+    isAffiliate,
     signInWithGoogle,
     signInWithOtp,
     verifyOtp,
     signInWithPassword,
+    signUpWithActivationLink,
+    resendActivationEmail,
   } = useAuth();
 
   // Mode: "login" or "register"
@@ -45,12 +49,12 @@ function LoginForm() {
   const [password, setPassword] = useState("");
 
   // Register form states
-  const [regStep, setRegStep] = useState<"form" | "verify">("form");
+  const [regStep, setRegStep] = useState<"form" | "link_sent">("form");
   const [regName, setRegName] = useState("");
   const [regEmail, setRegEmail] = useState("");
   const [regPhone, setRegPhone] = useState("");
   const [regPassword, setRegPassword] = useState("");
-  const [regOtpCode, setRegOtpCode] = useState("");
+  const [resendCooldown, setResendCooldown] = useState(0);
 
   // Loading & Feedback
   const [isLoading, setIsLoading] = useState(false);
@@ -65,11 +69,13 @@ function LoginForm() {
           document.cookie = "admin_session=authenticated; path=/; max-age=86400; SameSite=Lax";
           window.location.href = "/admin";
         }
+      } else if (isAffiliate || user?.role === "affiliate") {
+        window.location.href = "/afiliados";
       } else {
-        router.push("/mi-cuenta");
+        window.location.href = "/mi-cuenta";
       }
     }
-  }, [isAuthenticated, isAdmin, isSwitching, router]);
+  }, [isAuthenticated, isAdmin, isAffiliate, user, isSwitching, router]);
 
   const clearMessages = () => {
     setErrorMessage(null);
@@ -120,6 +126,11 @@ function LoginForm() {
           setTimeout(() => {
             window.location.href = "/admin";
           }, 300);
+        } else if (res.isAffiliate) {
+          setSuccessMessage("¡Bienvenido al portal de socios afiliados!");
+          setTimeout(() => {
+            window.location.href = "/afiliados";
+          }, 300);
         } else {
           setSuccessMessage("¡Sesión iniciada con éxito!");
           setTimeout(() => {
@@ -134,7 +145,16 @@ function LoginForm() {
     }
   };
 
-  // REGISTRATION STEP 1: Send OTP code
+  // Resend cooldown timer
+  useEffect(() => {
+    if (resendCooldown <= 0) return;
+    const timer = setInterval(() => {
+      setResendCooldown((prev) => Math.max(0, prev - 1));
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [resendCooldown]);
+
+  // REGISTRATION: Submit form and send confirmation link (Supabase + Resend)
   const handleStartRegistration = async (e: React.FormEvent) => {
     e.preventDefault();
     clearMessages();
@@ -159,56 +179,38 @@ function LoginForm() {
 
     setIsLoading(true);
     try {
-      const res = await signInWithOtp(regEmail);
-      if (res.success) {
-        setRegStep("verify");
-        setSuccessMessage("Código de verificación enviado. Revisa tu correo o teléfono.");
-      } else {
-        setErrorMessage(res.error || "No se pudo enviar el código de verificación.");
-      }
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  // REGISTRATION STEP 2: Verify OTP and activate client
-  const handleConfirmRegistration = async (e: React.FormEvent) => {
-    e.preventDefault();
-    clearMessages();
-
-    if (!regOtpCode || regOtpCode.trim().length < 6) {
-      setErrorMessage("Por favor ingresa el código de 6 dígitos.");
-      return;
-    }
-
-    setIsLoading(true);
-    try {
-      const cleanPhone = regPhone.replace(/\D/g, "");
       const formattedPhone = cleanPhone ? `+51 ${cleanPhone}` : "";
-      const res = await verifyOtp(regEmail, regOtpCode, regName, formattedPhone);
+      const res = await signUpWithActivationLink(regName, regEmail, regPassword, formattedPhone);
       if (res.success) {
-        setSuccessMessage("¡Cuenta activada con éxito con 5% de descuento de bienvenida!");
-        setTimeout(() => {
-          router.push("/mi-cuenta");
-        }, 500);
+        if (res.requiresEmailVerification) {
+          setRegStep("link_sent");
+          setSuccessMessage("Hemos enviado el enlace de activación a tu correo.");
+        } else {
+          setSuccessMessage("¡Cuenta creada con éxito! Redirigiendo a tu panel...");
+          setTimeout(() => {
+            window.location.href = "/mi-cuenta";
+          }, 800);
+        }
       } else {
-        setErrorMessage(res.error || "Código de verificación incorrecto o expirado.");
+        setErrorMessage(res.error || "No se pudo crear la cuenta.");
       }
     } finally {
       setIsLoading(false);
     }
   };
 
-  // Resend OTP during registration
-  const handleResendOtp = async () => {
+  // Reenviar correo de activación
+  const handleResendActivation = async () => {
+    if (resendCooldown > 0) return;
     clearMessages();
     setIsLoading(true);
     try {
-      const res = await signInWithOtp(regEmail);
+      const res = await resendActivationEmail(regEmail);
       if (res.success) {
-        setSuccessMessage("Se ha reenviado un nuevo código a tu correo.");
+        setSuccessMessage("Enlace de activación reenviado. Revisa tu bandeja de entrada o spam.");
+        setResendCooldown(45);
       } else {
-        setErrorMessage(res.error || "No se pudo reenviar el código.");
+        setErrorMessage(res.error || "No se pudo reenviar el correo de activación.");
       }
     } finally {
       setIsLoading(false);
@@ -447,7 +449,7 @@ function LoginForm() {
                       <Mail className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
                     </div>
                     <p className="text-[10px] text-slate-400 mt-0.5">
-                      Te enviaremos un código de confirmación a este correo.
+                      Te enviaremos un enlace de activación a este correo.
                     </p>
                   </div>
 
@@ -511,7 +513,7 @@ function LoginForm() {
                     disabled={isLoading}
                     className="w-full h-10 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs shadow-xs mt-1"
                   >
-                    {isLoading ? "Enviando código..." : "Crear cuenta y recibir código"}
+                    {isLoading ? "Creando cuenta..." : "Crear Cuenta"}
                     <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
                   </Button>
 
@@ -572,78 +574,79 @@ function LoginForm() {
                   </div>
                 </form>
               ) : (
-                /* PASO 2: CÓDIGO OTP DE CONFIRMACIÓN DE CUENTA */
-                <div className="space-y-4">
-                  <div className="text-center py-1">
-                    <div className="w-11 h-11 rounded-2xl bg-blue-50 border border-blue-200 flex items-center justify-center mx-auto mb-2 text-blue-600">
-                      <KeyRound className="w-5 h-5" />
-                    </div>
-                    <h3 className="text-sm font-bold text-slate-900">
-                      Confirma tu correo para activar tu cuenta
-                    </h3>
-                    <p className="text-xs text-slate-500 mt-1">
-                      Hemos enviado un código de 6 dígitos a{" "}
-                      <span className="font-semibold text-slate-800">{regEmail}</span>
-                      {regPhone ? ` (y a tu teléfono ${regPhone})` : ""}.
-                    </p>
-
-                    {!isSupabaseConfigured() && (
-                      <div className="mt-2 inline-block px-2.5 py-1 rounded-lg text-[11px] font-mono font-medium bg-amber-50 text-amber-900 border border-amber-200">
-                        Modo Demo: Ingresa <strong>123456</strong>
-                      </div>
-                    )}
+                /* PASO 2: CONFIRMACIÓN POR ENLACE DE ACTIVACIÓN (RESEND + SUPABASE) */
+                <div className="space-y-5 text-center py-2">
+                  <div className="w-14 h-14 rounded-2xl bg-blue-50 border border-blue-200 flex items-center justify-center mx-auto text-blue-600 shadow-xs">
+                    <Mail className="w-7 h-7" />
                   </div>
 
-                  <form onSubmit={handleConfirmRegistration} className="space-y-4">
-                    <div>
-                      <Label
-                        htmlFor="reg-otp-code"
-                        className="text-xs font-semibold text-slate-700 text-center block"
-                      >
-                        Código de 6 dígitos
-                      </Label>
-                      <div className="relative mt-1">
-                        <Input
-                          id="reg-otp-code"
-                          type="text"
-                          maxLength={6}
-                          placeholder="123456"
-                          value={regOtpCode}
-                          onChange={(e) => setRegOtpCode(e.target.value)}
-                          required
-                          autoFocus
-                          className="h-12 text-center text-xl tracking-[0.35em] font-mono font-bold rounded-xl border-slate-300 bg-white text-slate-900 shadow-xs focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
-                        />
-                      </div>
-                    </div>
+                  <div>
+                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-blue-100/70 text-blue-800 border border-blue-200 mb-2">
+                      <Sparkles className="w-3 h-3 text-blue-600" />
+                      Activación mediante enlace
+                    </span>
+                    <h3 className="text-base font-bold text-slate-900">
+                      ¡Revisa tu bandeja de entrada!
+                    </h3>
+                    <p className="text-xs text-slate-600 mt-1 max-w-sm mx-auto leading-relaxed">
+                      Hemos enviado un enlace seguro de activación a:
+                      <br />
+                      <strong className="text-slate-900 font-semibold">{regEmail}</strong>
+                    </p>
+                  </div>
 
+                  <div className="bg-slate-50 border border-slate-200/90 rounded-xl p-3.5 text-left space-y-2">
+                    <div className="flex items-start gap-2.5 text-xs text-slate-700">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+                      <span>
+                        Haz clic en el enlace que te llegó al correo para activar tu cuenta de inmediato.
+                      </span>
+                    </div>
+                    <div className="flex items-start gap-2.5 text-[11px] text-slate-500">
+                      <AlertCircle className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
+                      <span>
+                        Ya no se solicita ningún código por correo ni SMS. Si no ves el mensaje en segundos, revisa tu carpeta de Spam.
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2 pt-1">
                     <Button
-                      type="submit"
-                      disabled={isLoading}
-                      className="w-full h-10 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs shadow-xs"
+                      type="button"
+                      disabled={isLoading || resendCooldown > 0}
+                      onClick={handleResendActivation}
+                      variant="outline"
+                      className="w-full h-10 rounded-lg border-slate-200 hover:bg-slate-50 text-slate-700 font-semibold text-xs shadow-xs"
                     >
-                      {isLoading ? "Activando cuenta..." : "Confirmar y Activar Cuenta"}
-                      <CheckCircle2 className="w-3.5 h-3.5 ml-1.5" />
+                      <RotateCcw className={cn("w-3.5 h-3.5 mr-1.5", isLoading && "animate-spin")} />
+                      {resendCooldown > 0
+                        ? `Reenviar enlace en ${resendCooldown}s`
+                        : "Reenviar correo de activación"}
                     </Button>
 
-                    <div className="flex items-center justify-between text-[11px] pt-1">
-                      <button
-                        type="button"
-                        onClick={() => setRegStep("form")}
-                        className="text-slate-500 hover:text-slate-800 underline font-medium"
-                      >
-                        Editar datos de registro
-                      </button>
-                      <button
-                        type="button"
-                        onClick={handleResendOtp}
-                        className="text-blue-600 hover:text-blue-700 underline font-semibold flex items-center gap-1"
-                      >
-                        <RotateCcw className="w-3 h-3" />
-                        Reenviar código
-                      </button>
-                    </div>
-                  </form>
+                    <Button
+                      type="button"
+                      onClick={() => {
+                        setMode("login");
+                        setRegStep("form");
+                        clearMessages();
+                      }}
+                      className="w-full h-10 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs shadow-xs"
+                    >
+                      Ir a Iniciar Sesión
+                      <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
+                    </Button>
+                  </div>
+
+                  <div className="pt-1">
+                    <button
+                      type="button"
+                      onClick={() => setRegStep("form")}
+                      className="text-xs text-slate-500 hover:text-slate-800 underline font-medium"
+                    >
+                      ← Cambiar datos o correo
+                    </button>
+                  </div>
                 </div>
               )}
             </div>

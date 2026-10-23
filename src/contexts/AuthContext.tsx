@@ -8,8 +8,9 @@ import {
   RegisteredClient,
   INITIAL_CLIENTS,
 } from "@/services/ClientService";
+import { AffiliateService } from "@/services/AffiliateService";
 import { useCatalog } from "@/contexts/CatalogContext";
-import { setAdminSessionCookie, clearAdminSessionCookie } from "@/app/login/actions";
+import { setAdminSessionCookie, clearAdminSessionCookie, verifyAdminCredentialsAction } from "@/app/login/actions";
 
 const AUTH_USER_KEY = "nova:auth_user:v1";
 
@@ -17,6 +18,7 @@ interface AuthContextType {
   user: RegisteredClient | null;
   isAuthenticated: boolean;
   isAdmin: boolean;
+  isAffiliate: boolean;
   loading: boolean;
   signInWithGoogle: () => Promise<{ error?: string }>;
   signInWithOtp: (email: string) => Promise<{ success: boolean; message?: string; error?: string }>;
@@ -29,13 +31,20 @@ interface AuthContextType {
   signInWithPassword: (
     email: string,
     password: string
-  ) => Promise<{ success: boolean; isAdmin?: boolean; error?: string }>;
+  ) => Promise<{ success: boolean; isAdmin?: boolean; isAffiliate?: boolean; error?: string }>;
   signUpWithPassword: (
     name: string,
     email: string,
     password: string,
     phone?: string
   ) => Promise<{ success: boolean; error?: string }>;
+  signUpWithActivationLink: (
+    name: string,
+    email: string,
+    password: string,
+    phone?: string
+  ) => Promise<{ success: boolean; requiresEmailVerification?: boolean; error?: string }>;
+  resendActivationEmail: (email: string) => Promise<{ success: boolean; error?: string }>;
   signOut: () => Promise<void>;
   switchAccount: () => void;
   updateUserProfile: (data: Partial<RegisteredClient>) => void;
@@ -57,7 +66,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const parsed = JSON.parse(stored);
         if (parsed && parsed.email) {
           // Re-fetch fresh client details from ClientService
-          const fresh = ClientService.findByEmail(parsed.email) || parsed;
+          let fresh = ClientService.findByEmail(parsed.email) || parsed;
+          // Si el usuario es un socio en AffiliateService, garantizar rol de afiliado
+          const aff = AffiliateService.getStoredAffiliates().find(
+            (a) =>
+              a.email.toLowerCase() === parsed.email.toLowerCase() ||
+              a.user_id === parsed.id ||
+              a.id === parsed.id
+          );
+          if (aff) {
+            fresh = {
+              ...fresh,
+              name: aff.name,
+              phone: aff.phone || fresh.phone,
+              role: "affiliate",
+            };
+          }
           setUser(fresh);
           if (fresh.role === "admin") {
             document.cookie = "admin_session=authenticated; path=/; max-age=86400; SameSite=Lax";
@@ -81,17 +105,43 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           if (event === "SIGNED_IN" && session?.user) {
             const email = session.user.email;
             if (email) {
-              const name =
-                session.user.user_metadata?.full_name ||
-                session.user.user_metadata?.name ||
-                email.split("@")[0];
+              const meta = session.user.user_metadata || {};
+              const name = meta.full_name || meta.name || email.split("@")[0];
+              const phone = meta.phone;
+
+              // Determinar rol con prioridad:
+              let determinedRole: "admin" | "affiliate" | "client" = "client";
+              if (email.includes("admin") || meta.role === "admin") {
+                determinedRole = "admin";
+              } else if (
+                meta.role === "affiliate" ||
+                AffiliateService.getStoredAffiliates().some((a) => a.email.toLowerCase() === email.toLowerCase())
+              ) {
+                determinedRole = "affiliate";
+              } else {
+                const existingClient = ClientService.findByEmail(email);
+                if (existingClient?.role === "affiliate") {
+                  determinedRole = "affiliate";
+                } else if (existingClient?.role === "admin") {
+                  determinedRole = "admin";
+                }
+              }
+
               const registered = ClientService.registerNew({
                 name,
                 email,
-                provider: "google",
-                role: email.includes("admin") ? "admin" : "client",
+                phone,
+                provider: session.user.app_metadata?.provider === "google" ? "google" : "password",
+                role: determinedRole,
               });
-              saveActiveUser(registered);
+
+              const finalUser: RegisteredClient = {
+                ...registered,
+                name: name || registered.name,
+                role: determinedRole,
+                phone: phone || registered.phone,
+              };
+              saveActiveUser(finalUser);
             }
           } else if (event === "SIGNED_OUT") {
             setUser(null);
@@ -265,72 +315,178 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signInWithPassword = async (
     email: string,
     password: string
-  ): Promise<{ success: boolean; isAdmin?: boolean; error?: string }> => {
+  ): Promise<{ success: boolean; isAdmin?: boolean; isAffiliate?: boolean; error?: string }> => {
     const cleanEmail = email.trim().toLowerCase();
 
-    // Check if it's admin credentials
-    if (
-      (cleanEmail === "admin@novabytexrj.com" || cleanEmail === "admin") &&
-      password.length >= 4
-    ) {
-      const adminClient = INITIAL_CLIENTS.find((c) => c.role === "admin") || {
-        id: "cli-admin",
-        name: "Administrador Nova Bytex",
-        email: "admin@novabytexrj.com",
-        phone: "+51 990 804 482",
-        role: "admin" as const,
-        provider: "password" as const,
-        registeredAt: new Date().toISOString(),
-        purchasesCount: 0,
-        totalSpent: 0,
-        loyaltyDiscount: 0,
-        maxDiscountPrice: 0,
-        status: "active" as const,
-        recentOrders: [],
-      };
-      saveActiveUser(adminClient);
-      pushToast({
-        title: "Sesión Administrativa",
-        description: "Acceso concedido al panel de administración.",
-        variant: "success",
-      });
-      return { success: true, isAdmin: true };
+    // 1. Verificación segura en el servidor de credenciales de Administrador (Vercel env)
+    try {
+      const adminRes = await verifyAdminCredentialsAction(cleanEmail, password);
+      if (adminRes.success && adminRes.isAdmin && adminRes.user) {
+        saveActiveUser(adminRes.user);
+        pushToast({
+          title: "Sesión Administrativa",
+          description: "Acceso concedido al panel de administración NovaAdmin.",
+          variant: "success",
+        });
+        return { success: true, isAdmin: true };
+      }
+    } catch (err) {
+      console.warn("Error al verificar credenciales admin en servidor:", err);
     }
 
-    // Check registered clients
+    // 2. Verificación prioritaria de SOCIOS AFILIADOS (por Código REF-XXXX o por Correo)
+    const upperInput = cleanEmail.toUpperCase();
+    const isRefCode = upperInput.startsWith("REF-");
+    const affiliate = isRefCode
+      ? await AffiliateService.getAffiliateByCode(upperInput)
+      : await AffiliateService.getAffiliateByUserIdOrEmail(cleanEmail);
+
+    if (affiliate) {
+      const expectedPass = affiliate.password || "Password123!";
+      if (password !== expectedPass) {
+        return { success: false, error: "Contraseña incorrecta para esta cuenta de afiliado." };
+      }
+      if (affiliate.status === "suspended") {
+        return { success: false, error: "Esta cuenta de afiliado se encuentra suspendida." };
+      }
+
+      const affiliateUser: RegisteredClient = {
+        id: affiliate.user_id || affiliate.id,
+        name: affiliate.name,
+        email: affiliate.email.toLowerCase(),
+        phone: affiliate.phone,
+        password: affiliate.password,
+        role: "affiliate", // ROL ESTRICTO DE AFILIADO
+        provider: "password",
+        registeredAt: affiliate.created_at,
+        purchasesCount: 0,
+        totalSpent: 0,
+        loyaltyDiscount: 10,
+        maxDiscountPrice: 250,
+        status: "active",
+        recentOrders: [],
+      };
+
+      saveActiveUser(affiliateUser);
+      // Asegurar que en ClientService quede registrado como afiliado
+      ClientService.save(affiliateUser);
+
+      pushToast({
+        title: "Portal de Afiliados",
+        description: `¡Hola ${affiliate.name}! Bienvenido a tu panel de socios.`,
+        variant: "success",
+      });
+
+      return {
+        success: true,
+        isAdmin: false,
+        isAffiliate: true,
+      };
+    }
+
+    // 3. Verificación mediante Supabase Auth si está configurado
+    if (isSupabaseConfigured()) {
+      try {
+        const supabase = getSupabaseClient();
+        const { data, error } = await supabase.auth.signInWithPassword({
+          email: cleanEmail,
+          password,
+        });
+
+        if (error) {
+          if (error.message.toLowerCase().includes("email not confirmed")) {
+            return {
+              success: false,
+              error: "Tu cuenta aún no ha sido activada. Por favor haz clic en el enlace enviado a tu correo.",
+            };
+          }
+          // Si falló en Supabase, revisamos si existe en ClientService como fallback
+        } else if (data.user) {
+          const userMeta = data.user.user_metadata || {};
+          const existing = ClientService.findByEmail(cleanEmail);
+          
+          let role: "client" | "admin" | "affiliate" = "client";
+          if (cleanEmail.includes("admin") || userMeta.role === "admin" || existing?.role === "admin") {
+            role = "admin";
+          } else if (
+            userMeta.role === "affiliate" ||
+            existing?.role === "affiliate" ||
+            AffiliateService.getStoredAffiliates().some((a) => a.email.toLowerCase() === cleanEmail)
+          ) {
+            role = "affiliate";
+          }
+
+          const isAff = role === "affiliate";
+          const isAdm = role === "admin";
+
+          const clientData: RegisteredClient = {
+            ...(existing || {}),
+            id: data.user.id,
+            name: userMeta.full_name || userMeta.name || existing?.name || cleanEmail.split("@")[0],
+            email: cleanEmail,
+            phone: userMeta.phone || existing?.phone,
+            role,
+            provider: "password",
+            registeredAt: data.user.created_at || existing?.registeredAt || new Date().toISOString(),
+            purchasesCount: existing?.purchasesCount || 0,
+            totalSpent: existing?.totalSpent || 0,
+            loyaltyDiscount: isAff ? 10 : existing?.loyaltyDiscount || 5,
+            maxDiscountPrice: isAff ? 250 : existing?.maxDiscountPrice || 150,
+            status: "active",
+            recentOrders: existing?.recentOrders || [],
+          };
+
+          saveActiveUser(clientData);
+          ClientService.save(clientData);
+          pushToast({
+            title: isAdm
+              ? "Sesión Administrativa"
+              : isAff
+              ? "Portal de Afiliados"
+              : `¡Bienvenido de nuevo, ${clientData.name}!`,
+            description: isAdm
+              ? "Acceso concedido al panel de administración."
+              : isAff
+              ? `¡Hola ${clientData.name}! Bienvenido a tu panel de socios afiliados.`
+              : "Has iniciado sesión exitosamente.",
+            variant: "success",
+          });
+          return {
+            success: true,
+            isAdmin: isAdm,
+            isAffiliate: isAff,
+          };
+        }
+      } catch (err: any) {
+        console.warn("Supabase auth error:", err);
+      }
+    }
+
+    // 4. Verificación de clientes registrados localmente
     const existing = ClientService.findByEmail(cleanEmail);
     if (existing) {
+      if (existing.password && existing.password !== password) {
+        return { success: false, error: "Contraseña incorrecta. Verifica tus datos de acceso." };
+      }
       saveActiveUser(existing);
       const isAdm = existing.role === "admin";
+      const isAff = existing.role === "affiliate";
       pushToast({
-        title: isAdm ? "Sesión Administrativa" : "Sesión iniciada",
+        title: isAdm ? "Sesión Administrativa" : isAff ? "Portal de Afiliados" : "Sesión iniciada",
         description: isAdm
           ? "Acceso concedido al panel de administración."
+          : isAff
+          ? `¡Hola ${existing.name}! Bienvenido a tu panel de afiliados.`
           : `Hola de nuevo, ${existing.name}.`,
         variant: "success",
       });
-      return { success: true, isAdmin: isAdm };
+      return { success: true, isAdmin: isAdm, isAffiliate: isAff };
     }
 
-    // New client login on the fly if valid format
-    if (cleanEmail.includes("@") && password.length >= 6) {
-      const newClient = ClientService.registerNew({
-        name: cleanEmail.split("@")[0],
-        email: cleanEmail,
-        provider: "password",
-      });
-      saveActiveUser(newClient);
-      pushToast({
-        title: "Cuenta creada con éxito",
-        description: `Bienvenido a Nova Bytex, ${newClient.name}.`,
-        variant: "success",
-      });
-      return { success: true, isAdmin: false };
-    }
-
+    // NINGÚN registro silencioso o automático de correos inexistentes
     return {
       success: false,
-      error: "Credenciales incorrectas. Verifica tu usuario/correo y contraseña.",
+      error: "Correo o contraseña incorrectos. Verifica tus credenciales o regístrate si no tienes cuenta.",
     };
   };
 
@@ -340,6 +496,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     password: string,
     phone?: string
   ): Promise<{ success: boolean; error?: string }> => {
+    return signUpWithActivationLink(name, email, password, phone);
+  };
+
+  const signUpWithActivationLink = async (
+    name: string,
+    email: string,
+    password: string,
+    phone?: string
+  ): Promise<{ success: boolean; requiresEmailVerification?: boolean; error?: string }> => {
     if (!name || name.trim().length < 3) {
       return { success: false, error: "El nombre debe tener al menos 3 caracteres." };
     }
@@ -350,19 +515,94 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return { success: false, error: "La contraseña debe tener al menos 6 caracteres." };
     }
 
+    const cleanEmail = email.trim().toLowerCase();
+
+    if (isSupabaseConfigured()) {
+      try {
+        const supabase = getSupabaseClient();
+        const { data, error } = await supabase.auth.signUp({
+          email: cleanEmail,
+          password,
+          options: {
+            data: {
+              full_name: name.trim(),
+              name: name.trim(),
+              phone: phone?.trim(),
+              role: "client",
+            },
+            emailRedirectTo: `${window.location.origin}/auth/callback`,
+          },
+        });
+
+        if (error) {
+          return { success: false, error: error.message };
+        }
+
+        // Registrar cliente en el servicio local
+        ClientService.registerNew({
+          name: name.trim(),
+          email: cleanEmail,
+          phone: phone?.trim(),
+          password,
+          provider: "password",
+        });
+
+        // Si Supabase no requiere confirmación y devuelve sesión de inmediato
+        if (data.session && data.user) {
+          const registered = ClientService.findByEmail(cleanEmail);
+          if (registered) saveActiveUser(registered);
+          return { success: true, requiresEmailVerification: false };
+        }
+
+        // Si requiere confirmación por link de correo (Resend)
+        return { success: true, requiresEmailVerification: true };
+      } catch (err: any) {
+        return { success: false, error: err?.message || "Error al registrar la cuenta." };
+      }
+    }
+
+    // Modo local / offline
     const registered = ClientService.registerNew({
       name: name.trim(),
-      email: email.trim().toLowerCase(),
+      email: cleanEmail,
       phone: phone?.trim(),
+      password,
       provider: "password",
     });
 
     saveActiveUser(registered);
     pushToast({
       title: "¡Registro completado!",
-      description: `Hola ${registered.name}, tu cuenta ha sido creada con 5% de descuento de bienvenida.`,
+      description: `Hola ${registered.name}, tu cuenta ha sido creada.`,
       variant: "success",
     });
+    return { success: true, requiresEmailVerification: false };
+  };
+
+  const resendActivationEmail = async (
+    email: string
+  ): Promise<{ success: boolean; error?: string }> => {
+    if (!email || !email.includes("@")) {
+      return { success: false, error: "Ingresa un correo válido." };
+    }
+
+    if (isSupabaseConfigured()) {
+      try {
+        const supabase = getSupabaseClient();
+        const { error } = await supabase.auth.resend({
+          type: "signup",
+          email: email.trim().toLowerCase(),
+          options: {
+            emailRedirectTo: `${window.location.origin}/auth/callback`,
+          },
+        });
+        if (error) return { success: false, error: error.message };
+        return { success: true };
+      } catch (err: any) {
+        return { success: false, error: err?.message || "No se pudo reenviar el correo de activación." };
+      }
+    }
+
     return { success: true };
   };
 
@@ -405,12 +645,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         user,
         isAuthenticated: !!user,
         isAdmin: user?.role === "admin",
+        isAffiliate: user?.role === "affiliate",
         loading,
         signInWithGoogle,
         signInWithOtp,
         verifyOtp,
         signInWithPassword,
         signUpWithPassword,
+        signUpWithActivationLink,
+        resendActivationEmail,
         signOut,
         switchAccount,
         updateUserProfile,

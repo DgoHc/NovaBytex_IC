@@ -78,6 +78,13 @@ function CustomerDashboardContent() {
     }
   }, [loading, isAuthenticated, isAdmin, router]);
 
+  // REDIRECCIÓN OBLIGATORIA: Si el usuario autenticado es AFILIADO, debe ir al portal de afiliados
+  useEffect(() => {
+    if (!loading && isAuthenticated && user?.role === "affiliate") {
+      router.replace("/afiliados");
+    }
+  }, [loading, isAuthenticated, user, router]);
+
   // Si no está autenticado, redirigir a login
   useEffect(() => {
     if (!loading && !isAuthenticated) {
@@ -115,6 +122,20 @@ function CustomerDashboardContent() {
           <div className="w-8 h-8 border-2 border-amber-600 border-t-transparent rounded-full animate-spin" />
           <p className="text-xs text-slate-700 font-semibold">
             Acceso administrativo detectado. Redirigiendo al Panel de Control...
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // Si es afiliado, mostrar pantalla de redirección al portal de afiliados
+  if (user?.role === "affiliate") {
+    return (
+      <div className="min-h-screen bg-slate-50 text-slate-900 flex items-center justify-center">
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
+          <p className="text-xs text-slate-700 font-semibold">
+            Acceso de socio afiliado detectado. Redirigiendo a tu Portal de Afiliados...
           </p>
         </div>
       </div>

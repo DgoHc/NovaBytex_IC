@@ -23,6 +23,8 @@ import {
   PlusCircle,
   Ticket,
   Users,
+  UserCheck,
+  Banknote,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
@@ -95,6 +97,22 @@ const navSections: NavSection[] = [
         name: "Tickets",
         href: "/admin/tickets",
         icon: Ticket,
+      },
+    ],
+  },
+  {
+    title: "AFILIADOS",
+    items: [
+      {
+        name: "Gestión de Afiliados",
+        href: "/admin/afiliados",
+        icon: UserCheck,
+        exact: true,
+      },
+      {
+        name: "Solicitudes de Pago",
+        href: "/admin/afiliados/pagos",
+        icon: Banknote,
       },
     ],
   },
@@ -491,32 +509,39 @@ export default function AdminLayoutClient({
             </div>
           </div>
 
-          <div className="flex items-center gap-2.5 shrink-0">
-            {/* Botones de Tickets (Vista Previa / Sin implementar por ahora) */}
-            <div className="hidden md:flex items-center gap-2 mr-2">
-              <Button type="button" variant="outline" size="sm" className="h-8 px-3 text-xs bg-white text-slate-600 border-slate-200">
-                <Ticket className="w-3.5 h-3.5 mr-1.5 text-slate-500" />
+          <div className="flex items-center gap-2 sm:gap-2.5 shrink-0">
+            {/* Botones de Tickets */}
+            <div className="hidden md:flex items-center gap-2 mr-1">
+              <Button
+                type="button"
+                variant="outline"
+                className="h-9 px-3 text-xs font-medium rounded-lg border-slate-200 bg-white text-slate-700 hover:bg-slate-50 transition-colors"
+              >
+                <Ticket size={16} style={{ width: 16, height: 16 }} className="w-4 h-4 mr-1.5 text-slate-500 shrink-0" />
                 Mis Tickets
               </Button>
-              <Button type="button" size="sm" className="h-8 px-3 text-xs bg-slate-800 text-white hover:bg-slate-700">
-                <PlusCircle className="w-3.5 h-3.5 mr-1.5" />
+              <Button
+                type="button"
+                className="h-9 px-3 text-xs font-medium rounded-lg border border-blue-600 bg-blue-50/60 text-blue-700 hover:bg-blue-100 transition-colors"
+              >
+                <PlusCircle size={16} style={{ width: 16, height: 16 }} className="w-4 h-4 mr-1.5 text-blue-600 shrink-0" />
                 Nuevo Ticket
               </Button>
             </div>
 
-            <div className="hidden md:flex p-1 rounded-lg bg-slate-100 border border-slate-200">
+            <div className="hidden md:flex items-center p-0.5 rounded-lg bg-slate-100 border border-slate-200">
               <Link
                 href="/admin/productos?type=technology"
-                className="inline-flex items-center gap-1.5 h-7 px-3 rounded-md text-xs font-medium bg-white text-blue-700 shadow-sm transition-colors"
+                className="inline-flex items-center gap-1.5 h-9 px-3 rounded-md text-xs font-medium bg-white text-blue-700 shadow-xs transition-colors"
               >
-                <Cpu className="w-4 h-4 text-blue-600" />
+                <Cpu size={16} style={{ width: 16, height: 16 }} className="w-4 h-4 text-blue-600 shrink-0" />
                 Tecnología
               </Link>
               <Link
                 href="/admin/productos?type=library"
-                className="inline-flex items-center gap-1.5 h-7 px-3 rounded-md text-xs font-medium text-slate-600 hover:text-emerald-700 transition-colors"
+                className="inline-flex items-center gap-1.5 h-9 px-3 rounded-md text-xs font-medium text-slate-600 hover:text-emerald-700 transition-colors"
               >
-                <BookOpen className="w-4 h-4 text-emerald-700" />
+                <BookOpen size={16} style={{ width: 16, height: 16 }} className="w-4 h-4 text-emerald-700 shrink-0" />
                 Librería
               </Link>
             </div>
@@ -525,10 +550,10 @@ export default function AdminLayoutClient({
               <button
                 type="button"
                 onClick={() => signOut()}
-                className="inline-flex items-center gap-1.5 h-8 px-2.5 rounded-lg text-xs font-semibold text-rose-600 hover:bg-rose-50 hover:text-rose-700 transition-colors"
+                className="inline-flex items-center gap-1.5 h-9 px-3 rounded-lg border border-rose-200 bg-white text-xs font-semibold text-rose-600 hover:bg-rose-50 hover:text-rose-700 transition-colors shrink-0"
                 title="Cerrar sesión administrativa"
               >
-                <LogOut className="w-3.5 h-3.5" />
+                <LogOut size={16} style={{ width: 16, height: 16 }} className="w-4 h-4 text-rose-600 shrink-0" />
                 <span className="hidden sm:inline">Cerrar Sesión</span>
               </button>
             </div>

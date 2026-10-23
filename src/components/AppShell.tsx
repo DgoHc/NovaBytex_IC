@@ -12,6 +12,7 @@ import { CartSidebar } from "@/components/CartSidebar";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { NovaLoader } from "@/components/NovaLoader";
+import { AffiliateTracker } from "@/components/AffiliateTracker";
 import { cn } from "@/lib/utils";
 
 function ToastContainer() {
@@ -84,6 +85,7 @@ function ShellInner({ children }: { children: React.ReactNode }) {
   const isAdmin = pathname?.startsWith("/admin");
   const isCard = pathname?.startsWith("/card");
   const isAccount = pathname?.startsWith("/mi-cuenta");
+  const isAffiliates = pathname?.startsWith("/afiliados");
   const [navigating, setNavigating] = useState(false);
   const isFirstMount = React.useRef(true);
 
@@ -113,6 +115,28 @@ function ShellInner({ children }: { children: React.ReactNode }) {
           </div>
         )}
         <main className="min-h-screen bg-slate-950">{children}</main>
+        <AffiliateTracker />
+        <ToastContainer />
+      </>
+    );
+  }
+
+  if (isAffiliates) {
+    return (
+      <>
+        {navigating && (
+          <div className="fixed top-0 left-0 right-0 h-[3px] z-[150] overflow-hidden bg-transparent pointer-events-none">
+            <motion.div
+              initial={{ x: "-100%" }}
+              animate={{ x: "0%" }}
+              transition={{ duration: 0.4, ease: "easeOut" }}
+              className="h-full w-full bg-gradient-to-r from-blue-500 via-cyan-400 to-blue-600 shadow-[0_0_10px_rgba(59,130,246,0.5)]"
+            />
+          </div>
+        )}
+        <NovaLoader visible={showLoader} fadingOut={false} />
+        <main className="min-h-screen bg-slate-950">{children}</main>
+        <AffiliateTracker />
         <ToastContainer />
       </>
     );
@@ -134,6 +158,7 @@ function ShellInner({ children }: { children: React.ReactNode }) {
         <NovaLoader visible={showLoader} fadingOut={false} />
         <main className="min-h-screen bg-slate-50">{children}</main>
         <CartSidebar />
+        <AffiliateTracker />
         <ToastContainer />
       </>
     );

@@ -13,7 +13,8 @@ export interface RegisteredClient {
   name: string;
   email: string;
   phone?: string;
-  role: "client" | "admin";
+  password?: string; // Credencial de acceso para inicio de sesión
+  role: "client" | "admin" | "affiliate";
   avatar?: string;
   provider: "google" | "otp" | "password";
   registeredAt: string;
@@ -154,6 +155,86 @@ export const INITIAL_CLIENTS: RegisteredClient[] = [
     status: "active",
     recentOrders: [],
   },
+  {
+    id: "cli-aff-1",
+    name: "Alex Huamán Cueva",
+    email: "alex.huaman@gmail.com",
+    phone: "+51 976 543 210",
+    password: "Password123!",
+    role: "affiliate",
+    provider: "password",
+    registeredAt: "2026-01-15T10:00:00.000Z",
+    purchasesCount: 0,
+    totalSpent: 0,
+    loyaltyDiscount: 10,
+    maxDiscountPrice: 250,
+    status: "active",
+    recentOrders: [],
+  },
+  {
+    id: "cli-aff-2",
+    name: "Carolina Mendoza Valera",
+    email: "carolina.mendoza@hotmail.com",
+    phone: "+51 987 654 321",
+    password: "Password123!",
+    role: "affiliate",
+    provider: "password",
+    registeredAt: "2026-02-01T12:00:00.000Z",
+    purchasesCount: 0,
+    totalSpent: 0,
+    loyaltyDiscount: 10,
+    maxDiscountPrice: 250,
+    status: "active",
+    recentOrders: [],
+  },
+  {
+    id: "cli-aff-3",
+    name: "Digital Solutions Norte",
+    email: "contacto@digitalsolutions.pe",
+    phone: "+51 945 001 928",
+    password: "Password123!",
+    role: "affiliate",
+    provider: "password",
+    registeredAt: "2025-12-05T08:00:00.000Z",
+    purchasesCount: 0,
+    totalSpent: 0,
+    loyaltyDiscount: 10,
+    maxDiscountPrice: 250,
+    status: "active",
+    recentOrders: [],
+  },
+  {
+    id: "cli-aff-4",
+    name: "Diego",
+    email: "zdiegoc3@outlook.com",
+    phone: "969968423",
+    password: "Password123!",
+    role: "affiliate",
+    provider: "password",
+    registeredAt: "2026-03-01T10:00:00.000Z",
+    purchasesCount: 0,
+    totalSpent: 0,
+    loyaltyDiscount: 10,
+    maxDiscountPrice: 250,
+    status: "active",
+    recentOrders: [],
+  },
+  {
+    id: "cli-aff-5",
+    name: "DiegoAfi",
+    email: "dafi_1@unc.edu.pe",
+    phone: "969968423",
+    password: "Password123!",
+    role: "affiliate",
+    provider: "password",
+    registeredAt: "2026-03-01T10:00:00.000Z",
+    purchasesCount: 0,
+    totalSpent: 0,
+    loyaltyDiscount: 10,
+    maxDiscountPrice: 250,
+    status: "active",
+    recentOrders: [],
+  },
 ];
 
 export const ClientService = {
@@ -166,7 +247,25 @@ export const ClientService = {
         return INITIAL_CLIENTS;
       }
       const parsed = JSON.parse(stored);
-      return Array.isArray(parsed) && parsed.length > 0 ? parsed : INITIAL_CLIENTS;
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        let hasChanges = false;
+        const merged = [...parsed];
+        for (const initClient of INITIAL_CLIENTS) {
+          const idx = merged.findIndex((c) => c.email.toLowerCase() === initClient.email.toLowerCase());
+          if (idx === -1) {
+            merged.push(initClient);
+            hasChanges = true;
+          } else if (initClient.role === "affiliate" && merged[idx].role !== "affiliate") {
+            merged[idx] = { ...merged[idx], role: "affiliate", name: merged[idx].name || initClient.name };
+            hasChanges = true;
+          }
+        }
+        if (hasChanges) {
+          window.localStorage.setItem(STORAGE_KEY, JSON.stringify(merged));
+        }
+        return merged;
+      }
+      return INITIAL_CLIENTS;
     } catch {
       return INITIAL_CLIENTS;
     }
@@ -209,11 +308,22 @@ export const ClientService = {
     name: string;
     email: string;
     phone?: string;
-    role?: "client" | "admin";
+    password?: string;
+    role?: "client" | "admin" | "affiliate";
     provider: "google" | "otp" | "password";
   }): RegisteredClient {
     const existing = ClientService.findByEmail(input.email);
     if (existing) {
+      if (input.password || input.role || input.phone || input.name) {
+        const updated: RegisteredClient = {
+          ...existing,
+          name: input.name || existing.name,
+          phone: input.phone !== undefined ? input.phone : existing.phone,
+          password: input.password || existing.password,
+          role: input.role || existing.role,
+        };
+        return ClientService.save(updated);
+      }
       return existing;
     }
 
@@ -223,6 +333,7 @@ export const ClientService = {
       name: input.name,
       email: input.email.trim().toLowerCase(),
       phone: input.phone || "",
+      password: input.password,
       role: input.role || (input.email.includes("admin") ? "admin" : "client"),
       provider: input.provider,
       registeredAt: new Date().toISOString(),
