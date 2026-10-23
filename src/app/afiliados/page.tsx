@@ -73,7 +73,7 @@ import { cn } from "@/lib/utils";
 
 type AffiliateTab = "resumen" | "enlaces" | "ventas" | "retiros" | "cobros";
 
-export default function AffiliatePortalPage() {
+function AffiliatePortalContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const tabParam = searchParams.get("tab") as AffiliateTab | null;
@@ -1884,5 +1884,22 @@ export default function AffiliatePortalPage() {
         </DialogContent>
       </Dialog>
     </div>
+  );
+}
+
+export default function AffiliatePortalPage() {
+  return (
+    <React.Suspense
+      fallback={
+        <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center p-6 text-slate-100">
+          <div className="w-10 h-10 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+          <p className="text-xs text-slate-400 font-medium mt-4">
+            Cargando portal de afiliado...
+          </p>
+        </div>
+      }
+    >
+      <AffiliatePortalContent />
+    </React.Suspense>
   );
 }

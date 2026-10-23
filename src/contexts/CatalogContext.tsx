@@ -222,7 +222,7 @@ export function CatalogProvider({ children }: { children: React.ReactNode }) {
     });
   }, [pushToast, refresh]);
 
-  const stats = useMemo(() => ProductService.stats(), [products]);
+  const stats = useMemo(() => ProductService.stats(products), [products]);
 
   const value: CatalogContextValue = {
     products,

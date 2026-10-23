@@ -204,8 +204,8 @@ export const ProductService = {
     return PRODUCTS_DATA;
   },
 
-  stats() {
-    const all = ProductService.list();
+  stats(items?: Product[]) {
+    const all = items || ProductService.list();
     return {
       total: all.length,
       active: all.filter((p) => p.available).length,
