@@ -272,3 +272,4 @@ runTests().catch((err) => {
   console.error("Error fatal en pruebas:", err);
   process.exit(1);
 });
+

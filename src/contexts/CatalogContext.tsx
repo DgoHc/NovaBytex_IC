@@ -12,9 +12,11 @@ import {
   ProductService,
   type CreateProductInput,
   type UpdateProductInput,
+  type CatalogSyncMessage,
 } from "@/services/ProductService";
-import type { CatalogType, Product } from "@/lib/products";
+import { type CatalogType, type Product, fromDbProduct } from "@/lib/products";
 import type { ValidatedRow } from "@/lib/excelValidator";
+import { getSupabaseClient, isSupabaseConfigured } from "@/lib/supabase/client";
 
 type ToastVariant = "success" | "error" | "info";
 interface Toast {
@@ -28,14 +30,14 @@ interface CatalogContextValue {
   products: Product[];
   loading: boolean;
   hydrated: boolean;
-  findById: (id: number) => Product | undefined;
+  findById: (id: number | string) => Product | undefined;
   findByType: (type: CatalogType | "all") => Product[];
   createProduct: (input: CreateProductInput) => Product | null;
   bulkCreate: (inputs: CreateProductInput[]) => Product[];
   importBatch: (rows: ValidatedRow[]) => { createdCount: number; updatedCount: number; skippedCount: number };
   updateProduct: (input: UpdateProductInput) => Product | null;
-  toggleAvailable: (id: number) => Product | null;
-  deleteProduct: (id: number) => boolean;
+  toggleAvailable: (id: number | string) => Product | null;
+  deleteProduct: (id: number | string) => boolean;
   refresh: () => void;
   reset: () => void;
   stats: ReturnType<typeof ProductService.stats>;
@@ -78,6 +80,118 @@ export function CatalogProvider({ children }: { children: React.ReactNode }) {
     refresh();
   }, [refresh]);
 
+  // 1. Sincronización multi-pestaña instantánea (BroadcastChannel + CustomEvent + Storage Fallback)
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const handleSyncMessage = (msg: CatalogSyncMessage) => {
+      if (!msg || !msg.type) return;
+
+      if (msg.type === "PRODUCT_TOGGLED") {
+        setProducts((prev) =>
+          prev.map((p) =>
+            Number(p.id) === Number(msg.id)
+              ? { ...p, ...(msg.product || {}), available: msg.available }
+              : p
+          )
+        );
+      } else if (msg.type === "PRODUCT_UPDATED") {
+        setProducts((prev) => {
+          const id = Number(msg.product.id);
+          const exists = prev.some((p) => Number(p.id) === id);
+          if (exists) {
+            return prev.map((p) => (Number(p.id) === id ? msg.product : p));
+          }
+          return [...prev, msg.product];
+        });
+      } else if (msg.type === "PRODUCT_CREATED") {
+        setProducts((prev) => {
+          const id = Number(msg.product.id);
+          if (prev.some((p) => Number(p.id) === id)) return prev;
+          return [...prev, msg.product];
+        });
+      } else if (msg.type === "PRODUCT_DELETED") {
+        setProducts((prev) => prev.filter((p) => Number(p.id) !== Number(msg.id)));
+      } else if (msg.type === "BATCH_SYNC") {
+        refresh();
+      }
+    };
+
+    let ch: BroadcastChannel | null = null;
+    if (typeof BroadcastChannel !== "undefined") {
+      try {
+        ch = new BroadcastChannel("nova:catalog:sync");
+        ch.onmessage = (event) => {
+          handleSyncMessage(event.data);
+        };
+      } catch {}
+    }
+
+    const handleLocalEvent = (event: Event) => {
+      const custom = event as CustomEvent<CatalogSyncMessage>;
+      if (custom.detail) handleSyncMessage(custom.detail);
+    };
+    window.addEventListener("nova:catalog:local_event", handleLocalEvent);
+
+    const handleStorage = (e: StorageEvent) => {
+      if (e.key === "nova:catalog:ping" || e.key === ProductService.STORAGE_KEY) {
+        const fresh = ProductService.list();
+        setProducts(fresh);
+      }
+    };
+    window.addEventListener("storage", handleStorage);
+
+    return () => {
+      if (ch) ch.close();
+      window.removeEventListener("nova:catalog:local_event", handleLocalEvent);
+      window.removeEventListener("storage", handleStorage);
+    };
+  }, [refresh]);
+
+  // 2. WebSockets en tiempo real vía Supabase Realtime Channel
+  useEffect(() => {
+    if (typeof window === "undefined" || !isSupabaseConfigured()) return;
+
+    const supabase = getSupabaseClient();
+    const realtimeChannel = supabase
+      .channel("novabytex:products-realtime")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "products" },
+        (payload) => {
+          if (payload.eventType === "UPDATE" && payload.new) {
+            const updated = fromDbProduct(payload.new);
+            setProducts((prev) =>
+              prev.map((p) =>
+                Number(p.id) === Number(updated.id) ? { ...p, ...updated } : p
+              )
+            );
+            ProductService.updateLocalProduct(updated);
+          } else if (payload.eventType === "INSERT" && payload.new) {
+            const created = fromDbProduct(payload.new);
+            setProducts((prev) => {
+              if (prev.some((p) => Number(p.id) === Number(created.id))) return prev;
+              return [...prev, created];
+            });
+            ProductService.addLocalProduct(created);
+          } else if (payload.eventType === "DELETE" && payload.old) {
+            const deletedId = Number(payload.old.id);
+            if (deletedId) {
+              setProducts((prev) =>
+                prev.filter((p) => Number(p.id) !== deletedId)
+              );
+              ProductService.removeLocalProduct(deletedId);
+            }
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(realtimeChannel);
+    };
+  }, []);
+
   const dismissToast = useCallback((id: number) => {
     setToasts((prev) => prev.filter((t) => t.id !== id));
   }, []);
@@ -93,7 +207,7 @@ export function CatalogProvider({ children }: { children: React.ReactNode }) {
   );
 
   const findById = useCallback(
-    (id: number) => products.find((p) => p.id === id),
+    (id: number | string) => products.find((p) => Number(p.id) === Number(id)),
     [products]
   );
 
@@ -175,7 +289,8 @@ export function CatalogProvider({ children }: { children: React.ReactNode }) {
   const updateProduct = useCallback(
     (input: UpdateProductInput): Product | null => {
       try {
-        const updated = ProductService.update(input);
+        const targetId = Number(input.id);
+        const updated = ProductService.update({ ...input, id: targetId });
         if (!updated) {
           pushToast({
             title: "Producto no encontrado",
@@ -184,7 +299,7 @@ export function CatalogProvider({ children }: { children: React.ReactNode }) {
           return null;
         }
         setProducts((prev) =>
-          prev.map((p) => (p.id === input.id ? updated : p))
+          prev.map((p) => (Number(p.id) === targetId ? updated : p))
         );
         pushToast({
           title: "Producto actualizado",
@@ -205,12 +320,15 @@ export function CatalogProvider({ children }: { children: React.ReactNode }) {
   );
 
   const toggleAvailable = useCallback(
-    (id: number): Product | null => {
+    (id: number | string): Product | null => {
       try {
-        const updated = ProductService.toggleAvailable(id);
+        const targetId = Number(id);
+        const updated = ProductService.toggleAvailable(targetId);
         if (!updated) return null;
         setProducts((prev) =>
-          prev.map((p) => (p.id === id ? { ...p, available: updated.available } : p))
+          prev.map((p) =>
+            Number(p.id) === targetId ? { ...p, available: updated.available } : p
+          )
         );
         pushToast({
           title: updated.available ? "Producto activado" : "Producto desactivado",
@@ -228,10 +346,12 @@ export function CatalogProvider({ children }: { children: React.ReactNode }) {
   );
 
   const deleteProduct = useCallback(
-    (id: number): boolean => {
-      const product = ProductService.findById(id);
-      const ok = ProductService.remove(id);
+    (id: number | string): boolean => {
+      const targetId = Number(id);
+      const product = ProductService.findById(targetId);
+      const ok = ProductService.remove(targetId);
       if (ok) {
+        setProducts((prev) => prev.filter((p) => Number(p.id) !== targetId));
         refresh();
         pushToast({
           title: "Producto eliminado",

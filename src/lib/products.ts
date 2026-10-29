@@ -81,6 +81,34 @@ export function getCategoriesForType(type: CatalogType | "all"): string[] {
   return Array.from(new Set([...ALL_CATEGORIES, ...customAll]));
 }
 
+export function fromDbProduct(row: any): Product {
+  return {
+    id: Number(row.id),
+    name: row.name ?? "",
+    category: row.category ?? "",
+    brand: row.brand ?? "NovaBytex",
+    sku: row.sku ?? "",
+    warranty: row.warranty ?? "",
+    description: row.description ?? "",
+    fullDescription: row.full_description ?? row.fullDescription ?? "",
+    price: Number(row.price) || 0,
+    previousPrice: row.previous_price != null ? Number(row.previous_price) : undefined,
+    image: row.image ?? "",
+    gallery: Array.isArray(row.gallery) ? row.gallery : [],
+    inStock: Boolean(row.in_stock),
+    available: Boolean(row.available),
+    featured: Boolean(row.featured),
+    rating: Number(row.rating) || 4.5,
+    reviewsCount: Number(row.reviews_count) || 0,
+    specifications: Array.isArray(row.specifications) ? row.specifications : [],
+    features: Array.isArray(row.features) ? row.features : [],
+    imageType: row.image_type ?? "switch",
+    type: row.type ?? "technology",
+    techSubtype: row.tech_subtype ?? undefined,
+    createdAt: row.created_at ?? new Date().toISOString(),
+  };
+}
+
 export const PRODUCTS_DATA: Product[] = [
   {
     id: 1,

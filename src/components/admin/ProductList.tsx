@@ -415,7 +415,7 @@ export function ProductList() {
               ) : (
                 filtered.map((p) => (
                   <ProductRow
-                    key={p.id}
+                    key={`prod-${p.id}`}
                     product={p}
                     onToggle={toggleAvailable}
                     onToggleStock={toggleStock}
@@ -439,7 +439,7 @@ export function ProductList() {
           ) : (
             filtered.map((p) => (
               <ProductCardRow
-                key={p.id}
+                key={`mobile-prod-${p.id}`}
                 product={p}
                 onToggle={toggleAvailable}
                 onToggleStock={toggleStock}
@@ -617,13 +617,19 @@ function ProductRow({
 
       {/* 5. Estado */}
       <td className="px-3 py-2.5 align-middle text-left whitespace-nowrap">
-        <div className="flex items-center gap-2">
+        <div
+          onClick={() => onToggle(Number(product.id))}
+          className="inline-flex items-center gap-2 cursor-pointer select-none group/switch py-1"
+          title={product.available ? "Desactivar producto" : "Activar producto"}
+        >
           <button
             type="button"
             role="switch"
-            aria-checked={product.available}
-            onClick={() => onToggle(product.id)}
-            title={product.available ? "Desactivar producto" : "Activar producto"}
+            aria-checked={Boolean(product.available)}
+            onClick={(e) => {
+              e.stopPropagation();
+              onToggle(Number(product.id));
+            }}
             className={cn(
               "relative inline-flex w-[36px] h-[20px] shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-hidden",
               product.available ? "bg-emerald-500" : "bg-slate-300"
@@ -636,7 +642,7 @@ function ProductRow({
               )}
             />
           </button>
-          <span className="text-[13px] font-medium text-slate-700 select-none">
+          <span className="text-[13px] font-medium text-slate-700 group-hover/switch:text-slate-900 transition-colors">
             {product.available ? "Activo" : "Inactivo"}
           </span>
         </div>
@@ -755,12 +761,19 @@ function ProductCardRow({
                 )}
             </div>
 
-            <div className="flex items-center gap-2">
+            <div
+              onClick={() => onToggle(Number(product.id))}
+              className="flex items-center gap-2 cursor-pointer select-none group/switch"
+              title={product.available ? "Desactivar producto" : "Activar producto"}
+            >
               <button
                 type="button"
                 role="switch"
-                aria-checked={product.available}
-                onClick={() => onToggle(product.id)}
+                aria-checked={Boolean(product.available)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onToggle(Number(product.id));
+                }}
                 className={cn(
                   "relative inline-flex w-[36px] h-[20px] shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors",
                   product.available ? "bg-emerald-500" : "bg-slate-300"
@@ -773,7 +786,7 @@ function ProductCardRow({
                   )}
                 />
               </button>
-              <span className="text-[12px] font-medium text-slate-600">
+              <span className="text-[12px] font-medium text-slate-600 group-hover/switch:text-slate-900 transition-colors">
                 {product.available ? "Activo" : "Inactivo"}
               </span>
             </div>

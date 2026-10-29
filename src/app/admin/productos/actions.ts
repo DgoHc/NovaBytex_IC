@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { getSupabaseAdmin } from "@/lib/supabase/server";
-import type { Product, CustomCategory } from "@/lib/products";
+import { type Product, type CustomCategory, fromDbProduct } from "@/lib/products";
 
 export interface DbProductRow {
   id?: number;
@@ -56,34 +56,6 @@ function toDbProduct(p: Partial<Product>): DbProductRow {
     specifications: p.specifications ?? [],
     features: p.features ?? [],
     ...(p.createdAt ? { created_at: p.createdAt } : {}),
-  };
-}
-
-function fromDbProduct(row: any): Product {
-  return {
-    id: Number(row.id),
-    name: row.name ?? "",
-    category: row.category ?? "",
-    brand: row.brand ?? "NovaBytex",
-    sku: row.sku ?? "",
-    warranty: row.warranty ?? "",
-    description: row.description ?? "",
-    fullDescription: row.full_description ?? row.fullDescription ?? "",
-    price: Number(row.price) || 0,
-    previousPrice: row.previous_price != null ? Number(row.previous_price) : undefined,
-    image: row.image ?? "",
-    gallery: Array.isArray(row.gallery) ? row.gallery : [],
-    inStock: Boolean(row.in_stock),
-    available: Boolean(row.available),
-    featured: Boolean(row.featured),
-    rating: Number(row.rating) || 4.5,
-    reviewsCount: Number(row.reviews_count) || 0,
-    specifications: Array.isArray(row.specifications) ? row.specifications : [],
-    features: Array.isArray(row.features) ? row.features : [],
-    imageType: row.image_type ?? "switch",
-    type: row.type ?? "technology",
-    techSubtype: row.tech_subtype ?? undefined,
-    createdAt: row.created_at ?? new Date().toISOString(),
   };
 }
 
@@ -179,17 +151,25 @@ export async function deleteProductAction(
  */
 export async function toggleProductAvailableAction(
   id: number,
-  available: boolean
+  available: boolean,
+  fallbackProduct?: Partial<Product>
 ): Promise<{ success: boolean; error?: string }> {
   try {
     const supabase = getSupabaseAdmin();
-    const { error } = await supabase
+    const { data, error } = await supabase
       .from("products")
       .update({ available })
-      .eq("id", id);
+      .eq("id", Number(id))
+      .select("id");
 
     if (error) {
       return { success: false, error: error.message };
+    }
+
+    // Si el producto no existía en Supabase (ej: producto base local), crearlo con estado
+    if ((!data || data.length === 0) && fallbackProduct) {
+      const fullRow = toDbProduct({ ...fallbackProduct, id: Number(id), available });
+      await supabase.from("products").upsert(fullRow);
     }
 
     revalidatePath("/productos");
@@ -209,21 +189,29 @@ export async function toggleProductAvailableAction(
  */
 export async function toggleProductStockAction(
   id: number,
-  inStock: boolean
+  inStock: boolean,
+  fallbackProduct?: Partial<Product>
 ): Promise<{ success: boolean; error?: string }> {
   try {
     const supabase = getSupabaseAdmin();
-    const { error } = await supabase
+    const { data, error } = await supabase
       .from("products")
       .update({ in_stock: inStock })
-      .eq("id", id);
+      .eq("id", Number(id))
+      .select("id");
 
     if (error) {
       return { success: false, error: error.message };
     }
 
+    if ((!data || data.length === 0) && fallbackProduct) {
+      const fullRow = toDbProduct({ ...fallbackProduct, id: Number(id), inStock });
+      await supabase.from("products").upsert(fullRow);
+    }
+
     revalidatePath("/productos");
     revalidatePath("/libreria");
+    revalidatePath("/admin/productos");
     revalidatePath("/admin/inventario");
     return { success: true };
   } catch (err) {
