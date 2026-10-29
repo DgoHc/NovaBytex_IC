@@ -187,7 +187,7 @@ export function ExcelManagerModal({
                   ¿A qué catálogo pertenecen estos productos?
                 </label>
                 <span className="text-[11px] text-slate-400">
-                  (No necesitas agregar la columna "Tipo" en tu Excel)
+                  (No necesitas agregar la columna &quot;Tipo&quot; en tu Excel)
                 </span>
               </div>
               <div className="grid grid-cols-2 gap-2.5">

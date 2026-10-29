@@ -158,7 +158,9 @@ export function CatalogProvider({ children }: { children: React.ReactNode }) {
           });
           return null;
         }
-        refresh();
+        setProducts((prev) =>
+          prev.map((p) => (p.id === input.id ? updated : p))
+        );
         pushToast({
           title: "Producto actualizado",
           description: `«${updated.name}» fue actualizado correctamente.`,
@@ -174,7 +176,7 @@ export function CatalogProvider({ children }: { children: React.ReactNode }) {
         return null;
       }
     },
-    [pushToast, refresh]
+    [pushToast]
   );
 
   const toggleAvailable = useCallback(
@@ -182,7 +184,9 @@ export function CatalogProvider({ children }: { children: React.ReactNode }) {
       try {
         const updated = ProductService.toggleAvailable(id);
         if (!updated) return null;
-        refresh();
+        setProducts((prev) =>
+          prev.map((p) => (p.id === id ? { ...p, available: updated.available } : p))
+        );
         pushToast({
           title: updated.available ? "Producto activado" : "Producto desactivado",
           description: `«${updated.name}» ${
@@ -195,7 +199,7 @@ export function CatalogProvider({ children }: { children: React.ReactNode }) {
         return null;
       }
     },
-    [pushToast, refresh]
+    [pushToast]
   );
 
   const deleteProduct = useCallback(

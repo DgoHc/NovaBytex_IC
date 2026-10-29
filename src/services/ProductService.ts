@@ -115,25 +115,15 @@ export const ProductService = {
       // Filtrar cualquier producto eliminado
       const activeStored = stored.filter((p) => !deletedIds.has(p.id));
 
-      // Sincronizar estado de disponibilidad (available) con los datos base de PRODUCTS_DATA
-      const synced = activeStored.map((p) => {
-        const seed = PRODUCTS_DATA.find((s) => s.id === p.id);
-        if (seed && seed.available !== p.available) {
-          return { ...p, available: seed.available };
-        }
-        return p;
-      });
-
-      const existingIds = new Set(synced.map((p) => p.id));
-      // Solo incorporar productos base si NO fueron eliminados explícitamente
+      const existingIds = new Set(activeStored.map((p) => p.id));
+      // Solo incorporar productos base si NO fueron eliminados explícitamente y aún no existen en el almacenamiento
       const missing = PRODUCTS_DATA.filter((p) => !existingIds.has(p.id) && !deletedIds.has(p.id));
       if (missing.length > 0 || activeStored.length !== stored.length) {
-        const merged = [...synced, ...missing];
+        const merged = [...activeStored, ...missing];
         writeToStorage(merged);
         return merged;
       }
-      writeToStorage(synced);
-      return synced;
+      return activeStored;
     }
     const seed = PRODUCTS_DATA.filter((p) => !deletedIds.has(p.id));
     writeToStorage(seed);

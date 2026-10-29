@@ -31,7 +31,7 @@ export interface DbProductRow {
   updated_at?: string;
 }
 
-export function toDbProduct(p: Partial<Product>): DbProductRow {
+function toDbProduct(p: Partial<Product>): DbProductRow {
   return {
     ...(p.id ? { id: p.id } : {}),
     name: p.name ?? "",
@@ -59,7 +59,7 @@ export function toDbProduct(p: Partial<Product>): DbProductRow {
   };
 }
 
-export function fromDbProduct(row: any): Product {
+function fromDbProduct(row: any): Product {
   return {
     id: Number(row.id),
     name: row.name ?? "",
