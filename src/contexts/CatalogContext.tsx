@@ -14,6 +14,7 @@ import {
   type UpdateProductInput,
 } from "@/services/ProductService";
 import type { CatalogType, Product } from "@/lib/products";
+import type { ValidatedRow } from "@/lib/excelValidator";
 
 type ToastVariant = "success" | "error" | "info";
 interface Toast {
@@ -31,6 +32,7 @@ interface CatalogContextValue {
   findByType: (type: CatalogType | "all") => Product[];
   createProduct: (input: CreateProductInput) => Product | null;
   bulkCreate: (inputs: CreateProductInput[]) => Product[];
+  importBatch: (rows: ValidatedRow[]) => { createdCount: number; updatedCount: number; skippedCount: number };
   updateProduct: (input: UpdateProductInput) => Product | null;
   toggleAvailable: (id: number) => Product | null;
   deleteProduct: (id: number) => boolean;
@@ -119,6 +121,29 @@ export function CatalogProvider({ children }: { children: React.ReactNode }) {
           variant: "error",
         });
         return null;
+      }
+    },
+    [pushToast, refresh]
+  );
+
+  const importBatch = useCallback(
+    (rows: ValidatedRow[]) => {
+      try {
+        const res = ProductService.importValidatedBatch(rows);
+        refresh();
+        pushToast({
+          title: "Importación completada",
+          description: `${res.createdCount} creados, ${res.updatedCount} actualizados, ${res.skippedCount} omitidos.`,
+          variant: "success",
+        });
+        return res;
+      } catch (err) {
+        pushToast({
+          title: "Error en importación masiva",
+          description: err instanceof Error ? err.message : "Error al procesar el lote.",
+          variant: "error",
+        });
+        return { createdCount: 0, updatedCount: 0, skippedCount: rows.length };
       }
     },
     [pushToast, refresh]
@@ -247,6 +272,7 @@ export function CatalogProvider({ children }: { children: React.ReactNode }) {
     findByType,
     createProduct,
     bulkCreate,
+    importBatch,
     updateProduct,
     toggleAvailable,
     deleteProduct,

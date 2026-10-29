@@ -1,4 +1,5 @@
 import { PRODUCTS_DATA, type Product, type CatalogType } from "@/lib/products";
+import type { ValidatedRow } from "@/lib/excelValidator";
 import {
   saveProductAction,
   deleteProductAction,
@@ -188,6 +189,125 @@ export const ProductService = {
     });
 
     return createdList;
+  },
+
+  /**
+   * Importación segura por lotes respetando las decisiones de duplicados (omitir, actualizar precio/stock, crear nuevo)
+   */
+  importValidatedBatch(rows: ValidatedRow[]): {
+    createdCount: number;
+    updatedCount: number;
+    skippedCount: number;
+  } {
+    let current = ProductService.list();
+    let nextId = generateId(current);
+    const now = new Date().toISOString();
+    let createdCount = 0;
+    let updatedCount = 0;
+    let skippedCount = 0;
+
+    const toUpsert: Product[] = [];
+
+    for (const row of rows) {
+      if (row.status === "ERROR") {
+        skippedCount++;
+        continue;
+      }
+
+      const dup = row.duplicate;
+      if (dup) {
+        if (dup.action === "skip" || dup.action === "delete") {
+          skippedCount++;
+          continue;
+        }
+
+        if (dup.action === "update_all" && dup.targetProductId) {
+          const idx = current.findIndex((p) => p.id === dup.targetProductId);
+          if (idx >= 0) {
+            const updated: Product = {
+              ...current[idx],
+              ...row.product,
+              id: dup.targetProductId,
+              createdAt: current[idx].createdAt,
+            };
+            current[idx] = updated;
+            toUpsert.push(updated);
+            updatedCount++;
+            continue;
+          }
+        }
+
+        if (dup.action === "update_price_stock" && dup.targetProductId) {
+          const idx = current.findIndex((p) => p.id === dup.targetProductId);
+          if (idx >= 0) {
+            const updated: Product = {
+              ...current[idx],
+              price: row.product.price,
+              previousPrice: row.product.previousPrice,
+              inStock: row.product.inStock,
+            };
+            current[idx] = updated;
+            toUpsert.push(updated);
+            updatedCount++;
+            continue;
+          }
+        }
+
+        if (dup.action === "merge" && dup.targetProductId && dup.mergedFields) {
+          const idx = current.findIndex((p) => p.id === dup.targetProductId);
+          if (idx >= 0) {
+            const updated: Product = {
+              ...current[idx],
+              ...dup.mergedFields,
+              id: dup.targetProductId,
+            };
+            current[idx] = updated;
+            toUpsert.push(updated);
+            updatedCount++;
+            continue;
+          }
+        }
+
+        if (dup.action === "create_new") {
+          let newSku = row.product.sku;
+          if (current.some((p) => p.sku.toLowerCase() === newSku.toLowerCase())) {
+            newSku = `${newSku}-DUP${Math.floor(100 + Math.random() * 900)}`;
+          }
+          const newProduct: Product = {
+            ...DEFAULT_NEW_PRODUCT,
+            ...row.product,
+            sku: newSku,
+            id: nextId++,
+            createdAt: now,
+          };
+          current.push(newProduct);
+          toUpsert.push(newProduct);
+          createdCount++;
+          continue;
+        }
+      }
+
+      // Si no es duplicado o no fue omitido: crear como producto nuevo
+      const newProduct: Product = {
+        ...DEFAULT_NEW_PRODUCT,
+        ...row.product,
+        id: nextId++,
+        createdAt: now,
+      };
+      current.push(newProduct);
+      toUpsert.push(newProduct);
+      createdCount++;
+    }
+
+    writeToStorage(current);
+
+    if (toUpsert.length > 0) {
+      bulkUpsertProductsAction(toUpsert).catch(() => {
+        // Fallback local ya asegurado
+      });
+    }
+
+    return { createdCount, updatedCount, skippedCount };
   },
 
   update(input: UpdateProductInput): Product | null {

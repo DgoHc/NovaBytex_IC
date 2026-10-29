@@ -1,11 +1,28 @@
 import * as XLSX from "xlsx";
 import type { CreateProductInput } from "@/services/ProductService";
 import type { CatalogType, Product } from "@/lib/products";
+import {
+  validateExcelBuffer,
+  type ExcelValidationResult,
+  type ValidatedRow,
+  type ValidationIssue,
+  type DuplicateAction,
+  type DuplicateCollision,
+} from "./excelValidator";
+
+export type {
+  ExcelValidationResult,
+  ValidatedRow,
+  ValidationIssue,
+  DuplicateAction,
+  DuplicateCollision,
+};
 
 export interface ParsedRowResult {
   valid: CreateProductInput[];
   errors: { row: number; reason: string; data?: Record<string, unknown> }[];
   rawCount: number;
+  validation?: ExcelValidationResult;
 }
 
 const TEMPLATE_HEADERS = [
@@ -301,167 +318,100 @@ function cleanPriceValue(val: unknown): number {
 }
 
 /**
- * Parses an uploaded .xlsx / .xls / .csv file and validates rows.
- * Permite seleccionar el catálogo de destino (library o technology) desde la interfaz
- * para no obligar a colocar la columna "Tipo" en el archivo Excel.
+ * Exporta el reporte de problemas, duplicados y advertencias a un archivo Excel (.xlsx)
  */
-export async function parseExcelProducts(
-  file: File,
-  targetCatalogType: ImportCatalogOption = "library"
-): Promise<ParsedRowResult> {
-  const buffer = await file.arrayBuffer();
-  const workbook = XLSX.read(buffer, { type: "array" });
-  const sheetName = workbook.SheetNames[0];
-
-  if (!sheetName) {
-    return { valid: [], errors: [{ row: 0, reason: "El archivo no contiene hojas legibles." }], rawCount: 0 };
-  }
-
-  const worksheet = workbook.Sheets[sheetName];
-  const rawRows = XLSX.utils.sheet_to_json<Record<string, unknown>>(worksheet, { defval: "" });
-
-  const valid: CreateProductInput[] = [];
-  const errors: { row: number; reason: string; data?: Record<string, unknown> }[] = [];
-
-  rawRows.forEach((row, idx) => {
-    const rowNum = idx + 2; // 1-indexed header + data row
-
-    // Helper to find a value by multiple possible header keys
-    const getVal = (...keys: string[]): unknown => {
-      for (const k of keys) {
-        for (const rowKey of Object.keys(row)) {
-          if (rowKey.trim().toLowerCase().startsWith(k.toLowerCase())) {
-            return row[rowKey];
-          }
-        }
-      }
-      return undefined;
-    };
-
-    const name = String(getVal("nombre", "name", "producto", "item", "descripcion corta", "titulo") ?? "").trim();
-    // Único campo estrictamente requerido para crear un producto
-    if (!name) {
-      errors.push({ row: rowNum, reason: "Fila omitida: falta el nombre del producto", data: row });
-      return;
-    }
-
-    // 1. Tipo de catálogo:
-    // Si en el modal se seleccionó "library" o "technology", se asigna directamente.
-    // Si se seleccionó "auto", se busca en la columna o se deduce.
-    let type: CatalogType = targetCatalogType === "technology" ? "technology" : "library";
-    if (targetCatalogType === "auto") {
-      const rawType = String(getVal("tipo", "type", "catalogo", "seccion") ?? "").trim().toLowerCase();
-      if (
-        rawType.includes("tech") ||
-        rawType.includes("tec") ||
-        rawType.includes("ti") ||
-        rawType.includes("red") ||
-        rawType.includes("serv")
-      ) {
-        type = "technology";
-      } else {
-        type = "library";
-      }
-    } else {
-      type = targetCatalogType;
-    }
-
-    // 2. Categoría (Opcional: si está vacía, default según tipo)
-    const rawCat = String(getVal("categor", "cat", "rubro", "clasificacion") ?? "").trim();
-    const category = rawCat || (type === "library" ? "Papelería" : "Equipos");
-
-    // 3. Precio (Opcional: si no está, default a 0)
-    const rawPrice = getVal("precio", "price", "costo", "pvp", "monto");
-    const price = cleanPriceValue(rawPrice);
-
-    // 4. Precio anterior (Opcional: para descuentos)
-    const rawPrevPrice = getVal("precio anterior", "previous", "anterior", "antes", "rebaja");
-    let previousPrice: number | undefined = undefined;
-    if (rawPrevPrice !== undefined && rawPrevPrice !== "") {
-      const parsedPrev = cleanPriceValue(rawPrevPrice);
-      if (parsedPrev > price) {
-        previousPrice = parsedPrev;
-      }
-    }
-
-    // 5. Marca / Editorial (Opcional: default "NovaBytex")
-    const brand = String(getVal("marca", "brand", "editorial", "fabricante") ?? "").trim() || "NovaBytex";
-
-    // 6. SKU (Opcional: si no viene se autogenera)
-    const rawSku = String(getVal("sku", "código", "codigo", "cod") ?? "").trim();
-    const prefix = type === "library" ? "LIB" : "TECH";
-    const sku = rawSku || `NB-${prefix}-${Date.now().toString().slice(-4)}-${idx + 1}`;
-
-    // 7. Garantía (Opcional)
-    const warranty = String(getVal("garant", "warranty") ?? (type === "technology" ? "1 año" : "6 meses")).trim() || "Garantía de tienda";
-
-    // 8. Descripción (Opcional: si está vacía, se usa el nombre)
-    const rawDesc = String(getVal("descrip", "detalles", "detalle", "info") ?? "").trim();
-    const description = rawDesc || `${name} - Catálogo NovaBytex`;
-
-    // 9. En Stock (Opcional: default SI)
-    const rawStock = String(getVal("en stock", "stock", "disponible", "cant", "cantidad") ?? "SI").trim().toLowerCase();
-    const inStock = !(rawStock === "no" || rawStock === "0" || rawStock === "false" || rawStock === "agotado");
-
-    // 10. Destacado (Opcional: default NO)
-    const rawFeatured = String(getVal("destacado", "featured", "portada", "promocion") ?? "NO").trim().toLowerCase();
-    const featured = rawFeatured === "si" || rawFeatured === "yes" || rawFeatured === "true" || rawFeatured === "1";
-
-    // 11. Características (Opcional: frases separadas por coma)
-    const rawFeatures = String(getVal("caracteristicas", "features", "detalles tecnicos", "especificaciones") ?? "");
-    const features = rawFeatures
-      ? rawFeatures.split(",").map((s) => s.trim()).filter(Boolean)
-      : [];
-
-    // 12. Imagen (Opcional: ruta local /assets/... o URL web)
-    const rawImage = String(
-      getVal("imagen", "image", "foto", "url imagen", "foto url", "img", "picture", "link foto") ?? ""
-    ).trim();
-
-    // 13. Tipo de icono ilustrativo (Opcional: autodeducido por nombre si no hay foto)
-    const rawImageType = String(getVal("tipo imagen", "imagetype", "icono") ?? "").trim().toLowerCase();
-    let defaultImageType: Product["imageType"] = "book";
-    if (rawImageType) {
-      defaultImageType = rawImageType as Product["imageType"];
-    } else if (type === "technology") {
-      defaultImageType = category.toLowerCase().includes("serv") ? "server" : "switch";
-    } else {
-      const lower = (name + " " + category).toLowerCase();
-      if (lower.includes("cuad") || lower.includes("libret")) defaultImageType = "notebook";
-      else if (lower.includes("lapic") || lower.includes("bolig")) defaultImageType = "pen";
-      else if (lower.includes("lapiz") || lower.includes("lápiz")) defaultImageType = "pencil";
-      else if (lower.includes("plum") || lower.includes("marcad")) defaultImageType = "marker";
-      else if (lower.includes("resalt")) defaultImageType = "highlighter";
-      else if (lower.includes("agend")) defaultImageType = "agenda";
-      else defaultImageType = "book";
-    }
-
-    valid.push({
-      name,
-      type,
-      category,
-      price,
-      previousPrice,
-      brand,
-      sku,
-      warranty,
-      description,
-      fullDescription: description,
-      inStock,
-      available: true,
-      featured,
-      rating: 4.8,
-      reviewsCount: 0,
-      specifications: [
-        `Marca: ${brand}`,
-        `Categoría: ${category}`,
-        `Garantía: ${warranty}`,
-      ],
-      features,
-      imageType: defaultImageType,
-      image: rawImage,
+export function exportValidationReportToExcel(
+  validation: ExcelValidationResult,
+  fileName = "reporte_errores_importacion.xlsx"
+) {
+  const rows: Record<string, unknown>[] = [];
+  validation.rows.forEach((row) => {
+    if (row.issues.length === 0) return;
+    row.issues.forEach((issue) => {
+      rows.push({
+        Fila: issue.row,
+        Estado: row.status,
+        Severidad: issue.severity,
+        Columna: issue.column,
+        Campo: issue.field,
+        "Código de Problema": issue.code,
+        "Valor Original": String(issue.rawValue ?? ""),
+        "Corrección Sugerida": issue.suggestedFix !== undefined ? String(issue.suggestedFix) : "",
+        "Mensaje Detallado": issue.message,
+      });
     });
   });
 
-  return { valid, errors, rawCount: rawRows.length };
+  if (rows.length === 0) {
+    rows.push({
+      Resultado: "Sin problemas detectados",
+      Detalle: "Todas las filas del archivo son 100% válidas y están listas para importar.",
+    });
+  }
+
+  const ws = XLSX.utils.json_to_sheet(rows);
+  ws["!cols"] = [
+    { wch: 8 },  // Fila
+    { wch: 12 }, // Estado
+    { wch: 14 }, // Severidad
+    { wch: 20 }, // Columna
+    { wch: 16 }, // Campo
+    { wch: 24 }, // Código
+    { wch: 30 }, // Valor Original
+    { wch: 28 }, // Corrección
+    { wch: 60 }, // Mensaje
+  ];
+
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, "Reporte de Validación");
+  XLSX.writeFile(wb, fileName);
+}
+
+/**
+ * Parses an uploaded .xlsx / .xls / .csv file using the enhanced excelValidator engine.
+ */
+export async function parseExcelProducts(
+  file: File,
+  targetCatalogType: ImportCatalogOption = "library",
+  existingProducts: Product[] = []
+): Promise<ParsedRowResult & { validation: ExcelValidationResult }> {
+  const buffer = await file.arrayBuffer();
+  const validation = await validateExcelBuffer(buffer, {
+    targetCatalogType,
+    existingProducts,
+  });
+
+  if (!validation.success) {
+    return {
+      valid: [],
+      errors: [
+        {
+          row: 0,
+          reason: validation.fatalError || "Error al procesar el archivo Excel.",
+        },
+      ],
+      rawCount: 0,
+      validation,
+    };
+  }
+
+  // Las filas válidas para pre-cargar son aquellas sin error bloqueante
+  const valid = validation.rows
+    .filter((r) => r.status === "OK" || r.status === "AVISO")
+    .map((r) => r.product);
+
+  const errors = validation.rows
+    .filter((r) => r.status === "ERROR")
+    .map((r) => ({
+      row: r.rowNumber,
+      reason: r.issues.map((i) => i.message).join(" | "),
+      data: r.originalRow,
+    }));
+
+  return {
+    valid,
+    errors,
+    rawCount: validation.summary.totalRows,
+    validation,
+  };
 }
