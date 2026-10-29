@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import Link from "next/link";
 import {
   Package,
@@ -16,6 +16,8 @@ import {
   Plus,
   Boxes,
   DollarSign,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -52,6 +54,13 @@ export default function AdminInventarioPage() {
   const [typeFilter, setTypeFilter] = useState<"all" | "technology" | "library">("all");
   const [sortOrder, setSortOrder] = useState<SortOption>("name_asc");
   const [confirmDeleteProduct, setConfirmDeleteProduct] = useState<Product | null>(null);
+
+  const PAGE_SIZE = 20;
+  const [page, setPage] = useState(1);
+
+  useEffect(() => {
+    setPage(1);
+  }, [search, stockFilter, typeFilter, sortOrder]);
 
   const toggleStock = (id: number, current: boolean, productName: string) => {
     const nextStock = !current;
@@ -110,6 +119,12 @@ export default function AdminInventarioPage() {
 
     return list;
   }, [products, stockFilter, typeFilter, search, sortOrder]);
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const paginated = useMemo(() => {
+    const offset = (page - 1) * PAGE_SIZE;
+    return filtered.slice(offset, offset + PAGE_SIZE);
+  }, [filtered, page]);
 
   const outOfStockCount = stats.outOfStock;
   const inStockCount = stats.inStock;
@@ -386,7 +401,7 @@ export default function AdminInventarioPage() {
                   </td>
                 </tr>
               ) : (
-                filtered.map((item) => (
+                paginated.map((item) => (
                   <tr
                     key={item.id}
                     className="group hover:bg-slate-50/70 transition-colors h-[48px]"
@@ -506,7 +521,7 @@ export default function AdminInventarioPage() {
               <p className="text-[10px] text-slate-400 mt-0.5">Ajusta los filtros o busca otro artículo.</p>
             </div>
           ) : (
-            filtered.map((item) => (
+            paginated.map((item) => (
               <div
                 key={item.id}
                 className="p-3 rounded-lg border border-slate-200 bg-white shadow-2xs space-y-2"
@@ -587,6 +602,61 @@ export default function AdminInventarioPage() {
             ))
           )}
         </div>
+
+        {/* Barra de Paginación de Inventario (20 elementos con navegación izquierda/derecha) */}
+        {filtered.length > 0 && totalPages > 1 && (
+          <div className="px-4 py-3 border-t border-slate-100 bg-slate-50/70 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-600">
+            <div>
+              Mostrando{" "}
+              <strong className="text-slate-900 font-semibold">
+                {(page - 1) * PAGE_SIZE + 1} - {Math.min(page * PAGE_SIZE, filtered.length)}
+              </strong>{" "}
+              de <strong className="text-slate-900 font-semibold">{filtered.length}</strong> artículos
+            </div>
+
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
+                disabled={page <= 1}
+                className="h-8 px-2.5 rounded-lg border-slate-200 bg-white hover:bg-slate-100 text-xs font-semibold disabled:opacity-30 cursor-pointer"
+              >
+                <ChevronLeft className="w-3.5 h-3.5 mr-1" />
+                Anterior
+              </Button>
+
+              <div className="flex items-center gap-1">
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((pNum) => (
+                  <button
+                    key={pNum}
+                    type="button"
+                    onClick={() => setPage(pNum)}
+                    className={cn(
+                      "w-7 h-7 rounded-md text-xs font-semibold transition-all cursor-pointer",
+                      pNum === page
+                        ? "bg-blue-600 text-white font-bold shadow-xs"
+                        : "bg-white border border-slate-200 text-slate-700 hover:bg-slate-100"
+                    )}
+                  >
+                    {pNum}
+                  </button>
+                ))}
+              </div>
+
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                disabled={page >= totalPages}
+                className="h-8 px-2.5 rounded-lg border-slate-200 bg-white hover:bg-slate-100 text-xs font-semibold disabled:opacity-30 cursor-pointer"
+              >
+                Siguiente
+                <ChevronRight className="w-3.5 h-3.5 ml-1" />
+              </Button>
+            </div>
+          </div>
+        )}
       </Card>
 
       {/* CONFIRM DELETE MODAL */}

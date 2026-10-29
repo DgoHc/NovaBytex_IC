@@ -15,6 +15,8 @@ import {
   Download,
   ExternalLink,
   RotateCcw,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import { ExcelManagerModal } from "@/components/admin/ExcelManagerModal";
 import { Button } from "@/components/ui/button";
@@ -82,6 +84,14 @@ export function ProductList() {
   const [confirmTarget, setConfirmTarget] = useState<Product | null>(null);
   const [excelModalOpen, setExcelModalOpen] = useState(false);
   const [excelModalTab, setExcelModalTab] = useState<"import" | "export">("import");
+
+  const PAGE_SIZE = 20;
+  const [page, setPage] = useState(1);
+
+  // Resetear página al cambiar filtros
+  useEffect(() => {
+    setPage(1);
+  }, [typeFilter, categoryFilter, statusFilter, search, sortKey]);
 
   const toggleStock = (id: number, current: boolean) => {
     updateProduct({ id, inStock: !current });
@@ -159,6 +169,12 @@ export function ProductList() {
     }
     return list;
   }, [products, typeFilter, categoryFilter, statusFilter, search, sortKey]);
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const paginated = useMemo(() => {
+    const offset = (page - 1) * PAGE_SIZE;
+    return filtered.slice(offset, offset + PAGE_SIZE);
+  }, [filtered, page]);
 
   const counts = {
     all: stats.total,
@@ -433,7 +449,7 @@ export function ProductList() {
                   </td>
                 </tr>
               ) : (
-                filtered.map((p) => (
+                paginated.map((p) => (
                   <ProductRow
                     key={`prod-${p.id}`}
                     product={p}
@@ -457,7 +473,7 @@ export function ProductList() {
               <p className="text-xs text-slate-400 mt-1">Ajusta los filtros o crea uno nuevo.</p>
             </div>
           ) : (
-            filtered.map((p) => (
+            paginated.map((p) => (
               <ProductCardRow
                 key={`mobile-prod-${p.id}`}
                 product={p}
@@ -468,6 +484,61 @@ export function ProductList() {
             ))
           )}
         </div>
+
+        {/* Barra de Paginación de Tabla (20 elementos por tabla con desplazamiento izquierda/derecha) */}
+        {filtered.length > 0 && totalPages > 1 && (
+          <div className="px-4 py-3 border-t border-slate-100 bg-slate-50/70 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-600">
+            <div>
+              Mostrando{" "}
+              <strong className="text-slate-900 font-semibold">
+                {(page - 1) * PAGE_SIZE + 1} - {Math.min(page * PAGE_SIZE, filtered.length)}
+              </strong>{" "}
+              de <strong className="text-slate-900 font-semibold">{filtered.length}</strong> productos
+            </div>
+
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
+                disabled={page <= 1}
+                className="h-8 px-2.5 rounded-lg border-slate-200 bg-white hover:bg-slate-100 text-xs font-semibold disabled:opacity-30 cursor-pointer"
+              >
+                <ChevronLeft className="w-3.5 h-3.5 mr-1" />
+                Anterior
+              </Button>
+
+              <div className="flex items-center gap-1">
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((pNum) => (
+                  <button
+                    key={pNum}
+                    type="button"
+                    onClick={() => setPage(pNum)}
+                    className={cn(
+                      "w-7 h-7 rounded-md text-xs font-semibold transition-all cursor-pointer",
+                      pNum === page
+                        ? "bg-blue-600 text-white font-bold shadow-xs"
+                        : "bg-white border border-slate-200 text-slate-700 hover:bg-slate-100"
+                    )}
+                  >
+                    {pNum}
+                  </button>
+                ))}
+              </div>
+
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                disabled={page >= totalPages}
+                className="h-8 px-2.5 rounded-lg border-slate-200 bg-white hover:bg-slate-100 text-xs font-semibold disabled:opacity-30 cursor-pointer"
+              >
+                Siguiente
+                <ChevronRight className="w-3.5 h-3.5 ml-1" />
+              </Button>
+            </div>
+          </div>
+        )}
       </Card>
 
       {/* MODAL ELIMINAR PRODUCTO */}

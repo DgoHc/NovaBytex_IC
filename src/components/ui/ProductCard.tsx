@@ -113,8 +113,10 @@ export const ProductCard: React.FC<ProductCardProps> = ({
               )}
             >
               <Heart
+                width={16}
+                height={16}
                 className={cn(
-                  "w-3.5 h-3.5 transition-transform",
+                  "w-4 h-4 transition-transform",
                   isFav ? "fill-current scale-110" : ""
                 )}
               />
@@ -123,21 +125,37 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         </div>
 
         {/* Contenido de la Card: Textos y Precios */}
-        <div className="pt-3 px-1 flex flex-col flex-1 justify-between gap-3">
+        <div className="pt-3 px-1 flex flex-col flex-1 justify-between gap-2.5">
           <div className="space-y-1.5">
-            {/* Etiqueta de Categoría Discreta */}
-            <span
-              className={cn(
-                "inline-flex items-center px-2 py-0.5 rounded-md text-[10.5px] font-medium w-fit",
-                isDark
-                  ? "bg-blue-500/10 text-blue-300"
-                  : isLibrary
-                    ? "bg-library-cream/80 text-library-sage-foreground"
-                    : "bg-slate-100 text-slate-600"
+            {/* Fila superior: Badge Categoría (11px nowrap) + Marca/SKU (12px) */}
+            <div className="flex items-center justify-between gap-2 min-w-0">
+              <span
+                className={cn(
+                  "inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-semibold whitespace-nowrap shrink-0",
+                  isDark
+                    ? "bg-blue-500/10 text-blue-300"
+                    : isLibrary
+                      ? "bg-library-cream/80 text-library-sage-foreground"
+                      : "bg-slate-100 text-slate-600"
+                )}
+              >
+                {product.category}
+              </span>
+
+              {(product.brand || product.sku) && (
+                <span
+                  className={cn(
+                    "text-[12px] font-medium truncate",
+                    isDark ? "text-slate-400" : "text-slate-500"
+                  )}
+                  title={`${product.brand || ""} ${product.sku ? `(${product.sku})` : ""}`}
+                >
+                  {product.brand}
+                  {product.brand && product.sku ? " · " : ""}
+                  {product.sku && <span className="font-mono text-[11px]">{product.sku}</span>}
+                </span>
               )}
-            >
-              {product.category}
-            </span>
+            </div>
 
             {/* Título en máximo 2 líneas, blanco, peso 600 */}
             <h3
@@ -177,10 +195,10 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           >
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-1.5 flex-wrap">
-                {/* Precio Principal Grande y Negrita */}
+                {/* Precio Principal 16px semibold */}
                 <span
                   className={cn(
-                    "font-bold text-lg sm:text-xl tracking-tight tabular-nums",
+                    "font-semibold text-[16px] sm:text-[18px] tracking-tight tabular-nums",
                     isDark ? "text-white" : "text-slate-900"
                   )}
                 >
@@ -189,7 +207,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
 
                 {/* Precio Tachado con Mayor Contraste */}
                 {hasDiscount && (
-                  <span className="text-xs font-semibold text-slate-400 line-through tabular-nums">
+                  <span className="text-[12px] font-medium text-slate-400 line-through tabular-nums">
                     S/ {product.previousPrice!.toLocaleString("es-PE")}
                   </span>
                 )}
@@ -209,7 +227,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
               </div>
             </div>
 
-            {/* Botón "+" de 40px, esquinas redondeadas, alineado al precio */}
+            {/* Botón "+" de 40px, esquinas redondeadas, con icono explícito de 18px */}
             <Button
               type="button"
               size="icon"
@@ -224,7 +242,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
                     : "bg-blue-700 hover:bg-blue-800 text-white shadow-blue-700/20"
               )}
             >
-              <Plus className="w-4 h-4 stroke-[2.5]" />
+              <Plus width={18} height={18} className="w-[18px] h-[18px] stroke-[2.5]" />
             </Button>
           </div>
         </div>

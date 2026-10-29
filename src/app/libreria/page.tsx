@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useMemo, useEffect, Suspense } from "react";
 import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -26,6 +26,7 @@ import {
 import { PRODUCTS_DATA, LIBRARY_CATEGORIES } from "@/lib/products";
 import { useCatalog } from "@/contexts/CatalogContext";
 import { ProductCard } from "@/components/ui/ProductCard";
+import { CatalogSectionGrid } from "@/components/catalog/CatalogSectionGrid";
 import LibraryHero from "@/components/sections/LibraryHero";
 import { cn } from "@/lib/utils";
 
@@ -43,7 +44,7 @@ const categoryIcons: Record<string, React.ComponentType<{ className?: string }>>
   Agendas: Calendar,
 };
 
-export default function LibreriaPage() {
+function LibreriaContent() {
   const { products, hydrated } = useCatalog();
   const [selectedCategory, setSelectedCategory] = useState("Todos");
   const [searchQuery, setSearchQuery] = useState("");
@@ -364,51 +365,31 @@ export default function LibreriaPage() {
                 )}
               </div>
 
-              {filteredProducts.length === 0 ? (
-                <motion.div
-                  initial={mounted ? { opacity: 0, y: 14 } : false}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="bg-white border-library-beige/70 rounded-2xl p-12 text-center space-y-5"
-                >
-                  <div className="w-16 h-16 rounded-2xl bg-library-cream border border-library-beige/70 flex items-center justify-center mx-auto">
-                    <BookOpen className="w-7 h-7 text-library-sage-foreground" />
-                  </div>
-                  <div className="space-y-2">
-                    <p className="font-bodoni text-2xl text-slate-900">
-                      Sin resultados por el momento
-                    </p>
-                    <p className="text-slate-500">
-                      Ajusta tus filtros de búsqueda o limpia para explorar más.
-                    </p>
-                  </div>
-                  <Button
-                    onClick={resetFilters}
-                    className="bg-slate-900 hover:bg-blue-800 text-white font-semibold rounded-xl h-11 px-6"
-                  >
-                    Restablecer Filtros
-                  </Button>
-                </motion.div>
-              ) : (
-                <motion.div
-                  initial={mounted ? { opacity: 0, y: 12 } : false}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.35 }}
-                  className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-5 lg:gap-6"
-                >
-                  {filteredProducts.map((product, index) => (
-                    <ProductCard
-                      key={product.id}
-                      product={product}
-                      index={index}
-                      variant="light"
-                    />
-                  ))}
-                </motion.div>
-              )}
+              <CatalogSectionGrid
+                products={filteredProducts}
+                variant="light"
+                loading={!hydrated}
+                onResetFilters={resetFilters}
+                resetFilterDependency={`${selectedCategory}-${searchQuery}-${sortOrder}-${priceRange.join("-")}-${onlyAvailable}`}
+              />
             </div>
           </div>
         </div>
       </section>
     </main>
+  );
+}
+
+export default function LibreriaPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="py-20 min-h-screen bg-[#FDFBF7] flex items-center justify-center text-slate-400">
+          Cargando librería...
+        </div>
+      }
+    >
+      <LibreriaContent />
+    </Suspense>
   );
 }

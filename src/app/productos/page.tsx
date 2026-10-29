@@ -28,6 +28,7 @@ import {
 } from "@/lib/products";
 import { useCatalog } from "@/contexts/CatalogContext";
 import { ProductCard } from "@/components/ui/ProductCard";
+import { CatalogSectionGrid } from "@/components/catalog/CatalogSectionGrid";
 import { cn } from "@/lib/utils";
 
 type TechTabSection = "all" | "hardware" | "licenses";
@@ -379,10 +380,15 @@ function ProductosContent() {
               </div>
             </div>
 
-            {filteredProducts.length === 0 ? (
-              <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-10 sm:p-14 text-center space-y-4">
-                {activeTab === "hardware" ? (
-                  <>
+            <CatalogSectionGrid
+              products={filteredProducts}
+              variant="dark"
+              loading={!hydrated}
+              onResetFilters={resetFilters}
+              resetFilterDependency={`${activeTab}-${selectedCategory}-${selectedBrand}-${searchQuery}-${sortOrder}`}
+              emptyContent={
+                activeTab === "hardware" ? (
+                  <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-10 sm:p-14 text-center space-y-4">
                     <div className="w-12 h-12 rounded-2xl bg-blue-500/10 border border-blue-500/20 text-blue-400 flex items-center justify-center mx-auto mb-2">
                       <Cpu className="w-6 h-6" />
                     </div>
@@ -394,39 +400,17 @@ function ProductosContent() {
                     </p>
                     <div className="pt-2">
                       <Button
+                        type="button"
                         onClick={() => handleTabChange("licenses")}
                         className="bg-blue-600 hover:bg-blue-500 text-white font-semibold rounded-xl text-xs px-5 h-10 shadow-lg shadow-blue-600/25"
                       >
                         Ver Licencias &amp; Suscripciones
                       </Button>
                     </div>
-                  </>
-                ) : (
-                  <>
-                    <p className="text-slate-400 text-lg">
-                      No encontramos productos que coincidan con tu búsqueda.
-                    </p>
-                    <Button
-                      onClick={resetFilters}
-                      className="bg-blue-600 hover:bg-blue-500 text-white font-semibold rounded-xl"
-                    >
-                      Restablecer Filtros
-                    </Button>
-                  </>
-                )}
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-5 lg:gap-6">
-                {filteredProducts.map((product, index) => (
-                  <ProductCard
-                    key={product.id}
-                    product={product}
-                    index={index}
-                    variant="dark"
-                  />
-                ))}
-              </div>
-            )}
+                  </div>
+                ) : undefined
+              }
+            />
           </div>
         </div>
       </div>

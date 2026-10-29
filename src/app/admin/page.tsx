@@ -11,6 +11,8 @@ import {
   Plus,
   Edit3,
   ExternalLink,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import { ExcelManagerModal } from "@/components/admin/ExcelManagerModal";
 import { Badge } from "@/components/ui/badge";
@@ -23,13 +25,20 @@ export default function AdminDashboardPage() {
   const { products, stats } = useCatalog();
   const [excelModalOpen, setExcelModalOpen] = useState(false);
 
-  const recentProducts = useMemo(
+  const DASHBOARD_PAGE_SIZE = 20;
+  const [dashPage, setDashPage] = useState(1);
+
+  const sortedProducts = useMemo(
     () =>
-      [...products]
-        .sort((a, b) => (b.createdAt ?? "").localeCompare(a.createdAt ?? ""))
-        .slice(0, 5),
+      [...products].sort((a, b) => (b.createdAt ?? "").localeCompare(a.createdAt ?? "")),
     [products]
   );
+
+  const totalDashPages = Math.max(1, Math.ceil(sortedProducts.length / DASHBOARD_PAGE_SIZE));
+  const recentProducts = useMemo(() => {
+    const offset = (dashPage - 1) * DASHBOARD_PAGE_SIZE;
+    return sortedProducts.slice(offset, offset + DASHBOARD_PAGE_SIZE);
+  }, [sortedProducts, dashPage]);
 
   const techInStock = useMemo(
     () => products.filter((p) => p.type === "technology" && p.inStock).length,
@@ -149,18 +158,18 @@ export default function AdminDashboardPage() {
                 Actividad Reciente
               </h2>
               <p className="text-[11px] text-slate-500 mt-0.5">
-                Últimos productos
+                20 productos por página · Últimos registros
               </p>
             </div>
             <Link
               href="/admin/productos"
               className="text-xs font-semibold text-blue-700 hover:underline inline-flex items-center gap-1"
             >
-              Ver todos <ArrowRight className="w-3 h-3" />
+              Ver catálogo completo <ArrowRight className="w-3 h-3" />
             </Link>
           </div>
 
-          <div className="divide-y divide-slate-100 flex-1 overflow-y-auto max-h-[300px]">
+          <div className="divide-y divide-slate-100 flex-1 overflow-y-auto max-h-[520px]">
             {recentProducts.length === 0 ? (
               <div className="p-8 text-center text-slate-400 text-xs">
                 No hay productos registrados aún.
@@ -215,6 +224,40 @@ export default function AdminDashboardPage() {
               })
             )}
           </div>
+
+          {/* Paginador de 20 elementos para Actividad Reciente */}
+          {sortedProducts.length > 0 && totalDashPages > 1 && (
+            <div className="px-4 py-2.5 border-t border-slate-100 bg-slate-50/70 flex items-center justify-between text-xs text-slate-600">
+              <span className="text-[11px]">
+                {(dashPage - 1) * DASHBOARD_PAGE_SIZE + 1} - {Math.min(dashPage * DASHBOARD_PAGE_SIZE, sortedProducts.length)} de {sortedProducts.length}
+              </span>
+              <div className="flex items-center gap-1.5">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setDashPage((p) => Math.max(1, p - 1))}
+                  disabled={dashPage <= 1}
+                  className="h-7 px-2 text-xs rounded-md border-slate-200 bg-white hover:bg-slate-100 disabled:opacity-30 cursor-pointer"
+                >
+                  <ChevronLeft className="w-3 h-3 mr-0.5" />
+                  Ant.
+                </Button>
+                <span className="text-xs font-semibold px-1">
+                  {dashPage} / {totalDashPages}
+                </span>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setDashPage((p) => Math.min(totalDashPages, p + 1))}
+                  disabled={dashPage >= totalDashPages}
+                  className="h-7 px-2 text-xs rounded-md border-slate-200 bg-white hover:bg-slate-100 disabled:opacity-30 cursor-pointer"
+                >
+                  Sig.
+                  <ChevronRight className="w-3 h-3 ml-0.5" />
+                </Button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
