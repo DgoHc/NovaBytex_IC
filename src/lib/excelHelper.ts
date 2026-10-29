@@ -282,6 +282,24 @@ export function exportProductsToExcel(
   XLSX.writeFile(wb, fileName);
 }
 
+function cleanPriceValue(val: unknown): number {
+  if (typeof val === "number") return isNaN(val) ? 0 : Math.max(0, val);
+  if (!val) return 0;
+  let str = String(val).trim().replace(/[^0-9.,]/g, "");
+  if (!str) return 0;
+  if (str.includes(",") && !str.includes(".")) {
+    str = str.replace(",", ".");
+  } else if (str.includes(",") && str.includes(".")) {
+    if (str.lastIndexOf(",") > str.lastIndexOf(".")) {
+      str = str.replace(/\./g, "").replace(",", ".");
+    } else {
+      str = str.replace(/,/g, "");
+    }
+  }
+  const parsed = parseFloat(str);
+  return isNaN(parsed) ? 0 : Math.max(0, parsed);
+}
+
 /**
  * Parses an uploaded .xlsx / .xls / .csv file and validates rows.
  * Permite seleccionar el catálogo de destino (library o technology) desde la interfaz
@@ -354,15 +372,14 @@ export async function parseExcelProducts(
 
     // 3. Precio (Opcional: si no está, default a 0)
     const rawPrice = getVal("precio", "price", "costo", "pvp", "monto");
-    const numPrice = Number(String(rawPrice).replace(/[^0-9.]/g, ""));
-    const price = isNaN(numPrice) ? 0 : Math.max(0, numPrice);
+    const price = cleanPriceValue(rawPrice);
 
     // 4. Precio anterior (Opcional: para descuentos)
     const rawPrevPrice = getVal("precio anterior", "previous", "anterior", "antes", "rebaja");
     let previousPrice: number | undefined = undefined;
     if (rawPrevPrice !== undefined && rawPrevPrice !== "") {
-      const parsedPrev = Number(String(rawPrevPrice).replace(/[^0-9.]/g, ""));
-      if (!isNaN(parsedPrev) && parsedPrev > price) {
+      const parsedPrev = cleanPriceValue(rawPrevPrice);
+      if (parsedPrev > price) {
         previousPrice = parsedPrev;
       }
     }
