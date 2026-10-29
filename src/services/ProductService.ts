@@ -1,4 +1,11 @@
 import { PRODUCTS_DATA, type Product, type CatalogType } from "@/lib/products";
+import {
+  saveProductAction,
+  deleteProductAction,
+  toggleProductAvailableAction,
+  bulkUpsertProductsAction,
+  fetchProductsAction,
+} from "@/app/admin/productos/actions";
 
 const STORAGE_KEY = "nova:products:v2";
 const DELETED_KEY = "nova:deleted_product_ids:v1";
@@ -83,6 +90,24 @@ export const ProductService = {
   STORAGE_KEY,
   DEFAULT_NEW_PRODUCT,
 
+  /**
+   * Sincronización asíncrona con Supabase en segundo plano.
+   * Si Supabase responde, actualiza la caché local y retorna los productos de la BD.
+   * Si falla o está offline, retorna la caché de localStorage / datos base.
+   */
+  async syncWithSupabase(): Promise<Product[]> {
+    try {
+      const res = await fetchProductsAction();
+      if (res.success && res.data && res.data.length > 0) {
+        writeToStorage(res.data);
+        return res.data;
+      }
+    } catch {
+      // Continuar con fallback local
+    }
+    return ProductService.list();
+  },
+
   list(): Product[] {
     const deletedIds = readDeletedIds();
     const stored = readFromStorage();
@@ -137,6 +162,12 @@ export const ProductService = {
     };
     const next = [...current, product];
     writeToStorage(next);
+
+    // Sincronizar con Supabase en segundo plano
+    saveProductAction(product).catch(() => {
+      // Fallback ya persistido en localStorage
+    });
+
     return product;
   },
 
@@ -160,6 +191,12 @@ export const ProductService = {
 
     const next = [...current, ...createdList];
     writeToStorage(next);
+
+    // Sincronizar inserción masiva en Supabase
+    bulkUpsertProductsAction(createdList).catch(() => {
+      // Fallback ya persistido en localStorage
+    });
+
     return createdList;
   },
 
@@ -176,13 +213,27 @@ export const ProductService = {
     const next = [...current];
     next[idx] = updated;
     writeToStorage(next);
+
+    // Sincronizar actualización en Supabase
+    saveProductAction(updated).catch(() => {
+      // Fallback ya persistido en localStorage
+    });
+
     return updated;
   },
 
   toggleAvailable(id: number): Product | null {
     const product = ProductService.findById(id);
     if (!product) return null;
-    return ProductService.update({ id, available: !product.available });
+    const nextAvailable = !product.available;
+    const updated = ProductService.update({ id, available: nextAvailable });
+
+    // Sincronizar visibilidad en Supabase
+    toggleProductAvailableAction(id, nextAvailable).catch(() => {
+      // Fallback ya persistido en localStorage
+    });
+
+    return updated;
   },
 
   remove(id: number): boolean {
@@ -193,6 +244,12 @@ export const ProductService = {
     const current = ProductService.list();
     const next = current.filter((p) => p.id !== id);
     writeToStorage(next);
+
+    // Sincronizar eliminación en Supabase
+    deleteProductAction(id).catch(() => {
+      // Fallback ya persistido en localStorage
+    });
+
     return true;
   },
 
@@ -201,6 +258,12 @@ export const ProductService = {
       window.localStorage.removeItem(DELETED_KEY);
     }
     writeToStorage([...PRODUCTS_DATA]);
+
+    // Resincronizar los 35 productos base en Supabase
+    bulkUpsertProductsAction(PRODUCTS_DATA).catch(() => {
+      // Fallback en localStorage
+    });
+
     return PRODUCTS_DATA;
   },
 

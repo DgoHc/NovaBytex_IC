@@ -54,17 +54,18 @@ export function ExcelManagerModal({
   const [parsing, setParsing] = useState(false);
   const [parseResult, setParseResult] = useState<ParsedRowResult | null>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [importCatalogType, setImportCatalogType] = useState<"library" | "technology">("library");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Export states
   const [exportFilter, setExportFilter] = useState<"all" | "technology" | "library">("all");
 
-  const handleFileChange = async (selectedFile: File) => {
+  const handleFileChange = async (selectedFile: File, catalogType = importCatalogType) => {
     if (!selectedFile) return;
     setFile(selectedFile);
     setParsing(true);
     try {
-      const res = await parseExcelProducts(selectedFile);
+      const res = await parseExcelProducts(selectedFile, catalogType);
       setParseResult(res);
     } catch {
       setParseResult({
@@ -74,6 +75,13 @@ export function ExcelManagerModal({
       });
     } finally {
       setParsing(false);
+    }
+  };
+
+  const handleCatalogTypeChange = (newType: "library" | "technology") => {
+    setImportCatalogType(newType);
+    if (file) {
+      handleFileChange(file, newType);
     }
   };
 
@@ -171,6 +179,47 @@ export function ExcelManagerModal({
 
           {/* TAB: IMPORT */}
           <TabsContent value="import" className="space-y-4 focus-visible:outline-none mt-0">
+            {/* Selector de Catálogo de Destino */}
+            <div className="p-4 rounded-2xl border border-slate-200 bg-white shadow-xs space-y-2.5">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
+                <label className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                  <Layers className="w-3.5 h-3.5 text-blue-600" />
+                  ¿A qué catálogo pertenecen estos productos?
+                </label>
+                <span className="text-[11px] text-slate-400">
+                  (No necesitas agregar la columna "Tipo" en tu Excel)
+                </span>
+              </div>
+              <div className="grid grid-cols-2 gap-2.5">
+                <button
+                  type="button"
+                  onClick={() => handleCatalogTypeChange("library")}
+                  className={cn(
+                    "flex items-center justify-center gap-2 h-11 rounded-xl text-xs font-bold border transition-all",
+                    importCatalogType === "library"
+                      ? "bg-emerald-50/80 border-emerald-500 text-emerald-900 shadow-xs ring-2 ring-emerald-500/20"
+                      : "bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100"
+                  )}
+                >
+                  <BookOpen className="w-4 h-4 text-emerald-600" />
+                  Catálogo de Librería
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleCatalogTypeChange("technology")}
+                  className={cn(
+                    "flex items-center justify-center gap-2 h-11 rounded-xl text-xs font-bold border transition-all",
+                    importCatalogType === "technology"
+                      ? "bg-blue-50/80 border-blue-500 text-blue-900 shadow-xs ring-2 ring-blue-500/20"
+                      : "bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100"
+                  )}
+                >
+                  <Cpu className="w-4 h-4 text-blue-600" />
+                  Catálogo de Tecnología
+                </button>
+              </div>
+            </div>
+
             {/* Template Card */}
             <div className="flex items-center justify-between p-3.5 rounded-xl border border-blue-100 bg-blue-50/50">
               <div className="flex items-center gap-3 min-w-0">
@@ -179,17 +228,17 @@ export function ExcelManagerModal({
                 </div>
                 <div className="min-w-0">
                   <p className="text-xs font-bold text-blue-950">
-                    ¿No tienes la plantilla oficial?
+                    Descargar plantilla modelo ({importCatalogType === "library" ? "Librería" : "Tecnología"})
                   </p>
                   <p className="text-[11px] text-blue-800/80 leading-snug">
-                    Descarga el formato modelo con ejemplos para Tecnología y Librería.
+                    Columnas listas y con ejemplos de prueba. Todos los campos excepto el nombre son opcionales.
                   </p>
                 </div>
               </div>
               <Button
                 variant="outline"
                 size="sm"
-                onClick={downloadExcelTemplate}
+                onClick={() => downloadExcelTemplate(importCatalogType)}
                 className="h-8 px-3 rounded-lg border-blue-200 bg-white text-blue-700 hover:bg-blue-50 text-xs font-semibold shrink-0"
               >
                 <Download className="w-3.5 h-3.5 mr-1.5" />

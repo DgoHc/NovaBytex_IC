@@ -26,6 +26,10 @@ import {
   type CatalogType,
   type CustomCategory,
 } from "@/lib/products";
+import {
+  saveCustomCategoryAction,
+  fetchCustomCategoriesAction,
+} from "@/app/admin/productos/actions";
 import { cn } from "@/lib/utils";
 
 export default function AdminCategoriasPage() {
@@ -37,6 +41,19 @@ export default function AdminCategoriasPage() {
 
   useEffect(() => {
     setCustomCategories(getStoredCustomCategories());
+
+    // Sincronizar categorías personalizadas desde Supabase
+    fetchCustomCategoriesAction().then((res) => {
+      if (res.success && res.data && res.data.length > 0) {
+        let latest = getStoredCustomCategories();
+        for (const cat of res.data) {
+          latest = saveCustomCategory(cat);
+        }
+        setCustomCategories(latest);
+      }
+    }).catch(() => {
+      // Fallback local silencioso
+    });
   }, []);
 
   const techCategories = useMemo(() => {
@@ -90,6 +107,12 @@ export default function AdminCategoriasPage() {
 
     const updated = saveCustomCategory({ name, type: newCatType });
     setCustomCategories(updated);
+
+    // Guardar en Supabase en segundo plano
+    saveCustomCategoryAction({ name, type: newCatType }).catch(() => {
+      // Fallback local
+    });
+
     pushToast({
       title: "Categoría creada",
       description: `Se registró «${name}» en catálogo de ${

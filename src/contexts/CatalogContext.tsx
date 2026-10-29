@@ -59,6 +59,17 @@ export function CatalogProvider({ children }: { children: React.ReactNode }) {
       setLoading(false);
       setHydrated(true);
     }
+
+    // Sincronización en segundo plano con Supabase para datos multi-usuario en tiempo real
+    ProductService.syncWithSupabase()
+      .then((freshList) => {
+        if (freshList && freshList.length > 0) {
+          setProducts(freshList);
+        }
+      })
+      .catch(() => {
+        // En caso de desconexión o modo offline, se mantiene la lista local
+      });
   }, []);
 
   useEffect(() => {
