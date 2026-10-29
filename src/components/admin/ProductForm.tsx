@@ -761,6 +761,42 @@ export function ProductForm({
           <h1 className="text-2xl font-bold tracking-tight text-slate-900">
             {mode === "create" ? "Crear nuevo producto" : `Editar: ${initial?.name}`}
           </h1>
+          <div className="flex flex-wrap items-center gap-2.5 mt-1.5">
+            <Badge
+              className={cn(
+                "h-6 px-2.5 text-xs font-bold border gap-1.5 rounded-md",
+                activeType === "library"
+                  ? "bg-emerald-50 text-emerald-800 border-emerald-300"
+                  : "bg-blue-50 text-blue-800 border-blue-300"
+              )}
+            >
+              {activeType === "library" ? (
+                <>
+                  <BookOpen className="w-3.5 h-3.5 text-emerald-600" />
+                  <span>Catálogo de Librería</span>
+                </>
+              ) : (
+                <>
+                  <Cpu className="w-3.5 h-3.5 text-blue-600" />
+                  <span>Catálogo de Tecnología</span>
+                </>
+              )}
+            </Badge>
+
+            <button
+              type="button"
+              onClick={() => {
+                const nextType = activeType === "technology" ? "library" : "technology";
+                setValue("type", nextType, { shouldDirty: true });
+                setValue("category", nextType === "technology" ? "Redes" : "Cuadernos", { shouldDirty: true });
+                setValue("sku", `NB-${nextType === "technology" ? "TI" : "LIB"}-${Math.floor(100 + Math.random() * 900)}`, { shouldDirty: true });
+                setValue("brand", nextType === "technology" ? "Cisco" : "Standford", { shouldDirty: true });
+              }}
+              className="text-[11px] font-medium text-slate-500 hover:text-slate-800 underline decoration-slate-300 transition-colors cursor-pointer"
+            >
+              Cambiar a {activeType === "technology" ? "Librería" : "Tecnología"}
+            </button>
+          </div>
         </div>
 
         {/* Tablet Live Preview Toggle Button (768px - 1199px) */}
@@ -813,58 +849,11 @@ export function ProductForm({
       <div className="grid grid-cols-1 xl:grid-cols-[1fr_380px] gap-6 items-start">
         {/* FORM COLUMN (Left) */}
         <div className="space-y-4">
-          {/* SECCIÓN 1: TIPO DE CATÁLOGO (Segmented Control) */}
+          {/* SECCIÓN 1: INFORMACIÓN BÁSICA */}
           <section className="bg-white border border-slate-200 rounded-xl p-6 shadow-xs space-y-5">
             <div>
               <h2 className="text-[16px] font-semibold text-slate-900">
-                1. Tipo de catálogo
-              </h2>
-              <p className="text-[12px] text-slate-500 mt-0.5">
-                Selecciona en qué sección de la tienda aparecerá el producto.
-              </p>
-            </div>
-
-            <Controller
-              name="type"
-              control={control}
-              render={({ field }) => (
-                <div className="grid grid-cols-2 gap-2.5 bg-slate-50 p-1.5 rounded-xl border border-slate-200">
-                  <button
-                    type="button"
-                    onClick={() => field.onChange("technology")}
-                    className={cn(
-                      "flex items-center justify-center gap-2 h-11 md:h-10 rounded-lg text-xs font-bold transition-all cursor-pointer",
-                      field.value === "technology"
-                        ? "bg-white text-blue-700 shadow-xs border border-slate-200/80 ring-2 ring-blue-500/10"
-                        : "text-slate-600 hover:text-slate-900"
-                    )}
-                  >
-                    <Cpu className="w-4 h-4 text-blue-600" />
-                    Tecnología
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => field.onChange("library")}
-                    className={cn(
-                      "flex items-center justify-center gap-2 h-11 md:h-10 rounded-lg text-xs font-bold transition-all cursor-pointer",
-                      field.value === "library"
-                        ? "bg-white text-emerald-800 shadow-xs border border-slate-200/80 ring-2 ring-emerald-500/10"
-                        : "text-slate-600 hover:text-slate-900"
-                    )}
-                  >
-                    <BookOpen className="w-4 h-4 text-emerald-600" />
-                    Librería
-                  </button>
-                </div>
-              )}
-            />
-          </section>
-
-          {/* SECCIÓN 2: INFORMACIÓN BÁSICA */}
-          <section className="bg-white border border-slate-200 rounded-xl p-6 shadow-xs space-y-5">
-            <div>
-              <h2 className="text-[16px] font-semibold text-slate-900">
-                2. Información básica
+                1. Información básica
               </h2>
               <p className="text-[12px] text-slate-500 mt-0.5">
                 Datos descriptivos principales para identificar el artículo en el catálogo.
@@ -1073,11 +1062,11 @@ export function ProductForm({
             </div>
           </section>
 
-          {/* SECCIÓN 3: PRECIO E INVENTARIO */}
+          {/* SECCIÓN 2: PRECIO E INVENTARIO */}
           <section className="bg-white border border-slate-200 rounded-xl p-6 shadow-xs space-y-5">
             <div>
               <h2 className="text-[16px] font-semibold text-slate-900">
-                3. Precio e inventario
+                2. Precio e inventario
               </h2>
               <p className="text-[12px] text-slate-500 mt-0.5">
                 Establece el precio en Soles (S/), descuentos y disponibilidad del stock.
@@ -1233,7 +1222,7 @@ export function ProductForm({
             </div>
           </section>
 
-          {/* SECCIÓN 4: ESPECIFICACIONES TÉCNICAS (Colapsable, cerrada por defecto) */}
+          {/* SECCIÓN 3: ESPECIFICACIONES TÉCNICAS (Colapsable, cerrada por defecto) */}
           <section className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-xs transition-all">
             <button
               type="button"
@@ -1243,7 +1232,7 @@ export function ProductForm({
               <div>
                 <div className="flex items-center gap-2">
                   <h2 className="text-[16px] font-semibold text-slate-900">
-                    4. Especificaciones técnicas
+                    3. Especificaciones técnicas
                   </h2>
                   <span className="text-[12px] text-slate-500 font-normal">
                     (Opcional)

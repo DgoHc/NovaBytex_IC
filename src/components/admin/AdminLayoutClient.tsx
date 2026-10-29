@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -529,22 +529,16 @@ export default function AdminLayoutClient({
               </Button>
             </div>
 
-            <div className="hidden md:flex items-center p-0.5 rounded-lg bg-slate-100 border border-slate-200">
-              <Link
-                href="/admin/productos?type=technology"
-                className="inline-flex items-center gap-1.5 h-9 px-3 rounded-md text-xs font-medium bg-white text-blue-700 shadow-xs transition-colors"
-              >
-                <Cpu size={16} style={{ width: 16, height: 16 }} className="w-4 h-4 text-blue-600 shrink-0" />
-                Tecnología
-              </Link>
-              <Link
-                href="/admin/productos?type=library"
-                className="inline-flex items-center gap-1.5 h-9 px-3 rounded-md text-xs font-medium text-slate-600 hover:text-emerald-700 transition-colors"
-              >
-                <BookOpen size={16} style={{ width: 16, height: 16 }} className="w-4 h-4 text-emerald-700 shrink-0" />
-                Librería
-              </Link>
-            </div>
+            <React.Suspense
+              fallback={
+                <div className="hidden md:flex items-center h-8 w-44 rounded-xl bg-slate-100 border border-slate-200 animate-pulse" />
+              }
+            >
+              <HeaderCatalogSwitcher
+                techCount={stats.technology}
+                libCount={stats.library}
+              />
+            </React.Suspense>
 
             <div className="flex items-center gap-2 pl-2 border-l border-slate-200">
               <button
@@ -601,5 +595,124 @@ function Breadcrumb() {
       <span className="mx-1.5 text-slate-300 font-medium">/</span>
       <span>{currentSection}</span>
     </p>
+  );
+}
+
+function HeaderCatalogSwitcher({
+  techCount,
+  libCount,
+}: {
+  techCount: number;
+  libCount: number;
+}) {
+  const router = useRouter();
+  const pathname = usePathname() ?? "";
+  const searchParams = useSearchParams();
+  const typeParam = searchParams.get("type");
+
+  const isLib =
+    typeParam === "library" ||
+    (typeParam !== "technology" && pathname === "/libreria");
+  const isTech =
+    typeParam === "technology" ||
+    (!isLib &&
+      (pathname.startsWith("/admin/productos") ||
+        pathname === "/productos" ||
+        pathname === "/admin"));
+
+  const active: "technology" | "library" | null = isLib
+    ? "library"
+    : isTech
+    ? "technology"
+    : null;
+
+  const navigateTo = (t: "technology" | "library") => {
+    if (pathname.includes("/admin/productos/nuevo")) {
+      router.push(`/admin/productos/nuevo?type=${t}`);
+    } else {
+      router.push(`/admin/productos?type=${t}`);
+    }
+  };
+
+  return (
+    <div className="hidden md:flex items-center p-1 rounded-xl bg-slate-100 border border-slate-200/90 shadow-inner relative gap-1 select-none">
+      {/* Botón Tecnología */}
+      <button
+        type="button"
+        onClick={() => navigateTo("technology")}
+        className={cn(
+          "relative flex items-center gap-1.5 h-8 px-3 rounded-lg text-xs font-bold transition-all z-10 cursor-pointer",
+          active === "technology"
+            ? "text-blue-700 font-extrabold"
+            : "text-slate-500 hover:text-slate-900 hover:bg-slate-200/40"
+        )}
+      >
+        {active === "technology" && (
+          <motion.div
+            layoutId="headerActiveCatalogPill"
+            transition={{ type: "spring", stiffness: 450, damping: 32 }}
+            className="absolute inset-0 rounded-lg bg-white border border-blue-200 shadow-xs ring-2 ring-blue-500/15 -z-10"
+          />
+        )}
+        <Cpu
+          className={cn(
+            "w-4 h-4 transition-transform duration-200 shrink-0",
+            active === "technology" ? "text-blue-600 scale-110" : "text-slate-400"
+          )}
+        />
+        <span>Tecnología</span>
+        {techCount > 0 && (
+          <span
+            className={cn(
+              "text-[10px] px-1.5 py-0.2 rounded-full font-bold tabular-nums transition-colors",
+              active === "technology"
+                ? "bg-blue-100 text-blue-700 font-extrabold"
+                : "bg-slate-200/80 text-slate-500"
+            )}
+          >
+            {techCount}
+          </span>
+        )}
+      </button>
+
+      {/* Botón Librería */}
+      <button
+        type="button"
+        onClick={() => navigateTo("library")}
+        className={cn(
+          "relative flex items-center gap-1.5 h-8 px-3 rounded-lg text-xs font-bold transition-all z-10 cursor-pointer",
+          active === "library"
+            ? "text-emerald-800 font-extrabold"
+            : "text-slate-500 hover:text-slate-900 hover:bg-slate-200/40"
+        )}
+      >
+        {active === "library" && (
+          <motion.div
+            layoutId="headerActiveCatalogPill"
+            transition={{ type: "spring", stiffness: 450, damping: 32 }}
+            className="absolute inset-0 rounded-lg bg-white border border-emerald-300 shadow-xs ring-2 ring-emerald-500/15 -z-10"
+          />
+        )}
+        <BookOpen
+          className={cn(
+            "w-4 h-4 transition-transform duration-200 shrink-0",
+            active === "library" ? "text-emerald-600 scale-110" : "text-slate-400"
+          )}
+        />
+        <span>Librería</span>
+        {libCount > 0 && (
+          <span
+            className={cn(
+              "text-[10px] px-1.5 py-0.2 rounded-full font-bold tabular-nums transition-colors",
+              active === "library"
+                ? "bg-emerald-100 text-emerald-800 font-extrabold"
+                : "bg-slate-200/80 text-slate-500"
+            )}
+          >
+            {libCount}
+          </span>
+        )}
+      </button>
+    </div>
   );
 }

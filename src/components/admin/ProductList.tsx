@@ -100,8 +100,8 @@ export function ProductList() {
     if (categoryFilter !== "Todos") params.set("category", categoryFilter);
     const str = params.toString();
     const newUrl = "/admin/productos" + (str ? `?${str}` : "");
-    window.history.replaceState(null, "", newUrl);
-  }, [typeFilter, categoryFilter]);
+    router.replace(newUrl, { scroll: false });
+  }, [typeFilter, categoryFilter, router]);
 
   const availableCategories = useMemo(() => {
     const base = ["Todos"];
@@ -191,7 +191,12 @@ export function ProductList() {
           </Button>
           <Button
             asChild
-            className="h-10 px-4 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold shadow-xs border-0"
+            className={cn(
+              "h-10 px-4 rounded-lg text-white text-xs font-semibold shadow-xs border-0 transition-all",
+              typeFilter === "library"
+                ? "bg-emerald-600 hover:bg-emerald-700 shadow-emerald-500/20"
+                : "bg-blue-600 hover:bg-blue-700 shadow-blue-500/20"
+            )}
           >
             <Link
               href={
@@ -203,7 +208,7 @@ export function ProductList() {
               }
             >
               <Plus size={18} style={{ width: 18, height: 18 }} className="w-[18px] h-[18px] mr-1.5 shrink-0" />
-              Nuevo Producto {typeFilter === "technology" ? "TI" : typeFilter === "library" ? "Librería" : ""}
+              Nuevo Producto {typeFilter === "technology" ? "Tecnología" : typeFilter === "library" ? "Librería" : ""}
             </Link>
           </Button>
         </div>
