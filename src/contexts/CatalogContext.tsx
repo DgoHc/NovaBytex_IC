@@ -14,7 +14,12 @@ import {
   type UpdateProductInput,
   type CatalogSyncMessage,
 } from "@/services/ProductService";
-import { type CatalogType, type Product, fromDbProduct } from "@/lib/products";
+import {
+  type CatalogType,
+  type Product,
+  fromDbProduct,
+  getShortProductName,
+} from "@/lib/products";
 import type { ValidatedRow } from "@/lib/excelValidator";
 import { getSupabaseClient, isSupabaseConfigured } from "@/lib/supabase/client";
 
@@ -222,9 +227,10 @@ export function CatalogProvider({ children }: { children: React.ReactNode }) {
       try {
         const created = ProductService.create(input);
         refresh();
+        const shortName = getShortProductName(created.name);
         pushToast({
           title: "Producto creado",
-          description: `Se agregó «${created.name}» al catálogo.`,
+          description: `Se agregó «${shortName}» al catálogo.`,
           variant: "success",
         });
         return created;
@@ -301,9 +307,10 @@ export function CatalogProvider({ children }: { children: React.ReactNode }) {
         setProducts((prev) =>
           prev.map((p) => (Number(p.id) === targetId ? updated : p))
         );
+        const shortName = getShortProductName(updated.name);
         pushToast({
           title: "Producto actualizado",
-          description: `«${updated.name}» fue actualizado correctamente.`,
+          description: `«${shortName}» fue actualizado correctamente.`,
           variant: "success",
         });
         return updated;
@@ -330,9 +337,10 @@ export function CatalogProvider({ children }: { children: React.ReactNode }) {
             Number(p.id) === targetId ? { ...p, available: updated.available } : p
           )
         );
+        const shortName = getShortProductName(updated.name);
         pushToast({
           title: updated.available ? "Producto activado" : "Producto desactivado",
-          description: `«${updated.name}» ${
+          description: `«${shortName}» ${
             updated.available ? "ahora está visible en tienda." : "se ocultó de la tienda."
           }`,
           variant: "info",
@@ -353,10 +361,11 @@ export function CatalogProvider({ children }: { children: React.ReactNode }) {
       if (ok) {
         setProducts((prev) => prev.filter((p) => Number(p.id) !== targetId));
         refresh();
+        const shortName = product ? getShortProductName(product.name) : "";
         pushToast({
           title: "Producto eliminado",
-          description: product
-            ? `«${product.name}» fue eliminado del catálogo.`
+          description: shortName
+            ? `«${shortName}» fue eliminado del catálogo.`
             : undefined,
           variant: "success",
         });

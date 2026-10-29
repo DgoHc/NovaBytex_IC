@@ -109,6 +109,15 @@ export function fromDbProduct(row: any): Product {
   };
 }
 
+/**
+ * Retorna solo las 2 primeras palabras del nombre de un producto para que los avisos no tengan demasiado texto.
+ */
+export function getShortProductName(name: string): string {
+  if (!name) return "";
+  const words = name.trim().split(/\s+/);
+  return words.slice(0, 2).join(" ");
+}
+
 export const PRODUCTS_DATA: Product[] = [
   {
     id: 1,

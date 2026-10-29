@@ -40,7 +40,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { ProductImage } from "@/components/ui/ProductImage";
 import { useCatalog } from "@/contexts/CatalogContext";
-import { type Product } from "@/lib/products";
+import { type Product, getShortProductName } from "@/lib/products";
 import { cn } from "@/lib/utils";
 
 type SortOption = "name_asc" | "price_desc" | "price_asc" | "out_of_stock_first" | "in_stock_first";
@@ -56,9 +56,10 @@ export default function AdminInventarioPage() {
   const toggleStock = (id: number, current: boolean, productName: string) => {
     const nextStock = !current;
     updateProduct({ id, inStock: nextStock });
+    const shortName = getShortProductName(productName);
     pushToast({
       title: nextStock ? "En Stock" : "Agotado",
-      description: `«${productName}» marcado como ${nextStock ? "en stock" : "agotado"}.`,
+      description: `«${shortName}» marcado como ${nextStock ? "en stock" : "agotado"}.`,
       variant: nextStock ? "success" : "info",
     });
   };
@@ -66,11 +67,6 @@ export default function AdminInventarioPage() {
   const handleDeleteProduct = () => {
     if (!confirmDeleteProduct) return;
     deleteProduct(confirmDeleteProduct.id);
-    pushToast({
-      title: "Producto eliminado",
-      description: `«${confirmDeleteProduct.name}» fue removido del catálogo.`,
-      variant: "info",
-    });
     setConfirmDeleteProduct(null);
   };
 
