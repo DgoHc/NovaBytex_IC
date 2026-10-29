@@ -610,23 +610,54 @@ function HeaderCatalogSwitcher({
   const searchParams = useSearchParams();
   const typeParam = searchParams.get("type");
 
-  const isLib =
-    typeParam === "library" ||
-    (typeParam !== "technology" && pathname === "/libreria");
-  const isTech =
-    typeParam === "technology" ||
-    (!isLib &&
-      (pathname.startsWith("/admin/productos") ||
-        pathname === "/productos" ||
-        pathname === "/admin"));
+  const [activeCatalog, setActiveCatalog] = useState<"technology" | "library">(() => {
+    if (typeParam === "library" || pathname === "/libreria") return "library";
+    return "technology";
+  });
 
-  const active: "technology" | "library" | null = isLib
-    ? "library"
-    : isTech
-    ? "technology"
-    : null;
+  // Sync state when URL searchParams or pathname changes
+  useEffect(() => {
+    if (typeParam === "library" || pathname === "/libreria") {
+      setActiveCatalog("library");
+    } else if (
+      typeParam === "technology" ||
+      (!typeParam &&
+        (pathname.startsWith("/admin/productos") ||
+          pathname === "/productos" ||
+          pathname === "/admin"))
+    ) {
+      setActiveCatalog("technology");
+    }
+  }, [typeParam, pathname]);
+
+  // Sync with custom event from ProductList tabs or filters
+  useEffect(() => {
+    const handleFilterChange = (e: Event) => {
+      const customEvent = e as CustomEvent<{ type: "all" | "technology" | "library" }>;
+      if (customEvent.detail?.type === "library") {
+        setActiveCatalog("library");
+      } else if (customEvent.detail?.type === "technology") {
+        setActiveCatalog("technology");
+      }
+    };
+    window.addEventListener("nova:catalog:filter_change", handleFilterChange);
+    return () => window.removeEventListener("nova:catalog:filter_change", handleFilterChange);
+  }, []);
 
   const navigateTo = (t: "technology" | "library") => {
+    // 1. Instant optimistic state (0ms visual feedback)
+    setActiveCatalog(t);
+
+    // 2. Broadcast filter change so ProductList table immediately flips without lag
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(
+        new CustomEvent("nova:catalog:filter_change", {
+          detail: { type: t },
+        })
+      );
+    }
+
+    // 3. Update route
     if (pathname.includes("/admin/productos/nuevo")) {
       router.push(`/admin/productos/nuevo?type=${t}`);
     } else {
@@ -635,29 +666,31 @@ function HeaderCatalogSwitcher({
   };
 
   return (
-    <div className="hidden md:flex items-center p-1 rounded-xl bg-slate-100 border border-slate-200/90 shadow-inner relative gap-1 select-none">
+    <div className="hidden sm:flex items-center p-1 rounded-xl bg-slate-200/80 border border-slate-300/80 shadow-inner relative gap-1 select-none">
       {/* Botón Tecnología */}
       <button
         type="button"
         onClick={() => navigateTo("technology")}
         className={cn(
-          "relative flex items-center gap-1.5 h-8 px-3 rounded-lg text-xs font-bold transition-all z-10 cursor-pointer",
-          active === "technology"
-            ? "text-blue-700 font-extrabold"
-            : "text-slate-500 hover:text-slate-900 hover:bg-slate-200/40"
+          "relative flex items-center gap-1.5 h-8 px-3 rounded-lg text-xs font-bold transition-all duration-200 z-10 cursor-pointer active:scale-95",
+          activeCatalog === "technology"
+            ? "text-white font-extrabold shadow-sm"
+            : "text-slate-600 hover:text-slate-900 hover:bg-slate-300/40"
         )}
       >
-        {active === "technology" && (
+        {activeCatalog === "technology" && (
           <motion.div
             layoutId="headerActiveCatalogPill"
-            transition={{ type: "spring", stiffness: 450, damping: 32 }}
-            className="absolute inset-0 rounded-lg bg-white border border-blue-200 shadow-xs ring-2 ring-blue-500/15 -z-10"
+            transition={{ type: "spring", stiffness: 500, damping: 30 }}
+            className="absolute inset-0 rounded-lg bg-gradient-to-r from-blue-600 to-blue-700 shadow-md shadow-blue-500/35 border border-blue-500/50 -z-10"
           />
         )}
         <Cpu
           className={cn(
-            "w-4 h-4 transition-transform duration-200 shrink-0",
-            active === "technology" ? "text-blue-600 scale-110" : "text-slate-400"
+            "w-4 h-4 transition-all duration-200 shrink-0",
+            activeCatalog === "technology"
+              ? "text-white scale-110 drop-shadow-xs"
+              : "text-slate-500"
           )}
         />
         <span>Tecnología</span>
@@ -665,9 +698,9 @@ function HeaderCatalogSwitcher({
           <span
             className={cn(
               "text-[10px] px-1.5 py-0.2 rounded-full font-bold tabular-nums transition-colors",
-              active === "technology"
-                ? "bg-blue-100 text-blue-700 font-extrabold"
-                : "bg-slate-200/80 text-slate-500"
+              activeCatalog === "technology"
+                ? "bg-white/25 text-white font-black"
+                : "bg-slate-300/80 text-slate-600"
             )}
           >
             {techCount}
@@ -680,23 +713,25 @@ function HeaderCatalogSwitcher({
         type="button"
         onClick={() => navigateTo("library")}
         className={cn(
-          "relative flex items-center gap-1.5 h-8 px-3 rounded-lg text-xs font-bold transition-all z-10 cursor-pointer",
-          active === "library"
-            ? "text-emerald-800 font-extrabold"
-            : "text-slate-500 hover:text-slate-900 hover:bg-slate-200/40"
+          "relative flex items-center gap-1.5 h-8 px-3 rounded-lg text-xs font-bold transition-all duration-200 z-10 cursor-pointer active:scale-95",
+          activeCatalog === "library"
+            ? "text-white font-extrabold shadow-sm"
+            : "text-slate-600 hover:text-slate-900 hover:bg-slate-300/40"
         )}
       >
-        {active === "library" && (
+        {activeCatalog === "library" && (
           <motion.div
             layoutId="headerActiveCatalogPill"
-            transition={{ type: "spring", stiffness: 450, damping: 32 }}
-            className="absolute inset-0 rounded-lg bg-white border border-emerald-300 shadow-xs ring-2 ring-emerald-500/15 -z-10"
+            transition={{ type: "spring", stiffness: 500, damping: 30 }}
+            className="absolute inset-0 rounded-lg bg-gradient-to-r from-emerald-600 to-teal-600 shadow-md shadow-emerald-500/35 border border-emerald-500/50 -z-10"
           />
         )}
         <BookOpen
           className={cn(
-            "w-4 h-4 transition-transform duration-200 shrink-0",
-            active === "library" ? "text-emerald-600 scale-110" : "text-slate-400"
+            "w-4 h-4 transition-all duration-200 shrink-0",
+            activeCatalog === "library"
+              ? "text-white scale-110 drop-shadow-xs"
+              : "text-slate-500"
           )}
         />
         <span>Librería</span>
@@ -704,9 +739,9 @@ function HeaderCatalogSwitcher({
           <span
             className={cn(
               "text-[10px] px-1.5 py-0.2 rounded-full font-bold tabular-nums transition-colors",
-              active === "library"
-                ? "bg-emerald-100 text-emerald-800 font-extrabold"
-                : "bg-slate-200/80 text-slate-500"
+              activeCatalog === "library"
+                ? "bg-white/25 text-white font-black"
+                : "bg-slate-300/80 text-slate-600"
             )}
           >
             {libCount}

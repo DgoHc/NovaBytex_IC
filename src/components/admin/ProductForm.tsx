@@ -519,7 +519,7 @@ export function ProductForm({
     if (mode === "create") {
       const created = createProduct(payload);
       if (created) {
-        router.push(`/admin/productos?created=1`);
+        router.push(`/admin/productos?type=${values.type}&created=1`);
       }
       return;
     }
@@ -527,7 +527,7 @@ export function ProductForm({
     if (mode === "edit" && initial) {
       const updated = updateProduct({ id: initial.id, ...payload });
       if (updated) {
-        router.push(`/admin/productos?updated=1`);
+        router.push(`/admin/productos?type=${values.type}&updated=1`);
       }
       return;
     }
@@ -748,7 +748,7 @@ export function ProductForm({
         <div>
           <div className="flex items-center gap-2 text-xs font-medium text-slate-500 mb-1">
             <Link
-              href="/admin/productos"
+              href={`/admin/productos?type=${activeType}`}
               className="hover:text-blue-600 flex items-center gap-1 transition-colors"
             >
               <ArrowLeft className="w-3.5 h-3.5" /> Productos
@@ -761,10 +761,10 @@ export function ProductForm({
           <h1 className="text-2xl font-bold tracking-tight text-slate-900">
             {mode === "create" ? "Crear nuevo producto" : `Editar: ${initial?.name}`}
           </h1>
-          <div className="flex flex-wrap items-center gap-2.5 mt-1.5">
-            <Badge
+          <div className="flex flex-wrap items-center gap-2.5 mt-2">
+            <span
               className={cn(
-                "h-6 px-2.5 text-xs font-bold border gap-1.5 rounded-md",
+                "inline-flex items-center gap-1.5 h-6 px-2.5 text-xs font-bold rounded-md border select-none shadow-xs",
                 activeType === "library"
                   ? "bg-emerald-50 text-emerald-800 border-emerald-300"
                   : "bg-blue-50 text-blue-800 border-blue-300"
@@ -772,30 +772,16 @@ export function ProductForm({
             >
               {activeType === "library" ? (
                 <>
-                  <BookOpen className="w-3.5 h-3.5 text-emerald-600" />
-                  <span>Catálogo de Librería</span>
+                  <BookOpen className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                  <span>Catálogo: Librería &amp; Papelería</span>
                 </>
               ) : (
                 <>
-                  <Cpu className="w-3.5 h-3.5 text-blue-600" />
-                  <span>Catálogo de Tecnología</span>
+                  <Cpu className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+                  <span>Catálogo: Tecnología TI</span>
                 </>
               )}
-            </Badge>
-
-            <button
-              type="button"
-              onClick={() => {
-                const nextType = activeType === "technology" ? "library" : "technology";
-                setValue("type", nextType, { shouldDirty: true });
-                setValue("category", nextType === "technology" ? "Redes" : "Cuadernos", { shouldDirty: true });
-                setValue("sku", `NB-${nextType === "technology" ? "TI" : "LIB"}-${Math.floor(100 + Math.random() * 900)}`, { shouldDirty: true });
-                setValue("brand", nextType === "technology" ? "Cisco" : "Standford", { shouldDirty: true });
-              }}
-              className="text-[11px] font-medium text-slate-500 hover:text-slate-800 underline decoration-slate-300 transition-colors cursor-pointer"
-            >
-              Cambiar a {activeType === "technology" ? "Librería" : "Tecnología"}
-            </button>
+            </span>
           </div>
         </div>
 
@@ -1685,7 +1671,7 @@ export function ProductForm({
       <div className="fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-slate-200 shadow-[0_-4px_20px_rgba(0,0,0,0.06)] h-[64px] px-4 sm:px-8 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <Link
-            href="/admin/productos"
+            href={`/admin/productos?type=${activeType}`}
             className="text-xs font-semibold text-slate-500 hover:text-slate-800 transition-colors"
           >
             Cancelar

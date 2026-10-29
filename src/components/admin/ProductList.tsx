@@ -95,6 +95,18 @@ export function ProductList() {
   }, [searchParams]);
 
   useEffect(() => {
+    const handleFilterChange = (e: Event) => {
+      const customEvent = e as CustomEvent<{ type: TypeFilter }>;
+      if (customEvent.detail?.type && customEvent.detail.type !== typeFilter) {
+        setTypeFilter(customEvent.detail.type);
+        setCategoryFilter("Todos");
+      }
+    };
+    window.addEventListener("nova:catalog:filter_change", handleFilterChange);
+    return () => window.removeEventListener("nova:catalog:filter_change", handleFilterChange);
+  }, [typeFilter]);
+
+  useEffect(() => {
     const params = new URLSearchParams();
     if (typeFilter !== "all") params.set("type", typeFilter);
     if (categoryFilter !== "Todos") params.set("category", categoryFilter);
@@ -194,8 +206,8 @@ export function ProductList() {
             className={cn(
               "h-10 px-4 rounded-lg text-white text-xs font-semibold shadow-xs border-0 transition-all",
               typeFilter === "library"
-                ? "bg-emerald-600 hover:bg-emerald-700 shadow-emerald-500/20"
-                : "bg-blue-600 hover:bg-blue-700 shadow-blue-500/20"
+                ? "!bg-emerald-600 hover:!bg-emerald-700 shadow-emerald-500/20"
+                : "!bg-blue-600 hover:!bg-blue-700 shadow-blue-500/20"
             )}
           >
             <Link
@@ -221,8 +233,16 @@ export function ProductList() {
           <Tabs
             value={typeFilter}
             onValueChange={(v) => {
-              setTypeFilter(v as TypeFilter);
+              const nextType = v as TypeFilter;
+              setTypeFilter(nextType);
               setCategoryFilter("Todos");
+              if (typeof window !== "undefined") {
+                window.dispatchEvent(
+                  new CustomEvent("nova:catalog:filter_change", {
+                    detail: { type: nextType },
+                  })
+                );
+              }
             }}
           >
             <TabsList className="h-9 rounded-lg bg-slate-100 p-0.5">
