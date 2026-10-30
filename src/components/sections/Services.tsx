@@ -14,7 +14,6 @@ import {
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 
 const services = [
@@ -74,9 +73,6 @@ export const Services = () => {
           transition={{ duration: 1.0, ease: [0.22, 1, 0.36, 1] }}
           className="mx-auto mb-16 max-w-3xl space-y-4 text-center lg:mb-20"
         >
-          <Badge className="bg-blue-50 text-blue-700 border border-blue-100 px-3.5 py-1 mb-2 font-medium">
-            Servicios técnicos y asesoría
-          </Badge>
           <h2 className="font-editorial text-4xl sm:text-5xl md:text-6xl font-medium leading-[1.2] tracking-[-0.015em] text-slate-900">
             Nuestros Servicios
           </h2>

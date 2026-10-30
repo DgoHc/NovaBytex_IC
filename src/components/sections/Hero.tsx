@@ -1,56 +1,13 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { motion, useReducedMotion, AnimatePresence } from "framer-motion";
+import React from "react";
+import { motion, useReducedMotion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, ShoppingBag, ShieldCheck, CheckCircle2, PhoneCall, CreditCard, Server, Headphones } from "lucide-react";
+import { ShoppingBag, PhoneCall } from "lucide-react";
 import Link from "next/link";
-
-const heroServices = [
-  {
-    title: "Tarjetas Digitales NFC",
-    description: "Comparte tu contacto al instante. Moderna y personalizable para tu empresa o negocio.",
-    icon: <CreditCard className="w-8 h-8 text-white" />,
-    features: ["Contacto directo", "Sin apps adicionales"],
-    gradient: "from-blue-600 to-indigo-700",
-    shadow: "shadow-blue-500/30"
-  },
-  {
-    title: "Papelería & Hardware",
-    description: "Venta de útiles de oficina, papelería y equipos para empresas e instituciones.",
-    icon: <ShoppingBag className="w-8 h-8 text-white" />,
-    features: ["Stock local", "Garantía de marca"],
-    gradient: "from-cyan-500 to-blue-600",
-    shadow: "shadow-cyan-500/30"
-  },
-  {
-    title: "Soporte Técnico",
-    description: "Asistencia técnica para computadoras, impresoras y sistemas en tu oficina o negocio.",
-    icon: <Headphones className="w-8 h-8 text-white" />,
-    features: ["Mantenimiento preventivo", "Atención presencial y remota"],
-    gradient: "from-violet-500 to-purple-600",
-    shadow: "shadow-purple-500/30"
-  },
-  {
-    title: "Redes y Conectividad",
-    description: "Instalación de redes locales, cableado estructurado y configuración de equipos.",
-    icon: <Server className="w-8 h-8 text-white" />,
-    features: ["Cableado estructurado", "Configuración de routers"],
-    gradient: "from-emerald-500 to-teal-600",
-    shadow: "shadow-emerald-500/30"
-  }
-];
+import { HeroServicesCarousel } from "./HeroServicesCarousel";
 
 export const Hero = () => {
-  const [activeService, setActiveService] = useState(0);
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setActiveService((prev) => (prev + 1) % heroServices.length);
-    }, 4500);
-    return () => clearInterval(timer);
-  }, []);
-
   const reduceMotion = useReducedMotion();
   const easeCurve = [0.22, 1, 0.36, 1] as const;
 
@@ -65,7 +22,7 @@ export const Hero = () => {
   });
 
   return (
-    <section className="relative overflow-hidden bg-gradient-to-b from-slate-50 via-blue-50/30 to-white pt-8 pb-20 text-slate-900 md:pt-12 md:pb-28 lg:pt-12 lg:pb-32">
+    <section className="relative overflow-hidden bg-gradient-to-b from-slate-50 via-blue-50/30 to-white py-14 text-slate-900">
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <motion.div
           className="absolute -left-32 -top-32 h-[500px] w-[500px] rounded-full bg-blue-400/10 blur-[140px]"
@@ -79,72 +36,66 @@ export const Hero = () => {
         />
       </div>
 
-      <div className="container relative z-10 mx-auto px-4">
-        <div className="grid items-center gap-12 lg:grid-cols-12 lg:gap-16">
+      {/* Contenedor Centrado: max-width 1280px, padding lateral 32px (20px en móvil) */}
+      <div className="max-w-[1280px] mx-auto px-5 sm:px-8 relative z-10">
+        {/* Grid de 2 columnas (1fr 1fr, gap 64px), align-items: center */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+          {/* Columna Izquierda: max-width 560px */}
           <motion.div
             initial={reduceMotion ? false : "hidden"}
             animate={reduceMotion ? { opacity: 1, y: 0 } : "visible"}
             variants={reveal(0.05, 1)}
-            className="space-y-8 text-center lg:col-span-6 lg:text-left"
+            className="w-full max-w-[560px] mx-auto lg:mx-0 text-center lg:text-left flex flex-col justify-center"
           >
-            <motion.div
-              initial={reduceMotion ? false : "hidden"}
-              animate={reduceMotion ? { opacity: 1, scale: 1, y: 0 } : "visible"}
-              variants={reveal(0.12, 1)}
-              className="inline-flex items-center gap-2 rounded-full border border-blue-200/80 bg-white/95 px-3.5 py-1.5 text-xs font-semibold text-blue-900 shadow-sm md:text-sm backdrop-blur-sm"
-            >
-              <img
-                src="/assets/branding/nb-isotype.png"
-                alt="Isotipo de Nova Bytex S.R.L."
-                className="h-4 w-auto object-contain shrink-0"
-              />
-              <span className="font-semibold">Tecnología y papelería en Cajamarca</span>
-            </motion.div>
 
+            {/* Título (H1): clamp(40px, 4.2vw, 60px), line-height 1.08, máximo 4 líneas, 24px hacia el párrafo */}
             <motion.h1
               initial={reduceMotion ? false : "hidden"}
               animate={reduceMotion ? { opacity: 1, y: 0 } : "visible"}
               variants={reveal(0.18, 1)}
-              className="font-editorial text-5xl font-medium leading-[1.05] tracking-[-0.015em] text-slate-900 sm:text-6xl md:text-7xl lg:text-[88px]"
+              className="font-editorial text-[clamp(40px,4.2vw,60px)] font-medium leading-[1.08] tracking-[-0.015em] text-slate-900 mb-6"
             >
               Tecnología, útiles de oficina y{" "}
               <span className="font-medium italic text-blue-700">soporte técnico</span>{" "}
               en Cajamarca
             </motion.h1>
 
+            {/* Párrafo: 17px, max-width 520px, 28px hacia los botones */}
             <motion.p
               initial={reduceMotion ? false : "hidden"}
               animate={reduceMotion ? { opacity: 1, y: 0 } : "visible"}
               variants={reveal(0.24, 1)}
-              className="mx-auto max-w-2xl text-base leading-relaxed text-slate-600 md:text-lg lg:mx-0"
+              className="text-[17px] leading-relaxed text-slate-600 max-w-[520px] mb-7 mx-auto lg:mx-0"
             >
               Vendemos equipos, papelería y útiles de oficina. También damos soporte técnico, redes y asesoría para empresas e instituciones.
             </motion.p>
 
+            {/* Botones de 52px de alto con 12px de separación: Ver catálogo ~200px, Cotizar ~240px */}
             <motion.div
               initial={reduceMotion ? false : "hidden"}
               animate={reduceMotion ? { opacity: 1, y: 0 } : "visible"}
               variants={reveal(0.32, 1)}
-              className="flex flex-col justify-center gap-4 pt-2 sm:flex-row lg:justify-start"
+              className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3"
             >
-              <Button asChild size="lg" className="h-14 w-full rounded-2xl bg-blue-700 px-8 text-sm font-semibold text-white shadow-lg shadow-blue-700/20 transition-all duration-300 hover:-translate-y-0.5 hover:bg-blue-800 sm:w-auto">
+              <Button asChild size="lg" className="h-[52px] w-full sm:w-[200px] rounded-2xl bg-blue-700 px-6 text-sm font-semibold text-white shadow-lg shadow-blue-700/20 transition-all duration-300 hover:-translate-y-0.5 hover:bg-blue-800">
                 <Link href="/productos">
                   Ver catálogo <ShoppingBag className="ml-2 h-4 w-4" />
                 </Link>
               </Button>
 
-              <Button asChild size="lg" variant="outline" className="h-14 w-full rounded-2xl border-slate-200 bg-white px-8 text-sm font-semibold text-slate-800 shadow-sm transition-all duration-300 hover:bg-slate-50 sm:w-auto">
+              <Button asChild size="lg" variant="outline" className="h-[52px] w-full sm:w-[240px] rounded-2xl border-slate-200 bg-white px-6 text-sm font-semibold text-slate-800 shadow-sm transition-all duration-300 hover:bg-slate-50">
                 <a href="https://wa.me/51990804482?text=Hola,%20deseo%20solicitar%20una%20cotizaci%C3%B3n" target="_blank" rel="noopener noreferrer">
                   Cotizar por WhatsApp <PhoneCall className="ml-2 h-4 w-4 text-blue-700" />
                 </a>
               </Button>
             </motion.div>
 
+            {/* Fila de datos a 40px de los botones */}
             <motion.div
               initial={reduceMotion ? false : "hidden"}
               animate={reduceMotion ? { opacity: 1, y: 0 } : "visible"}
               variants={reveal(0.4, 1)}
-              className="mx-auto grid max-w-lg grid-cols-3 gap-6 border-t border-slate-200/70 pt-10 lg:mx-0"
+              className="mt-10 pt-8 border-t border-slate-200/70 grid grid-cols-3 gap-6 max-w-lg mx-auto lg:mx-0"
             >
               {[
                 { value: "Cajamarca", label: "Tienda física" },
@@ -163,79 +114,19 @@ export const Hero = () => {
             </motion.div>
           </motion.div>
 
+          {/* Columna Derecha: Tarjeta del Carrusel (ancho máx. 600px, centrada verticalmente) */}
           <motion.div
             initial={reduceMotion ? false : { opacity: 0, scale: 0.94, y: 28 }}
             animate={reduceMotion ? { opacity: 1, scale: 1, y: 0 } : { opacity: 1, scale: 1, y: 0 }}
             transition={{ duration: 1.05, delay: 0.38, ease: easeCurve }}
-            className="relative mx-auto w-full max-w-lg lg:max-w-xl lg:col-span-6 mt-6 lg:mt-0"
+            className="relative mx-auto w-full max-w-[600px] flex items-center justify-center"
           >
-            {/* Logo from /card */}
-            <div className="absolute -top-14 -right-4 md:-top-16 md:-right-10 z-50">
-              <motion.div
-                animate={{ y: [-4, 4, -4] }}
-                transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
-                className="relative w-[110px] h-[110px] sm:w-[130px] sm:h-[130px] rounded-[2rem] p-0.5 bg-gradient-to-br from-blue-400 via-cyan-500 to-blue-700 shadow-[0_15px_40px_-10px_rgba(59,130,246,0.4)] rotate-3"
-              >
-                <div className="w-full h-full rounded-[1.9rem] bg-slate-950 p-3 flex items-center justify-center overflow-hidden -rotate-3 relative z-10">
-                  <img
-                    src="/assets/branding/nb-isotype.png"
-                    alt="Isotipo de Nova Bytex S.R.L."
-                    className="w-full h-full object-contain"
-                  />
-                </div>
-                <div className="absolute -top-3 -right-3 w-6 h-6 rounded-full border border-blue-400/40 -z-10" />
-                <div className="absolute -bottom-2 -left-2 w-3 h-3 rounded-full bg-cyan-500/40 -z-10 blur-[1px]" />
-              </motion.div>
-            </div>
-
-            <div className="relative space-y-6 rounded-[32px] border border-slate-100 bg-white p-6 sm:p-8 shadow-xl overflow-hidden min-h-[480px] sm:min-h-[540px] flex flex-col">
-              <div className="flex items-center justify-between text-sm text-slate-500 mb-2">
-                <span className="flex items-center gap-1.5 font-bold uppercase tracking-wider text-blue-700 z-10">
-                  Nuestros Servicios
-                </span>
-                <span className="flex gap-1.5 z-10">
-                  {heroServices.map((_, i) => (
-                    <div key={i} className={`h-1.5 rounded-full transition-all duration-300 ${i === activeService ? "w-6 bg-blue-600" : "w-1.5 bg-slate-200"}`} />
-                  ))}
-                </span>
-              </div>
-              
-              <div className="relative flex-1 flex flex-col w-full h-full">
-                <AnimatePresence mode="wait">
-                  <motion.div
-                    key={activeService}
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -20 }}
-                    transition={{ duration: 0.3 }}
-                    className="flex flex-col flex-1 w-full h-full"
-                  >
-                    <div className={`w-full h-40 sm:h-48 rounded-[24px] bg-gradient-to-br ${heroServices[activeService].gradient} flex items-center justify-center mb-6 sm:mb-8 shadow-lg ${heroServices[activeService].shadow}`}>
-                      <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-sm border border-white/30 shadow-inner">
-                        {heroServices[activeService].icon}
-                      </div>
-                    </div>
-                    
-                    <div className="flex-1 flex flex-col justify-end">
-                      <h3 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-3">{heroServices[activeService].title}</h3>
-                      <p className="text-base sm:text-lg text-slate-600 leading-relaxed mb-6">{heroServices[activeService].description}</p>
-                      
-                      <div className="grid grid-cols-2 gap-3 sm:gap-4 mt-auto">
-                        {heroServices[activeService].features.map((feat, i) => (
-                          <div key={i} className="flex items-center gap-2 rounded-2xl bg-slate-50 p-3 sm:p-4 border border-slate-100/60">
-                            <CheckCircle2 className="h-5 w-5 text-emerald-500 shrink-0" />
-                            <div className="truncate text-sm font-semibold text-slate-700">{feat}</div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </motion.div>
-                </AnimatePresence>
-              </div>
-            </div>
+            <HeroServicesCarousel />
           </motion.div>
         </div>
       </div>
     </section>
   );
 };
+
+export default Hero;

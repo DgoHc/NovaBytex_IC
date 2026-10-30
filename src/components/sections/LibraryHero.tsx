@@ -1,30 +1,54 @@
 "use client";
 
 import React from "react";
+import Link from "next/link";
 import { motion } from "framer-motion";
-import { BookOpen, Sparkles, Ruler, ArrowRight } from "lucide-react";
+import { BookOpen, Sparkles, Ruler, ArrowRight, FileText, Notebook, Pen } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
-const features = [
+interface HeroFeature {
+  category: string;
+  title: string;
+  desc: string;
+  icon: React.ComponentType<{ width?: number; height?: number; className?: string; strokeWidth?: number }>;
+  circleBg: string;
+  href: string;
+}
+
+const heroFeatures: HeroFeature[] = [
   {
-    icon: BookOpen,
+    category: "Papelería",
     title: "Papelería & Impresión",
-    desc: "Papel bond Report A4, fólderes y notas adhesivas.",
+    desc: "Papel bond, notas y fólderes",
+    icon: FileText,
+    circleBg: "bg-[#FCE7DC]", // Durazno suave
+    href: "/libreria?categoria=Papelería#library-catalog",
   },
   {
-    icon: Ruler,
+    category: "Cuadernos",
     title: "Cuadernos & Archivo",
-    desc: "Cuadernos Stanford 100 hojas y archivadores de palanca.",
+    desc: "Stanford, cuadriculados y archivo",
+    icon: Notebook,
+    circleBg: "bg-[#E5EFE7]", // Salvia suave
+    href: "/libreria?categoria=Cuadernos#library-catalog",
   },
   {
-    icon: Sparkles,
+    category: "Escritura",
     title: "Escritura & Oficina",
-    desc: "Lapiceros Faber-Castell y bolígrafos Parker Jotter.",
+    desc: "Faber-Castell, bolígrafos y tintas",
+    icon: Pen,
+    circleBg: "bg-[#FAF0E1]", // Crema suave
+    href: "/libreria?categoria=Escritura#library-catalog",
   },
 ];
 
-export const LibraryHero: React.FC = () => {
+interface LibraryHeroProps {
+  onSelectCategory?: (category: string) => void;
+}
+
+export const LibraryHero: React.FC<LibraryHeroProps> = ({ onSelectCategory }) => {
   return (
     <section className="relative overflow-hidden paper-warm-bg border-b border-library-beige/40">
       <div
@@ -57,13 +81,7 @@ export const LibraryHero: React.FC = () => {
             transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
             className="lg:col-span-7 space-y-7"
           >
-            <Badge
-              variant="outline"
-              className="h-7 px-3 gap-2 text-[12px] font-semibold tracking-wide border-blue-800/30 text-blue-900 bg-blue-50/60"
-            >
-              <BookOpen className="w-3.5 h-3.5 text-blue-700" />
-              <span>Librería y papelería en Cajamarca</span>
-            </Badge>
+
 
             <div className="space-y-4">
               <h1 className="font-bodoni text-[44px] leading-[1.05] md:text-6xl lg:text-[72px] font-medium tracking-[-0.02em] text-slate-900">
@@ -100,25 +118,51 @@ export const LibraryHero: React.FC = () => {
               </Button>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-6 border-t border-library-beige/70">
-              {features.map((f) => (
-                <div
-                  key={f.title}
-                  className="flex items-start gap-3"
-                >
-                  <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-white border border-library-beige/70 shadow-sm shrink-0">
-                    <f.icon className="w-5 h-5 text-library-sage-foreground" />
-                  </div>
-                  <div className="min-w-0">
-                    <p className="text-[13px] font-semibold text-slate-900 leading-tight">
-                      {f.title}
-                    </p>
-                    <p className="text-[12px] text-slate-500 mt-0.5 leading-snug">
-                      {f.desc}
-                    </p>
-                  </div>
-                </div>
-              ))}
+            <div className="pt-6 mt-6 border-t border-[#0f172a]/[0.08]">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                {heroFeatures.map((f) => (
+                  <Link
+                    key={f.category}
+                    href={f.href}
+                    onClick={(e) => {
+                      if (onSelectCategory) {
+                        e.preventDefault();
+                        onSelectCategory(f.category);
+                        const el = document.getElementById("library-catalog");
+                        if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+                      }
+                    }}
+                    className="group flex items-center gap-3 p-2 rounded-xl transition-all duration-200 hover:bg-white/40 focus-visible:ring-2 focus-visible:ring-[#0f172a] focus-visible:ring-offset-2 outline-none min-h-[48px]"
+                  >
+                    <div
+                      className={cn(
+                        "w-9 h-9 min-w-[36px] min-h-[36px] rounded-full flex items-center justify-center shrink-0 transition-transform duration-200 group-hover:-translate-y-0.5 shadow-2xs",
+                        f.circleBg
+                      )}
+                    >
+                      <f.icon
+                        width={18}
+                        height={18}
+                        strokeWidth={1.5}
+                        className="w-[18px] h-[18px] text-[#0f172a] shrink-0"
+                      />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-[14px] font-semibold text-[#0f172a] group-hover:text-blue-900 transition-colors flex items-center gap-1.5 leading-snug truncate">
+                        <span>{f.title}</span>
+                        <ArrowRight
+                          width={14}
+                          height={14}
+                          className="w-3.5 h-3.5 text-slate-500 opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-200 shrink-0"
+                        />
+                      </p>
+                      <p className="text-[13px] text-slate-600 truncate block mt-0.5 leading-tight">
+                        {f.desc}
+                      </p>
+                    </div>
+                  </Link>
+                ))}
+              </div>
             </div>
           </motion.div>
 

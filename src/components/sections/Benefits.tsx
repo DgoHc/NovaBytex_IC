@@ -2,8 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { motion, useReducedMotion } from "framer-motion";
-import { ShieldCheck, Building2, Headphones, Award, HeartHandshake, CheckCircle2 } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
+import { ShieldCheck, Building2, Headphones, HeartHandshake } from "lucide-react";
 
 const benefits = [
   {
@@ -47,10 +46,6 @@ export const Benefits = () => {
           transition={{ duration: 1.0, ease: [0.22, 1, 0.36, 1] }}
           className="mx-auto mb-16 max-w-3xl space-y-4 text-center lg:mb-20"
         >
-          <Badge className="bg-blue-500/10 text-blue-400 border border-blue-500/20 px-3.5 py-1 mb-2 font-medium">
-            <CheckCircle2 className="w-3.5 h-3.5 mr-1.5 inline text-blue-400" />
-            Por qué elegirnos
-          </Badge>
           <h2 className="font-editorial text-4xl sm:text-5xl md:text-6xl font-medium leading-[1.2] tracking-[-0.015em] text-white">
             ¿Por qué elegir Nova Bytex?
           </h2>

@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 180" width="280" height="180" fill="none">
+  <defs>
+    <linearGradient id="routerChassis" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#2e1065"/>
+      <stop offset="40%" stop-color="#1e1b4b"/>
+      <stop offset="100%" stop-color="#0a081e"/>
+    </linearGradient>
+    <linearGradient id="antennaGrad" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#334155"/>
+      <stop offset="50%" stop-color="#64748b"/>
+      <stop offset="100%" stop-color="#1e293b"/>
+    </linearGradient>
+    <linearGradient id="violetAccent" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#c084fc"/>
+      <stop offset="50%" stop-color="#a855f7"/>
+      <stop offset="100%" stop-color="#7c3aed"/>
+    </linearGradient>
+    <filter id="dropShadowRouter" x="-10%" y="-10%" width="130%" height="140%">
+      <feDropShadow dx="0" dy="12" stdDeviation="10" flood-color="#000000" flood-opacity="0.6"/>
+    </filter>
+  </defs>
+
+  <g filter="url(#dropShadowRouter)">
+    <g transform="rotate(-18, 48, 105)">
+      <rect x="44" y="16" width="8" height="90" rx="4" fill="url(#antennaGrad)" stroke="#475569" stroke-width="1"/>
+      <line x1="48" y1="20" x2="48" y2="60" stroke="#a855f7" stroke-width="1.5" stroke-linecap="round"/>
+    </g>
+
+    <rect x="96" y="10" width="8" height="95" rx="4" fill="url(#antennaGrad)" stroke="#475569" stroke-width="1"/>
+    <line x1="100" y1="15" x2="100" y2="60" stroke="#a855f7" stroke-width="1.5" stroke-linecap="round"/>
+
+    <rect x="176" y="10" width="8" height="95" rx="4" fill="url(#antennaGrad)" stroke="#475569" stroke-width="1"/>
+    <line x1="180" y1="15" x2="180" y2="60" stroke="#a855f7" stroke-width="1.5" stroke-linecap="round"/>
+
+    <g transform="rotate(18, 232, 105)">
+      <rect x="228" y="16" width="8" height="90" rx="4" fill="url(#antennaGrad)" stroke="#475569" stroke-width="1"/>
+      <line x1="232" y1="20" x2="232" y2="60" stroke="#a855f7" stroke-width="1.5" stroke-linecap="round"/>
+    </g>
+
+    <path d="M 32 118 L 62 92 L 218 92 L 248 118 L 240 148 C 240 152, 236 155, 230 155 L 50 155 C 44 155, 40 152, 40 148 Z" fill="url(#routerChassis)" stroke="#4c1d95" stroke-width="1.8"/>
+    
+    <polygon points="68,96 212,96 226,114 54,114" fill="#0f0b29" stroke="#6d28d9" stroke-width="1"/>
+    <path d="M 120 100 L 160 100 L 152 110 L 128 110 Z" fill="url(#violetAccent)" fill-opacity="0.75"/>
+
+    <rect x="80" y="128" width="120" height="12" rx="6" fill="#09061a" stroke="#3b0764" stroke-width="1"/>
+    <circle cx="95" cy="134" r="2.5" fill="#22d3ee"/>
+    <circle cx="115" cy="134" r="2.5" fill="#34d399"/>
+    <circle cx="135" cy="134" r="2.5" fill="#c084fc"/>
+    <circle cx="155" cy="134" r="2.5" fill="#c084fc"/>
+    <circle cx="175" cy="134" r="2.5" fill="#22d3ee"/>
+
+    <line x1="45" y1="152" x2="235" y2="152" stroke="url(#violetAccent)" stroke-width="1.5" stroke-opacity="0.7"/>
+  </g>
+</svg>

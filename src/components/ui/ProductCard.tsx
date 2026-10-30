@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Plus, Heart } from "lucide-react";
+import { Plus, Heart, Check } from "lucide-react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -29,8 +29,15 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   const { isInWishlist, toggleWishlist } = useWishlist();
   const { isAdmin } = useAuth();
   const [mounted, setMounted] = useState(false);
+  const [added, setAdded] = useState(false);
+
   const isLibrary = product.type === "library";
+  const isDark = variant === "dark";
   const isFav = isInWishlist(product.id);
+  const hasDiscount = typeof product.previousPrice === "number" && product.previousPrice > product.price;
+
+  // Detección de Adobe Acrobat PRO DC para parche temporal de encuadre
+  const isAdobeAcrobatDC = product.name?.toLowerCase().includes("adobe acrobat pro dc");
 
   useEffect(() => {
     setMounted(true);
@@ -39,6 +46,8 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
+    if (!product.inStock) return;
+
     addToCart({
       id: product.id,
       name: product.name,
@@ -46,56 +55,66 @@ export const ProductCard: React.FC<ProductCardProps> = ({
       price: product.price,
       image: product.image,
     });
+
+    setAdded(true);
+    setTimeout(() => {
+      setAdded(false);
+    }, 1500);
   };
 
-  const isDark = variant === "dark";
-  const hasDiscount = typeof product.previousPrice === "number" && product.previousPrice > product.price;
+  // Formato de precio: sin decimales si es entero ("S/ 60"), o 2 decimales si tiene centavos ("S/ 25.50")
+  const formatPrice = (val: number) => {
+    return Number.isInteger(val)
+      ? `S/ ${val.toLocaleString("es-PE")}`
+      : `S/ ${val.toLocaleString("es-PE", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  };
 
   return (
     <motion.div
-      initial={mounted ? { opacity: 0, y: 20 } : false}
+      initial={mounted ? { opacity: 0, y: 16 } : false}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-40px" }}
-      transition={{ delay: index * 0.04, duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-      className="flex min-w-0 h-full w-full"
+      viewport={{ once: true, margin: "-30px" }}
+      transition={{ delay: Math.min(index * 0.03, 0.3), duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+      className="min-w-0 w-full h-full flex"
     >
       <Link
         href={`/productos/${product.id}`}
         className={cn(
-          "w-full h-full flex flex-col justify-between rounded-2xl overflow-hidden group transition-all duration-300 p-2.5 sm:p-3",
+          "w-full h-full flex flex-col justify-between rounded-2xl overflow-hidden group transition-all duration-200 p-2.5 sm:p-3 hover:-translate-y-0.5",
           isDark
-            ? "bg-slate-900 border border-slate-800/80 hover:border-blue-500/60 shadow-md hover:shadow-xl hover:shadow-blue-500/10 hover:-translate-y-1"
+            ? "bg-slate-900 border border-slate-800/80 hover:border-blue-500/60 shadow-sm hover:shadow-lg hover:shadow-blue-500/10"
             : isLibrary
-              ? "bg-white border border-library-beige/60 hover:border-library-sage/60 shadow-sm hover:shadow-[0_12px_30px_hsla(145,30%,50%,0.10)] hover:-translate-y-1"
-              : "bg-white border border-slate-200/80 hover:border-blue-200 shadow-sm hover:shadow-[0_12px_30px_rgba(30,64,175,0.08)] hover:-translate-y-1"
+              ? "bg-white border border-[#e8e2d8] hover:border-amber-700/40 shadow-sm hover:shadow-md"
+              : "bg-white border border-slate-200/80 hover:border-blue-300 shadow-sm hover:shadow-md hover:shadow-blue-600/5"
         )}
       >
-        {/* Contenedor Cuadrado de la Imagen (Aspect 1/1, fondo claro sólido, sin marco negro extra) */}
-        <div className="relative w-full aspect-square rounded-xl overflow-hidden bg-white flex items-center justify-center p-3.5 sm:p-4 select-none shrink-0">
+        {/* Zona de imagen en recuadro blanco con esquinas redondeadas: aspect 1/1, máx. 258px, padding 16px, object-fit contain */}
+        <div className="relative w-full aspect-square max-h-[258px] rounded-xl overflow-hidden bg-white flex items-center justify-center p-4 select-none shrink-0 transition-colors">
           {product.image ? (
             <img
               src={product.image}
               alt={product.name}
-              className="w-full h-full object-contain transition-transform duration-300 group-hover:scale-105"
+              style={isAdobeAcrobatDC ? { objectPosition: "center", clipPath: "inset(0 8% 0 0)" } : undefined}
+              className="w-full h-full object-contain transition-transform duration-200 group-hover:scale-[1.04]"
             />
           ) : (
             <ProductImage
               type={product.imageType}
               name={product.name}
-              className="w-full h-full bg-transparent border-0"
+              className="w-full h-full bg-transparent border-0 transition-transform duration-200 group-hover:scale-[1.04]"
             />
           )}
 
-          {/* Badge de Descuento: Arriba a la izquierda, margen 8px, rojo sólido y texto blanco */}
+          {/* Badge de Descuento: pill de 24px de alto, 12px semibold, top/left 10px dentro del recuadro blanco */}
           {hasDiscount && (
-            <div className="absolute top-2 left-2 z-10">
-              <Badge className="h-6 px-2 rounded-md text-[10.5px] font-black tracking-wide bg-rose-600 text-white shadow-xs border-0 inline-flex items-center justify-center leading-none select-none">
+            <div className="absolute top-[10px] left-[10px] z-10">
+              <Badge className="h-6 px-2 rounded-md text-[12px] font-semibold tracking-wide bg-rose-600 text-white shadow-xs border-0 inline-flex items-center justify-center leading-none select-none">
                 -{Math.round(((product.previousPrice! - product.price) / product.previousPrice!) * 100)}%
               </Badge>
             </div>
           )}
 
-          {/* Corazón: Mismo tamaño y proporción del recuadro de descuento (h-6 w-6 rounded-md) */}
+          {/* Corazón de Favoritos: círculo de 32px, fondo translúcido con blur, icono de 16px, top/right 10px */}
           {!isAdmin && (
             <button
               type="button"
@@ -104,12 +123,13 @@ export const ProductCard: React.FC<ProductCardProps> = ({
                 e.stopPropagation();
                 toggleWishlist(product);
               }}
-              aria-label={isFav ? "Quitar de deseados" : "Agregar a deseados"}
+              aria-pressed={isFav}
+              aria-label={isFav ? "Quitar de favoritos" : "Guardar en favoritos"}
               className={cn(
-                "absolute top-2 right-2 z-10 h-6 w-6 rounded-md flex items-center justify-center transition-all duration-200 shadow-xs border select-none",
+                "absolute top-[10px] right-[10px] z-10 w-8 h-8 rounded-full flex items-center justify-center transition-all duration-200 shadow-xs border select-none backdrop-blur-md",
                 isFav
                   ? "bg-rose-600 text-white border-rose-600 shadow-rose-600/30 scale-105"
-                  : "bg-slate-900/80 backdrop-blur-sm text-slate-200 border-slate-700/60 hover:bg-slate-900 hover:text-rose-400 hover:border-slate-600"
+                  : "bg-white/80 dark:bg-slate-900/80 text-slate-500 dark:text-slate-300 border-white/40 dark:border-slate-700/60 hover:text-rose-500 hover:bg-white dark:hover:bg-slate-900"
               )}
             >
               <Heart
@@ -117,7 +137,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
                 height={16}
                 className={cn(
                   "w-4 h-4 transition-transform",
-                  isFav ? "fill-current scale-110" : ""
+                  isFav ? "fill-rose-500 text-white scale-110" : ""
                 )}
               />
             </button>
@@ -125,10 +145,10 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         </div>
 
         {/* Contenido de la Card: Textos y Precios */}
-        <div className="pt-3 px-1 flex flex-col flex-1 justify-between gap-2.5">
-          <div className="space-y-1.5">
-            {/* Fila superior: Badge Categoría (11px nowrap) + Marca/SKU (12px) */}
-            <div className="flex items-center justify-between gap-2 min-w-0">
+        <div className="pt-3 px-1 flex flex-col flex-1 justify-between gap-2.5 min-w-0">
+          <div className="space-y-1.5 min-w-0">
+            {/* Categoría en chip nowrap + Marca sin cortar. Si no caben en una línea, la marca pasa a la siguiente */}
+            <div className="flex flex-wrap items-center justify-between gap-x-2 gap-y-1 min-w-0">
               <span
                 className={cn(
                   "inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-semibold whitespace-nowrap shrink-0",
@@ -142,39 +162,38 @@ export const ProductCard: React.FC<ProductCardProps> = ({
                 {product.category}
               </span>
 
-              {(product.brand || product.sku) && (
+              {product.brand && (
                 <span
                   className={cn(
-                    "text-[12px] font-medium truncate",
+                    "text-[12px] font-medium min-w-0 shrink-0",
                     isDark ? "text-slate-400" : "text-slate-500"
                   )}
-                  title={`${product.brand || ""} ${product.sku ? `(${product.sku})` : ""}`}
+                  title={product.brand}
                 >
                   {product.brand}
-                  {product.brand && product.sku ? " · " : ""}
-                  {product.sku && <span className="font-mono text-[11px]">{product.sku}</span>}
                 </span>
               )}
             </div>
 
-            {/* Título en máximo 2 líneas, blanco, peso 600 */}
+            {/* Título en máximo 2 líneas */}
             <h3
               className={cn(
-                "font-semibold text-sm sm:text-[15px] leading-snug line-clamp-2 text-left min-h-[40px] transition-colors duration-200",
+                "font-semibold text-sm sm:text-[15px] leading-snug line-clamp-2 text-left min-h-[40px] transition-colors duration-200 min-w-0",
                 isDark
                   ? "text-white group-hover:text-blue-400"
                   : isLibrary
-                    ? "text-slate-900 group-hover:text-library-sage-foreground"
+                    ? "text-slate-900 group-hover:text-amber-900"
                     : "text-slate-900 group-hover:text-blue-700"
               )}
+              title={product.name}
             >
               {product.name}
             </h3>
 
-            {/* Descripción en máximo 2 líneas con contraste claro */}
+            {/* Descripción en máximo 2 líneas */}
             <p
               className={cn(
-                "text-xs leading-relaxed line-clamp-2 text-left",
+                "text-xs leading-relaxed line-clamp-2 text-left min-w-0",
                 isDark ? "text-slate-300" : "text-slate-600"
               )}
             >
@@ -182,7 +201,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             </p>
           </div>
 
-          {/* Bloque Inferior: Precio + Punto de Stock + Botón "+" de 40px */}
+          {/* Bloque Inferior Original: Precio + Precio Anterior + Punto de Stock Verde + Botón "+" de 40px */}
           <div
             className={cn(
               "pt-2 mt-auto flex items-center justify-between gap-3 min-w-0",
@@ -195,31 +214,32 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           >
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-1.5 flex-wrap">
-                {/* Precio Principal 16px semibold */}
+                {/* Precio actual: sin decimales si es entero */}
                 <span
                   className={cn(
-                    "font-semibold text-[16px] sm:text-[18px] tracking-tight tabular-nums",
+                    "font-semibold text-[16px] sm:text-[18px] tracking-tight tabular-nums whitespace-nowrap",
                     isDark ? "text-white" : "text-slate-900"
                   )}
                 >
-                  S/ {product.price.toLocaleString("es-PE")}
+                  {formatPrice(product.price)}
                 </span>
 
-                {/* Precio Tachado con Mayor Contraste */}
+                {/* Precio anterior tachado en 13px gris */}
                 {hasDiscount && (
-                  <span className="text-[12px] font-medium text-slate-400 line-through tabular-nums">
-                    S/ {product.previousPrice!.toLocaleString("es-PE")}
+                  <span className="text-[13px] font-medium text-slate-400 line-through tabular-nums whitespace-nowrap">
+                    {formatPrice(product.previousPrice!)}
                   </span>
                 )}
 
-                {/* Stock: Solo punto verde pequeño junto al precio; muestra texto únicamente cuando esté agotado */}
+                {/* Punto verde de stock con halo suave y accesibilidad */}
                 {product.inStock ? (
                   <span
-                    className="w-2 h-2 rounded-full bg-emerald-400 shrink-0 ml-0.5 shadow-[0_0_6px_rgba(52,211,153,0.6)]"
+                    className="w-2 h-2 rounded-full bg-emerald-400 shrink-0 ml-0.5 shadow-[0_0_8px_rgba(52,211,153,0.7)]"
                     title="En stock"
+                    aria-label="En stock"
                   />
                 ) : (
-                  <span className="inline-flex items-center gap-1 text-[10.5px] font-semibold text-rose-400 ml-1">
+                  <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-rose-400 ml-1 whitespace-nowrap">
                     <span className="w-1.5 h-1.5 rounded-full bg-rose-500 shrink-0" />
                     Agotado
                   </span>
@@ -227,22 +247,30 @@ export const ProductCard: React.FC<ProductCardProps> = ({
               </div>
             </div>
 
-            {/* Botón "+" de 40px, esquinas redondeadas, con icono explícito de 18px */}
+            {/* Botón "+" de 40px con icono de 16px, alineado al centro */}
             <Button
               type="button"
               size="icon"
+              disabled={!product.inStock}
               onClick={handleAddToCart}
-              aria-label="Agregar al carrito"
+              aria-label={product.inStock ? (added ? "Agregado al carrito" : "Agregar al carrito") : "Producto agotado"}
               className={cn(
-                "w-10 h-10 rounded-xl shadow-md transition-all duration-200 hover:scale-105 active:scale-95 shrink-0 flex items-center justify-center border-0",
-                isDark
-                  ? "bg-blue-600 hover:bg-blue-500 text-white shadow-blue-600/25"
-                  : isLibrary
-                    ? "bg-slate-900 hover:bg-blue-800 text-white shadow-slate-900/10"
-                    : "bg-blue-700 hover:bg-blue-800 text-white shadow-blue-700/20"
+                "w-10 h-10 rounded-xl shadow-md transition-all duration-200 shrink-0 flex items-center justify-center border-0",
+                product.inStock ? "hover:scale-105 active:scale-95 cursor-pointer" : "opacity-35 cursor-not-allowed shadow-none",
+                added
+                  ? "bg-emerald-600 text-white shadow-emerald-600/20"
+                  : isDark
+                    ? "bg-[#2563eb] hover:bg-blue-600 text-white shadow-blue-500/20"
+                    : isLibrary
+                      ? "bg-slate-900 hover:bg-blue-800 text-white shadow-slate-900/10"
+                      : "bg-blue-700 hover:bg-blue-800 text-white shadow-blue-700/20"
               )}
             >
-              <Plus width={18} height={18} className="w-[18px] h-[18px] stroke-[2.5]" />
+              {added ? (
+                <Check width={16} height={16} className="w-4 h-4 stroke-[2.5] text-white animate-in zoom-in-75 duration-200" />
+              ) : (
+                <Plus width={16} height={16} className="w-4 h-4 stroke-[2.5]" />
+              )}
             </Button>
           </div>
         </div>
