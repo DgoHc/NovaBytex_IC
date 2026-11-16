@@ -12,21 +12,18 @@ import {
   ArrowRight,
   Tag,
   ChevronDown,
-  ChevronUp,
-  CheckCircle2,
-  Clock,
   Sparkles,
 } from "lucide-react";
 import { useCart, CartItem } from "@/contexts/CartContext";
 import { type Coupon } from "@/lib/coupons";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { PRODUCTS_DATA } from "@/lib/products";
 import { ProductImage } from "@/components/ui/ProductImage";
 import { useCatalog } from "@/contexts/CatalogContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { getActiveReferralCode } from "@/lib/affiliateTracking";
 import { AffiliateService } from "@/services/AffiliateService";
+import { cn } from "@/lib/utils";
 
 const openWhatsAppOrder = (
   cart: CartItem[],
@@ -73,8 +70,6 @@ export function CartSidebar() {
     cartCount,
     appliedCoupon,
     discountAmount,
-    discountedSubtotal,
-    estimatedTotal,
     finalTotal,
     availableCoupons,
     applyCoupon,
@@ -83,15 +78,14 @@ export function CartSidebar() {
 
   const { user } = useAuth();
   const [activeRefCode, setActiveRefCode] = useState<string | null>(null);
+  const [couponsDropdownOpen, setCouponsDropdownOpen] = useState(false);
+  const [couponFeedback, setCouponFeedback] = useState<string | null>(null);
 
   useEffect(() => {
     if (isCartOpen) {
       setActiveRefCode(getActiveReferralCode());
     }
   }, [isCartOpen]);
-
-  const [couponsDropdownOpen, setCouponsDropdownOpen] = useState(false);
-  const [couponFeedback, setCouponFeedback] = useState<string | null>(null);
 
   const formatPrice = (amount: number) => {
     return `S/ ${amount.toLocaleString("es-PE", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
@@ -105,8 +99,6 @@ export function CartSidebar() {
     }
     setTimeout(() => setCouponFeedback(null), 3500);
   };
-
-  const currentIgv = discountedSubtotal * 0.18;
 
   return (
     <AnimatePresence>
@@ -127,45 +119,42 @@ export function CartSidebar() {
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ type: "spring", damping: 25, stiffness: 220 }}
-            className="fixed right-0 top-0 h-full w-full max-w-md bg-slate-900 border-l border-slate-800 text-white shadow-2xl z-50 flex flex-col"
+            className="fixed right-0 top-0 h-[100dvh] w-full sm:max-w-md bg-slate-900 border-l border-white/[0.08] text-white shadow-2xl z-50 flex flex-col"
           >
-            {/* Header */}
-            <div className="p-5 border-b border-slate-800 bg-slate-950 flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-blue-600/20 rounded-xl border border-blue-500/30 text-blue-400">
-                  <ShoppingCart className="w-5 h-5" />
-                </div>
-                <div>
-                  <h2 className="text-base font-bold text-white">Carrito de Compras</h2>
-                  <span className="text-xs text-slate-400">{cartCount} ítems seleccionados</span>
-                </div>
+            {/* Encabezado compacto (64px) */}
+            <div className="h-16 shrink-0 px-5 border-b border-white/[0.08] bg-slate-950 flex items-center justify-between">
+              <div>
+                <h2 className="text-sm font-bold text-white leading-tight">Carrito de Compras</h2>
+                <span className="text-xs text-slate-400">
+                  {cartCount} {cartCount === 1 ? "ítem" : "ítems"}
+                </span>
               </div>
-              <Button
-                variant="ghost"
-                size="icon"
+              <button
+                type="button"
                 onClick={toggleCart}
-                className="text-slate-400 hover:text-white hover:bg-slate-800"
+                aria-label="Cerrar carrito"
+                className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-white hover:bg-slate-800/80 transition-colors cursor-pointer"
               >
                 <X className="w-5 h-5" />
-              </Button>
+              </button>
             </div>
 
-            {/* Cart Items */}
-            <div className="flex-1 overflow-y-auto p-5 space-y-4 no-scrollbar">
+            {/* Lista de productos (Zona protagonista: flex: 1, min-height: 0, overflow-y: auto) */}
+            <div className="flex-1 min-h-0 overflow-y-auto p-4 space-y-2 no-scrollbar">
               {cart.length === 0 ? (
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   className="h-full flex flex-col items-center justify-center text-center p-6"
                 >
-                  <div className="w-20 h-20 bg-slate-950 rounded-full flex items-center justify-center border border-slate-800 mb-4 text-slate-600">
-                    <ShoppingCart className="w-10 h-10" />
+                  <div className="w-16 h-16 bg-slate-950 rounded-full flex items-center justify-center border border-slate-800 mb-3 text-slate-600">
+                    <ShoppingCart className="w-8 h-8" />
                   </div>
-                  <h3 className="text-lg font-bold text-white mb-1">Tu carrito de compras está vacío</h3>
-                  <p className="text-xs text-slate-400 mb-6">Explora el catálogo para agregar equipos, licencias o útiles</p>
+                  <h3 className="text-base font-bold text-white mb-1">Tu carrito de compras está vacío</h3>
+                  <p className="text-xs text-slate-400 mb-5">Explora el catálogo para agregar equipos, licencias o útiles</p>
                   <Button
                     onClick={toggleCart}
-                    className="bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs h-10 px-6 rounded-xl"
+                    className="bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs h-9 px-5 rounded-xl cursor-pointer"
                   >
                     Ver Productos <ArrowRight className="w-3.5 h-3.5 ml-1" />
                   </Button>
@@ -175,206 +164,124 @@ export function CartSidebar() {
               )}
             </div>
 
-            {/* Footer / Coupons & Calculation */}
+            {/* Pie compacto, siempre visible, con borde sutil de 8% de opacidad */}
             {cart.length > 0 && (
-              <div className="p-5 border-t border-slate-800 bg-slate-950 space-y-4">
-                {/* ------------------------------------------------------------- */}
-                {/* SECCIÓN DE CUPONES: BOTÓN DESPLEGABLE & GESTIÓN               */}
-                {/* ------------------------------------------------------------- */}
-                <div className="rounded-xl border border-slate-800 bg-slate-900/90 overflow-hidden">
-                  {appliedCoupon ? (
-                    // Cupón Activo con opción para Cancelar
-                    <div className="p-3.5 bg-emerald-950/40 border border-emerald-500/40 rounded-xl space-y-2">
-                      <div className="flex items-start justify-between gap-2">
-                        <div className="flex items-center gap-2">
-                          <span className="p-1.5 rounded-lg bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
-                            <Tag className="w-3.5 h-3.5" />
-                          </span>
-                          <div>
-                            <div className="flex items-center gap-1.5">
-                              <span className="text-xs font-bold text-emerald-300">
-                                {appliedCoupon.name}
-                              </span>
-                              <Badge className="bg-emerald-500 text-slate-950 text-[10px] font-black px-1.5 py-0">
-                                {appliedCoupon.badge}
-                              </Badge>
-                            </div>
-                            <div className="flex items-center gap-1.5 text-[10.5px] text-emerald-400/80 mt-0.5">
-                              <Clock className="w-3 h-3 text-emerald-400" />
-                              <span>{appliedCoupon.validUntilDisplay}</span>
-                            </div>
-                          </div>
-                        </div>
+              <div className="shrink-0 p-4 border-t border-white/[0.08] bg-slate-950 space-y-3">
+                {/* Cupones */}
+                {appliedCoupon ? (
+                  // Cupón aplicado: Una sola línea con nombre y X para quitarlo
+                  <div className="h-11 px-3.5 flex items-center justify-between rounded-xl bg-emerald-950/40 border border-emerald-500/30 text-xs">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <Tag className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                      <span className="font-semibold text-emerald-300 truncate">
+                        {appliedCoupon.name}
+                      </span>
+                      <span className="text-[10px] font-bold text-emerald-400 bg-emerald-500/20 border border-emerald-500/30 px-1.5 py-0.5 rounded shrink-0">
+                        {appliedCoupon.badge}
+                      </span>
+                      {discountAmount > 0 && (
+                        <span className="text-[11px] font-mono text-emerald-400/90 shrink-0">
+                          (-{formatPrice(discountAmount)})
+                        </span>
+                      )}
+                    </div>
+                    <button
+                      type="button"
+                      onClick={removeCoupon}
+                      className="w-6 h-6 rounded-md flex items-center justify-center text-slate-400 hover:text-white hover:bg-emerald-900/40 transition-colors shrink-0 cursor-pointer"
+                      aria-label="Quitar cupón"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                ) : (
+                  // Cupones disponibles
+                  <div className="rounded-xl border border-slate-800 bg-slate-900/90 overflow-hidden">
+                    {/* Fila cerrada de 44px */}
+                    <button
+                      type="button"
+                      onClick={() => setCouponsDropdownOpen(!couponsDropdownOpen)}
+                      className="w-full h-11 px-3.5 flex items-center justify-between hover:bg-slate-800/60 transition-colors cursor-pointer text-left"
+                    >
+                      <div className="flex items-center gap-2">
+                        <Tag className="w-4 h-4 text-slate-400 shrink-0" />
+                        <span className="text-xs font-semibold text-white">¿Tienes un cupón?</span>
+                      </div>
+                      <div className="flex items-center gap-1.5 text-slate-400">
+                        <span className="text-xs font-mono">{availableCoupons.length}</span>
+                        <ChevronDown
+                          className={cn(
+                            "w-4 h-4 transition-transform duration-200",
+                            couponsDropdownOpen && "rotate-180"
+                          )}
+                        />
+                      </div>
+                    </button>
 
-                        {/* Botón para cancelar / liberar cupón */}
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={removeCoupon}
-                          className="h-7 px-2 text-xs text-rose-300 hover:text-white hover:bg-rose-900/40 rounded-lg shrink-0 font-medium"
-                          title="Cancelar cupón"
+                    {/* Lista abierta: max-height 180px con scroll interno */}
+                    <AnimatePresence>
+                      {couponsDropdownOpen && (
+                        <motion.div
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: "auto", opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          className="border-t border-slate-800 max-h-[180px] overflow-y-auto divide-y divide-slate-800/50 no-scrollbar"
                         >
-                          <X className="w-3.5 h-3.5 mr-1" /> Cancelar
-                        </Button>
-                      </div>
+                          {availableCoupons.map((coupon) => {
+                            const canUse = coupon.minPurchase === 0 || cartTotal >= coupon.minPurchase;
 
-                      <div className="text-[11px] text-emerald-200/90 font-medium bg-emerald-900/30 rounded-lg px-2.5 py-1 flex items-center justify-between">
-                        <span>Ahorro aplicado al pedido:</span>
-                        <span className="font-bold font-mono text-emerald-300">
-                          - {formatPrice(discountAmount)}
-                        </span>
-                      </div>
-                    </div>
-                  ) : (
-                    // Botón para desplegar cupones disponibles
-                    <div>
-                      <button
-                        type="button"
-                        onClick={() => setCouponsDropdownOpen(!couponsDropdownOpen)}
-                        className="w-full p-3 flex items-center justify-between text-left hover:bg-slate-800/60 transition-colors"
-                      >
-                        <div className="flex items-center gap-2.5">
-                          <div className="p-1.5 bg-blue-500/10 border border-blue-500/30 rounded-lg text-blue-400">
-                            <Tag className="w-3.5 h-3.5" />
-                          </div>
-                          <div>
-                            <p className="text-xs font-bold text-white flex items-center gap-1.5">
-                              ¿Tienes un cupón de descuento?
-                              <Badge className="bg-blue-600/30 text-blue-300 border-blue-500/30 text-[9px] px-1 py-0">
-                                {availableCoupons.length} disponibles
-                              </Badge>
-                            </p>
-                            <p className="text-[10px] text-slate-400">
-                              Toca para desplegar y aplicar cupones con vigencia
-                            </p>
-                          </div>
-                        </div>
-                        {couponsDropdownOpen ? (
-                          <ChevronUp className="w-4 h-4 text-slate-400" />
-                        ) : (
-                          <ChevronDown className="w-4 h-4 text-slate-400" />
-                        )}
-                      </button>
-
-                      {/* Desplegable de cupones disponibles */}
-                      <AnimatePresence>
-                        {couponsDropdownOpen && (
-                          <motion.div
-                            initial={{ height: 0, opacity: 0 }}
-                            animate={{ height: "auto", opacity: 1 }}
-                            exit={{ height: 0, opacity: 0 }}
-                            className="border-t border-slate-800 p-3 bg-slate-950/70 space-y-2.5 max-h-60 overflow-y-auto no-scrollbar"
-                          >
-                            {availableCoupons.map((coupon) => {
-                              const canUse =
-                                coupon.minPurchase === 0 || cartTotal >= coupon.minPurchase;
-
-                              return (
-                                <div
-                                  key={coupon.id}
-                                  className={`p-2.5 rounded-xl border transition-all ${
-                                    canUse
-                                      ? "border-slate-700 bg-slate-900/90 hover:border-blue-500/50"
-                                      : "border-slate-800/60 bg-slate-950/40 opacity-70"
-                                  }`}
-                                >
-                                  <div className="flex items-start justify-between gap-2">
-                                    <div className="min-w-0">
-                                      <div className="flex items-center gap-1.5 flex-wrap">
-                                        <span className="text-xs font-bold text-white">
-                                          {coupon.name}
-                                        </span>
-                                        <Badge className="bg-emerald-500 text-slate-950 text-[10px] font-black px-1 py-0">
-                                          {coupon.badge}
-                                        </Badge>
-                                      </div>
-                                      <p className="text-[10px] text-slate-400 mt-0.5 line-clamp-2">
-                                        {coupon.description}
-                                      </p>
-                                      <div className="flex items-center gap-1.5 text-[9.5px] text-amber-400 mt-1">
-                                        <Clock className="w-3 h-3 shrink-0" />
-                                        <span>{coupon.validUntilDisplay}</span>
-                                      </div>
-                                    </div>
-
-                                    <Button
-                                      size="sm"
-                                      disabled={!canUse}
-                                      onClick={() => handleApplyCoupon(coupon)}
-                                      className={`h-7 px-2.5 text-[11px] font-bold rounded-lg shrink-0 ${
-                                        canUse
-                                          ? "bg-blue-600 hover:bg-blue-500 text-white"
-                                          : "bg-slate-800 text-slate-500 border border-slate-700 cursor-not-allowed"
-                                      }`}
-                                    >
-                                      {canUse ? (
-                                        "Aplicar"
-                                      ) : (
-                                        `Mín. S/ ${coupon.minPurchase}`
-                                      )}
-                                    </Button>
-                                  </div>
+                            return (
+                              <div
+                                key={coupon.id}
+                                className={cn(
+                                  "h-[52px] px-3.5 flex items-center justify-between gap-2 transition-colors",
+                                  canUse ? "hover:bg-slate-800/40" : "opacity-50"
+                                )}
+                              >
+                                <div className="flex items-center gap-2 min-w-0">
+                                  <span className="text-xs font-semibold text-white truncate">
+                                    {coupon.name}
+                                  </span>
+                                  <span className="text-[10px] font-bold text-emerald-400 bg-emerald-500/20 border border-emerald-500/30 px-1.5 py-0.5 rounded shrink-0">
+                                    {coupon.badge}
+                                  </span>
                                 </div>
-                              );
-                            })}
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
-                    </div>
-                  )}
 
-                  {couponFeedback && (
-                    <div className="px-3 py-1.5 bg-blue-950/80 border-t border-blue-900/50 text-[11px] text-blue-200 flex items-center gap-1.5">
-                      <Sparkles className="w-3 h-3 text-cyan-400 shrink-0" />
-                      <span>{couponFeedback}</span>
-                    </div>
-                  )}
-                </div>
-
-                {/* ------------------------------------------------------------- */}
-                {/* RESUMEN DE PRECIOS CON DESCUENTO DESTACADO POR DEBAJO         */}
-                {/* ------------------------------------------------------------- */}
-                <div className="space-y-1.5 text-xs text-slate-400">
-                  <div className="flex justify-between">
-                    <span>Subtotal Neto:</span>
-                    <span className="font-mono text-slate-200">{formatPrice(cartTotal)}</span>
-                  </div>
-
-                  {appliedCoupon && discountAmount > 0 && (
-                    <div className="flex justify-between text-emerald-400 font-semibold bg-emerald-950/20 px-2 py-1 rounded-md border border-emerald-500/20">
-                      <span className="flex items-center gap-1">
-                        <Tag className="w-3 h-3" /> Descuento Cupón ({appliedCoupon.badge}):
-                      </span>
-                      <span className="font-mono font-bold">- {formatPrice(discountAmount)}</span>
-                    </div>
-                  )}
-
-                  <div className="flex justify-between">
-                    <span>IGV (18%):</span>
-                    <span className="font-mono text-slate-200">{formatPrice(currentIgv)}</span>
-                  </div>
-
-                  {/* PRECIO FINAL CON DESCUENTO POR DEBAJO */}
-                  <div className="pt-2 border-t border-slate-800 flex items-end justify-between">
-                    <div>
-                      <span className="text-xs font-semibold text-slate-300 block">Total Estimado:</span>
-                      {appliedCoupon && discountAmount > 0 && (
-                        <span className="text-xs text-slate-500 line-through font-mono">
-                          {formatPrice(estimatedTotal)}
-                        </span>
+                                {canUse ? (
+                                  <button
+                                    type="button"
+                                    onClick={() => handleApplyCoupon(coupon)}
+                                    className="h-8 px-3 text-xs font-semibold rounded-lg bg-blue-600 hover:bg-blue-500 text-white shrink-0 transition-colors cursor-pointer"
+                                  >
+                                    Aplicar
+                                  </button>
+                                ) : (
+                                  <span className="text-xs text-slate-400 font-mono shrink-0">
+                                    Min. S/ {coupon.minPurchase}
+                                  </span>
+                                )}
+                              </div>
+                            );
+                          })}
+                        </motion.div>
                       )}
-                    </div>
-                    <div className="text-right">
-                      <span className="text-xl font-extrabold text-blue-400 font-mono block leading-none">
-                        {formatPrice(finalTotal)}
-                      </span>
-                      {appliedCoupon && discountAmount > 0 && (
-                        <span className="text-[10px] text-emerald-400 font-bold">
-                          ¡Ahorraste {formatPrice(discountAmount)}!
-                        </span>
-                      )}
-                    </div>
+                    </AnimatePresence>
                   </div>
+                )}
+
+                {couponFeedback && (
+                  <div className="px-3 py-1.5 bg-blue-950/80 border border-blue-900/50 rounded-lg text-[11px] text-blue-200 flex items-center gap-1.5">
+                    <Sparkles className="w-3 h-3 text-cyan-400 shrink-0" />
+                    <span>{couponFeedback}</span>
+                  </div>
+                )}
+
+                {/* Fila única de Total */}
+                <div className="flex items-baseline justify-between pt-1">
+                  <span className="text-sm font-semibold text-slate-300">Total</span>
+                  <span className="text-2xl font-bold font-mono text-white leading-none">
+                    {formatPrice(finalTotal)}
+                  </span>
                 </div>
 
                 {activeRefCode && (
@@ -387,9 +294,10 @@ export function CartSidebar() {
                   </div>
                 )}
 
-                <div className="space-y-2">
+                {/* Botones de acción */}
+                <div className="space-y-2 pt-1">
                   <Button
-                    className="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-sm h-12 rounded-xl shadow-lg shadow-emerald-500/20"
+                    className="w-full h-12 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm rounded-xl shadow-lg shadow-emerald-950/40 flex items-center justify-center gap-2 cursor-pointer"
                     onClick={async () => {
                       const refCode = getActiveReferralCode();
                       if (refCode && cart.length > 0) {
@@ -414,17 +322,17 @@ export function CartSidebar() {
                       );
                     }}
                   >
-                    <MessageCircle className="w-4 h-4 mr-2" />
-                    Enviar Cotización a WhatsApp
+                    <MessageCircle className="w-4 h-4 shrink-0" />
+                    <span>Enviar Cotización a WhatsApp</span>
                   </Button>
-                  <Button
-                    variant="outline"
-                    className="w-full border-slate-800 hover:bg-slate-800 text-slate-400 hover:text-white text-xs h-9"
+
+                  <button
+                    type="button"
                     onClick={clearCart}
+                    className="w-full text-center text-xs text-slate-400 hover:text-slate-200 transition-colors py-1 cursor-pointer bg-transparent border-0"
                   >
-                    <Trash2 className="w-3.5 h-3.5 mr-1" />
                     Vaciar Carrito
-                  </Button>
+                  </button>
                 </div>
               </div>
             )}
@@ -452,64 +360,71 @@ function CartItemCard({ item }: { item: CartItem }) {
     <motion.div
       initial={{ opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
-      className="bg-slate-800/80 rounded-xl border border-slate-700/60 p-3.5 flex gap-3 min-w-0"
+      exit={{ opacity: 0, x: -20 }}
+      className="relative flex items-center gap-3 p-2.5 rounded-xl bg-slate-800/40 border border-white/[0.06] hover:border-white/[0.12] transition-colors"
     >
-      <div className="w-16 h-16 bg-slate-950 rounded-lg overflow-hidden shrink-0 p-1">
-        <ProductImage
-          type={imageType}
-          name={item.name}
-          image={item.image}
-          className="h-full min-h-0 text-[8px]"
-        />
+      {/* Miniatura 56x56 con fondo claro (#F4F6F9) y object-fit: contain */}
+      <div className="w-14 h-14 rounded-lg bg-[#F4F6F9] shrink-0 p-1 flex items-center justify-center overflow-hidden">
+        {item.image ? (
+          <img
+            src={item.image}
+            alt={item.name}
+            className="w-full h-full object-contain"
+          />
+        ) : (
+          <ProductImage
+            type={imageType}
+            name={item.name}
+            className="w-full h-full !min-h-0 text-[8px]"
+          />
+        )}
       </div>
-      <div className="flex-1 min-w-0 flex flex-col justify-between">
-        <div className="flex items-start justify-between gap-1">
-          <div className="min-w-0">
-            <h3 className="font-bold text-xs text-white truncate">{item.name}</h3>
-            <Badge
-              variant="outline"
-              className="text-[9px] border-blue-500/30 text-blue-300 px-1.5 py-0 mt-0.5"
-            >
-              {item.category}
-            </Badge>
-          </div>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => removeFromCart(item.id)}
-            className="text-slate-400 hover:text-red-400 hover:bg-slate-700 h-6 w-6 shrink-0"
-          >
-            <Trash2 className="w-3.5 h-3.5" />
-          </Button>
-        </div>
 
-        <div className="mt-2 flex items-center justify-between gap-2 flex-wrap">
-          <div className="flex items-center gap-1.5 bg-slate-900 border border-slate-700 rounded-lg p-0.5">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => updateQuantity(item.id, item.quantity - 1)}
-              className="h-6 w-6 text-slate-300 hover:text-white"
-            >
-              <Minus className="w-3 h-3" />
-            </Button>
-            <span className="w-5 text-center font-bold text-xs text-blue-400">
-              {item.quantity}
-            </span>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => updateQuantity(item.id, item.quantity + 1)}
-              className="h-6 w-6 text-slate-300 hover:text-white"
-            >
-              <Plus className="w-3 h-3" />
-            </Button>
-          </div>
-          <span className="font-extrabold text-xs text-blue-400 shrink-0 font-mono">
+      {/* Contenido: Nombre (máx 2 líneas), precio y selector de cantidad */}
+      <div className="flex-1 min-w-0 pr-6">
+        <h4 className="text-xs font-semibold text-white leading-tight line-clamp-2" title={item.name}>
+          {item.name}
+        </h4>
+
+        <div className="mt-1.5 flex items-center justify-between gap-2">
+          <span className="font-mono font-bold text-xs text-blue-400">
             {formatPrice(itemPrice * item.quantity)}
           </span>
+
+          {/* Selector de cantidad compacto */}
+          <div className="flex items-center gap-1 bg-slate-900 border border-slate-700/80 rounded-md p-0.5">
+            <button
+              type="button"
+              onClick={() => updateQuantity(item.id, item.quantity - 1)}
+              className="w-5 h-5 flex items-center justify-center text-slate-400 hover:text-white rounded hover:bg-slate-800 transition-colors cursor-pointer"
+              aria-label="Disminuir cantidad"
+            >
+              <Minus className="w-3 h-3" />
+            </button>
+            <span className="w-5 text-center text-xs font-mono font-bold text-white">
+              {item.quantity}
+            </span>
+            <button
+              type="button"
+              onClick={() => updateQuantity(item.id, item.quantity + 1)}
+              className="w-5 h-5 flex items-center justify-center text-slate-400 hover:text-white rounded hover:bg-slate-800 transition-colors cursor-pointer"
+              aria-label="Aumentar cantidad"
+            >
+              <Plus className="w-3 h-3" />
+            </button>
+          </div>
         </div>
       </div>
+
+      {/* Papelera pequeña (18px), gris, alineada arriba a la derecha */}
+      <button
+        type="button"
+        onClick={() => removeFromCart(item.id)}
+        className="absolute top-2.5 right-2.5 w-[18px] h-[18px] text-slate-400 hover:text-rose-400 transition-colors flex items-center justify-center cursor-pointer"
+        aria-label="Eliminar producto"
+      >
+        <Trash2 className="w-[18px] h-[18px]" />
+      </button>
     </motion.div>
   );
 }

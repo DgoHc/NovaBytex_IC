@@ -14,19 +14,15 @@ import {
   Calendar,
   LogOut,
   ExternalLink,
-  Gift,
   Phone,
   Mail,
-  TrendingUp,
   LayoutDashboard,
   Menu,
   X,
   ChevronRight,
   ArrowLeftRight,
-  ShieldAlert,
   Store,
   Clock,
-  CheckCircle,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -39,7 +35,6 @@ import {
 import { AVAILABLE_COUPONS, type Coupon } from "@/lib/coupons";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Card } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuth } from "@/contexts/AuthContext";
 import { useWishlist } from "@/contexts/WishlistContext";
@@ -180,7 +175,6 @@ function CustomerDashboardContent() {
           key: "promociones" as TabKey,
           label: "Promociones & Cupones",
           icon: Tag,
-          badge: `${loyalty.discount}%`,
         },
         {
           key: "recomendaciones" as TabKey,
@@ -231,27 +225,24 @@ function CustomerDashboardContent() {
         </div>
 
         {/* User Mini Profile Card */}
-        <div className="p-3.5 mx-3 my-3 rounded-xl bg-slate-900/80 border border-slate-800/90 flex items-center gap-3">
-          <Avatar className="h-10 w-10 border border-blue-500/40 shrink-0">
+        <div className="p-3 mx-3 my-3 rounded-lg bg-slate-900/40 border border-slate-800/60 flex items-center gap-2.5">
+          <Avatar className="h-8 w-8 border border-slate-700 shrink-0">
             {user.avatar && <AvatarImage src={user.avatar} alt={user.name} />}
-            <AvatarFallback className="bg-blue-600 text-xs font-black text-white">
+            <AvatarFallback className="bg-slate-800 text-xs font-semibold text-white">
               {user.name.slice(0, 2).toUpperCase()}
             </AvatarFallback>
           </Avatar>
           <div className="min-w-0 flex-1">
-            <p className="text-xs font-bold text-white truncate">{user.name}</p>
-            <span className="inline-flex items-center gap-1 mt-0.5 text-[10px] font-semibold text-emerald-300 bg-emerald-950/60 border border-emerald-500/30 px-1.5 py-0.2 rounded">
-              <Sparkles className="w-2.5 h-2.5" />
-              {loyalty.discount}% OFF activo
-            </span>
+            <p className="text-xs font-medium text-white truncate">{user.name}</p>
+            <p className="text-[11px] text-slate-400">nivel {loyalty.level.toLowerCase()}</p>
           </div>
         </div>
 
         {/* Navigation list */}
         <nav className="flex-1 overflow-y-auto px-3 py-2 space-y-4 no-scrollbar">
           {navItems.map((section) => (
-            <div key={section.group} className="space-y-1">
-              <p className="text-[9.5px] font-black tracking-widest text-slate-500 px-3 py-1 uppercase">
+            <div key={section.group} className="space-y-0.5">
+              <p className="text-[9.5px] font-bold tracking-widest text-slate-500 px-3 py-1 uppercase">
                 {section.group}
               </p>
               {section.items.map((item) => {
@@ -263,32 +254,21 @@ function CustomerDashboardContent() {
                     type="button"
                     onClick={() => setActiveTab(item.key)}
                     className={cn(
-                      "w-full flex items-center gap-3 px-3 h-9 rounded-lg text-xs font-semibold transition-all relative group text-left",
+                      "w-full flex items-center gap-2.5 h-8 text-xs transition-colors text-left",
                       active
-                        ? "bg-blue-600 text-white shadow-xs"
-                        : "text-slate-300 hover:text-white hover:bg-slate-800/60"
+                        ? "text-white font-medium border-l-2 border-blue-500 pl-2.5"
+                        : "text-slate-400 hover:text-slate-200 pl-3 border-l-2 border-transparent"
                     )}
                   >
                     <Icon
                       className={cn(
                         "w-4 h-4 shrink-0 transition-colors",
-                        active ? "text-white" : "text-slate-400 group-hover:text-slate-200"
+                        active ? "text-white" : "text-slate-500 group-hover:text-slate-300"
                       )}
                     />
                     <span className="flex-1 truncate">{item.label}</span>
                     {item.badge !== undefined && (
-                      <span
-                        className={cn(
-                          "text-[10px] font-bold px-1.5 py-0.5 rounded tabular-nums",
-                          active
-                            ? "bg-white/20 text-white"
-                            : item.key === "deseados"
-                            ? "bg-rose-500/20 text-rose-300 border border-rose-500/30"
-                            : item.key === "promociones"
-                            ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30"
-                            : "bg-slate-800 text-slate-400 border border-slate-700"
-                        )}
-                      >
+                      <span className="text-[11px] text-slate-400 tabular-nums">
                         {item.badge}
                       </span>
                     )}
@@ -300,30 +280,30 @@ function CustomerDashboardContent() {
         </nav>
 
         {/* Footer Actions */}
-        <div className="shrink-0 p-3 border-t border-slate-800/80 bg-[#080D1F]/60 space-y-2">
+        <div className="shrink-0 p-3 border-t border-slate-800/60 bg-[#080D1F]/40 space-y-2 text-xs">
           <Link
             href="/"
             title="Volver a la Tienda Pública"
-            className="w-full flex items-center justify-center gap-2 px-3 h-8 rounded-lg text-xs font-semibold text-slate-300 hover:text-white bg-slate-900/60 border border-slate-800 hover:bg-slate-800 transition-colors"
+            className="flex items-center gap-2 text-slate-400 hover:text-slate-200 transition-colors"
           >
-            <Store className="w-3.5 h-3.5 text-cyan-400" />
-            <span className="text-[11px]">Volver a la Tienda</span>
+            <Store className="w-3.5 h-3.5 text-blue-400" />
+            <span>Volver a la Tienda</span>
           </Link>
-          <div className="grid grid-cols-2 gap-1.5">
+          <div className="flex items-center justify-between pt-1 text-slate-400">
             <button
               type="button"
               onClick={switchAccount}
               title="Cambiar de Cuenta"
-              className="flex items-center justify-center gap-1.5 h-8 rounded-lg text-[11px] font-semibold text-slate-300 bg-slate-900/80 border border-slate-800 hover:text-white hover:bg-slate-800 transition-colors"
+              className="flex items-center gap-1.5 hover:text-slate-200 transition-colors cursor-pointer"
             >
-              <ArrowLeftRight className="w-3.5 h-3.5 text-slate-400" />
+              <ArrowLeftRight className="w-3.5 h-3.5" />
               <span>Cuenta</span>
             </button>
             <button
               type="button"
               onClick={() => signOut()}
               title="Cerrar Sesión"
-              className="flex items-center justify-center gap-1.5 h-8 rounded-lg text-[11px] font-semibold text-rose-400 bg-rose-950/30 border border-rose-900/50 hover:bg-rose-900/40 hover:text-rose-200 transition-colors"
+              className="flex items-center gap-1.5 hover:text-rose-300 transition-colors cursor-pointer"
             >
               <LogOut className="w-3.5 h-3.5" />
               <span>Salir</span>
@@ -374,25 +354,23 @@ function CustomerDashboardContent() {
                 </button>
               </div>
 
-              <div className="p-3 mx-3 my-2 rounded-xl bg-slate-900 border border-slate-800 flex items-center gap-3">
-                <Avatar className="h-9 w-9 border border-blue-500/40">
+              <div className="p-3 mx-3 my-2 rounded-lg bg-slate-900/40 border border-slate-800/60 flex items-center gap-2.5">
+                <Avatar className="h-8 w-8 border border-slate-700 shrink-0">
                   {user.avatar && <AvatarImage src={user.avatar} alt={user.name} />}
-                  <AvatarFallback className="bg-blue-600 text-xs font-black text-white">
+                  <AvatarFallback className="bg-slate-800 text-xs font-semibold text-white">
                     {user.name.slice(0, 2).toUpperCase()}
                   </AvatarFallback>
                 </Avatar>
                 <div className="min-w-0">
-                  <p className="text-xs font-bold text-white truncate">{user.name}</p>
-                  <p className="text-[10px] text-emerald-400 font-semibold">
-                    {loyalty.discount}% OFF activo
-                  </p>
+                  <p className="text-xs font-medium text-white truncate">{user.name}</p>
+                  <p className="text-[11px] text-slate-400">nivel {loyalty.level.toLowerCase()}</p>
                 </div>
               </div>
 
               <nav className="flex-1 overflow-y-auto p-3 space-y-3">
                 {navItems.map((section) => (
-                  <div key={section.group} className="space-y-1">
-                    <p className="text-[9.5px] font-black tracking-widest text-slate-500 px-3 uppercase">
+                  <div key={section.group} className="space-y-0.5">
+                    <p className="text-[9.5px] font-bold tracking-widest text-slate-500 px-3 uppercase">
                       {section.group}
                     </p>
                     {section.items.map((item) => {
@@ -407,16 +385,16 @@ function CustomerDashboardContent() {
                             setMobileMenuOpen(false);
                           }}
                           className={cn(
-                            "w-full flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-semibold transition-all text-left",
+                            "w-full flex items-center gap-2.5 h-8 text-xs transition-colors text-left",
                             active
-                              ? "bg-blue-600 text-white"
-                              : "text-slate-300 hover:text-white hover:bg-slate-800/60"
+                              ? "text-white font-medium border-l-2 border-blue-500 pl-2.5"
+                              : "text-slate-400 hover:text-slate-200 pl-3 border-l-2 border-transparent"
                           )}
                         >
-                          <Icon className="w-4 h-4" />
+                          <Icon className="w-4 h-4 shrink-0" />
                           <span className="flex-1 truncate">{item.label}</span>
                           {item.badge !== undefined && (
-                            <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-slate-800 text-slate-300">
+                            <span className="text-[11px] text-slate-400 tabular-nums">
                               {item.badge}
                             </span>
                           )}
@@ -427,25 +405,26 @@ function CustomerDashboardContent() {
                 ))}
               </nav>
 
-              <div className="p-3 border-t border-slate-800 bg-[#080D1F] space-y-2">
+              <div className="p-3 border-t border-slate-800/60 bg-[#080D1F] space-y-2 text-xs">
                 <Link
                   href="/"
-                  className="flex items-center justify-center gap-2 h-9 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-xs font-semibold transition-colors"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="flex items-center gap-2 text-slate-400 hover:text-slate-200 transition-colors"
                 >
-                  <Store className="w-3.5 h-3.5 text-cyan-400" />
-                  Ir a Tienda Pública
+                  <Store className="w-3.5 h-3.5 text-blue-400" />
+                  <span>Volver a la Tienda</span>
                 </Link>
-                <div className="grid grid-cols-2 gap-2">
+                <div className="flex items-center justify-between pt-1 text-slate-400">
                   <button
                     type="button"
                     onClick={() => {
                       setMobileMenuOpen(false);
                       switchAccount();
                     }}
-                    className="flex items-center justify-center gap-1.5 h-9 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 text-xs font-semibold hover:text-white hover:bg-slate-800 transition-colors"
+                    className="flex items-center gap-1.5 hover:text-slate-200 transition-colors"
                   >
-                    <ArrowLeftRight className="w-3.5 h-3.5 text-slate-400" />
-                    Cambiar
+                    <ArrowLeftRight className="w-3.5 h-3.5" />
+                    <span>Cuenta</span>
                   </button>
                   <button
                     type="button"
@@ -453,10 +432,10 @@ function CustomerDashboardContent() {
                       setMobileMenuOpen(false);
                       signOut();
                     }}
-                    className="flex items-center justify-center gap-1.5 h-9 rounded-xl bg-rose-950/40 border border-rose-900/60 text-rose-300 text-xs font-semibold hover:bg-rose-900/50 hover:text-rose-200 transition-colors"
+                    className="flex items-center gap-1.5 hover:text-rose-300 transition-colors"
                   >
                     <LogOut className="w-3.5 h-3.5" />
-                    Salir
+                    <span>Salir</span>
                   </button>
                 </div>
               </div>
@@ -470,21 +449,21 @@ function CustomerDashboardContent() {
       {/* ------------------------------------------------------------- */}
       <div className="flex-1 flex flex-col lg:ml-64 min-w-0 bg-slate-50 min-h-screen">
         {/* Top Header del Sistema */}
-        <header className="shrink-0 h-16 bg-white border-b border-slate-200/90 px-4 sm:px-6 lg:px-8 flex items-center justify-between sticky top-0 z-30 shadow-xs">
-          <div className="flex items-center gap-3 min-w-0">
+        <header className="shrink-0 h-14 bg-white border-b border-slate-200 px-4 sm:px-6 flex items-center justify-between sticky top-0 z-30">
+          <div className="flex items-center gap-2.5 min-w-0">
             <button
               type="button"
               onClick={() => setMobileMenuOpen(true)}
-              className="w-9 h-9 rounded-xl flex items-center justify-center text-slate-700 hover:bg-slate-100 lg:hidden border border-slate-200"
+              className="w-8 h-8 rounded-md flex items-center justify-center text-slate-700 hover:bg-slate-100 lg:hidden border border-slate-200"
               aria-label="Abrir menú"
             >
-              <Menu className="w-5 h-5" />
+              <Menu className="w-4 h-4" />
             </button>
             <div className="min-w-0">
-              <p className="text-xs font-semibold text-slate-900 leading-none flex items-center gap-1.5">
-                <span className="text-slate-400 font-normal">Portal Cliente</span>
-                <ChevronRight className="w-3.5 h-3.5 text-slate-300" />
-                <span className="capitalize text-slate-800 font-bold">
+              <p className="text-xs text-slate-500 leading-none flex items-center gap-1.5">
+                <span>Portal Cliente</span>
+                <ChevronRight className="w-3 h-3 text-slate-300" />
+                <span className="text-slate-900 font-medium">
                   {activeTab === "resumen"
                     ? "Resumen General"
                     : activeTab === "compras"
@@ -503,21 +482,15 @@ function CustomerDashboardContent() {
             </div>
           </div>
 
-          <div className="flex items-center gap-2 sm:gap-3">
-            {/* Loyalty coupon pill */}
-            <div className="hidden lg:flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-50 border border-emerald-200 text-[11px] font-semibold text-emerald-800">
-              <Gift className="w-3.5 h-3.5 text-emerald-600" />
-              <span>Cupón VIP: <strong className="font-mono">NOVA-{user.name.split(" ")[0].toUpperCase()}-{loyalty.discount}</strong></span>
-            </div>
-
-            {/* Quick action: Volver a la Tienda (icono/botón flotante no intrusivo) */}
+          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+            {/* Quick action: Volver a la Tienda */}
             <Link
               href="/"
               title="Volver a la Tienda Pública"
-              className="h-8 px-2.5 text-xs rounded-lg border border-slate-200 bg-white hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 text-slate-700 flex items-center gap-1.5 shadow-xs transition-colors"
+              className="h-8 px-2.5 text-xs rounded-md border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 flex items-center gap-1.5 transition-colors"
             >
               <Store className="w-3.5 h-3.5 text-blue-600" />
-              <span className="hidden sm:inline font-semibold">Tienda</span>
+              <span className="hidden sm:inline font-medium">Tienda</span>
             </Link>
 
             {/* Cart shortcut */}
@@ -525,53 +498,48 @@ function CustomerDashboardContent() {
               variant="outline"
               size="sm"
               onClick={toggleCart}
-              className="h-8 px-2.5 text-xs rounded-lg border-slate-200 bg-white hover:bg-slate-50 text-slate-700 flex items-center gap-1.5 shadow-xs"
+              className="h-8 px-2.5 text-xs rounded-md border-slate-200 bg-white hover:bg-slate-50 text-slate-700 flex items-center gap-1.5 shadow-none"
             >
               <ShoppingCart className="w-3.5 h-3.5 text-blue-600" />
-              <span className="font-bold">{cartCount}</span>
+              <span className="tabular-nums font-medium">{cartCount}</span>
             </Button>
 
-            {/* User Dropdown Menu desplegable integrado al icono de perfil */}
+            {/* User Dropdown Menu */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <button
                   type="button"
-                  className="flex items-center gap-2 pl-2 border-l border-slate-200 outline-none hover:opacity-85 transition-opacity select-none"
+                  className="flex items-center gap-2 pl-2 border-l border-slate-200 outline-none hover:opacity-80 transition-opacity select-none cursor-pointer"
                 >
-                  <Avatar className="h-8 w-8 border border-slate-200 ring-2 ring-transparent hover:ring-blue-500/20 transition-all cursor-pointer">
+                  <Avatar className="h-7 w-7 border border-slate-200">
                     {user.avatar && <AvatarImage src={user.avatar} alt={user.name} />}
-                    <AvatarFallback className="bg-slate-900 text-[10px] font-black text-white">
+                    <AvatarFallback className="bg-slate-900 text-[10px] font-bold text-white">
                       {user.name.slice(0, 2).toUpperCase()}
                     </AvatarFallback>
                   </Avatar>
-                  <div className="hidden md:flex flex-col text-left">
-                    <span className="text-xs font-semibold text-slate-800 max-w-[120px] truncate leading-tight">
-                      {user.name.split(" ")[0]}
-                    </span>
-                    <span className="text-[10px] text-slate-400 font-normal leading-tight">
-                      Mi Perfil ▾
-                    </span>
-                  </div>
+                  <span className="hidden md:inline text-xs font-medium text-slate-800 max-w-[120px] truncate leading-tight">
+                    {user.name.split(" ")[0]}
+                  </span>
                 </button>
               </DropdownMenuTrigger>
 
               <DropdownMenuContent
                 align="end"
-                className="w-56 p-1.5 rounded-2xl bg-white border border-slate-200 shadow-xl text-slate-800 z-50"
+                className="w-56 p-1.5 rounded-lg bg-white border border-slate-200 shadow-lg text-slate-800 z-50"
               >
                 <DropdownMenuLabel className="p-2">
-                  <p className="text-xs font-bold text-slate-900 truncate">{user.name}</p>
-                  <p className="text-[10.5px] text-slate-500 truncate">{user.email}</p>
-                  <Badge className="mt-1.5 bg-blue-50 text-blue-800 text-[10px] font-semibold border-blue-200">
-                    Nivel {loyalty.level} ({loyalty.discount}% OFF)
-                  </Badge>
+                  <p className="text-xs font-semibold text-slate-900 truncate">{user.name}</p>
+                  <p className="text-[11px] text-slate-500 truncate">{user.email}</p>
+                  <p className="text-[11px] text-slate-500 mt-1 capitalize">
+                    nivel {loyalty.level.toLowerCase()}
+                  </p>
                 </DropdownMenuLabel>
 
                 <DropdownMenuSeparator className="bg-slate-100 my-1" />
 
                 <DropdownMenuItem
                   onClick={() => router.push("/")}
-                  className="cursor-pointer text-xs rounded-xl px-2.5 py-2 font-medium flex items-center gap-2 text-slate-700 hover:bg-slate-100 hover:text-slate-900"
+                  className="cursor-pointer text-xs rounded-md px-2.5 py-1.5 font-medium flex items-center gap-2 text-slate-700 hover:bg-slate-50 hover:text-slate-900"
                 >
                   <Store className="w-4 h-4 text-blue-600" />
                   <span>Volver a la Tienda</span>
@@ -579,7 +547,7 @@ function CustomerDashboardContent() {
 
                 <DropdownMenuItem
                   onClick={switchAccount}
-                  className="cursor-pointer text-xs rounded-xl px-2.5 py-2 font-medium flex items-center gap-2 text-slate-700 hover:bg-slate-100 hover:text-slate-900"
+                  className="cursor-pointer text-xs rounded-md px-2.5 py-1.5 font-medium flex items-center gap-2 text-slate-700 hover:bg-slate-50 hover:text-slate-900"
                 >
                   <ArrowLeftRight className="w-4 h-4 text-slate-600" />
                   <span>Cambiar de Cuenta</span>
@@ -587,7 +555,7 @@ function CustomerDashboardContent() {
 
                 <DropdownMenuItem
                   onClick={() => setActiveTab("perfil")}
-                  className="cursor-pointer text-xs rounded-xl px-2.5 py-2 font-medium flex items-center gap-2 text-slate-700 hover:bg-slate-100 hover:text-slate-900"
+                  className="cursor-pointer text-xs rounded-md px-2.5 py-1.5 font-medium flex items-center gap-2 text-slate-700 hover:bg-slate-50 hover:text-slate-900"
                 >
                   <User className="w-4 h-4 text-slate-600" />
                   <span>Mi Perfil &amp; Datos</span>
@@ -597,7 +565,7 @@ function CustomerDashboardContent() {
 
                 <DropdownMenuItem
                   onClick={() => signOut()}
-                  className="cursor-pointer text-xs rounded-xl px-2.5 py-2 font-medium flex items-center gap-2 text-rose-600 hover:bg-rose-50 hover:text-rose-700"
+                  className="cursor-pointer text-xs rounded-md px-2.5 py-1.5 font-medium flex items-center gap-2 text-rose-600 hover:bg-rose-50 hover:text-rose-700"
                 >
                   <LogOut className="w-4 h-4 text-rose-500" />
                   <span>Cerrar Sesión</span>
@@ -608,184 +576,143 @@ function CustomerDashboardContent() {
         </header>
 
         {/* Cuerpo de la Sección Activa */}
-        <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-6xl w-full mx-auto space-y-6">
+        <main className="flex-1 p-4 sm:p-6 max-w-4xl w-full mx-auto space-y-6">
           {/* ========================================================= */}
           {/* TAB 1: RESUMEN GENERAL                                    */}
           {/* ========================================================= */}
           {activeTab === "resumen" && (
             <div className="space-y-6">
-              {/* Customer Welcome Card */}
-              <div className="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-6 sm:p-7">
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-                  <div className="flex items-start sm:items-center gap-4">
-                    <Avatar className="h-16 w-16 rounded-2xl border-2 border-slate-200 shadow-xs bg-slate-900">
-                      {user.avatar && <AvatarImage src={user.avatar} alt={user.name} />}
-                      <AvatarFallback className="bg-slate-900 text-lg font-black text-white rounded-2xl">
-                        {user.name.slice(0, 2).toUpperCase()}
-                      </AvatarFallback>
-                    </Avatar>
+              {/* Saludo y bloque de descuento directo sobre el fondo */}
+              <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
+                {/* Saludo a la izquierda con datos en una sola línea */}
+                <div className="space-y-1">
+                  <h1 className="text-[26px] font-semibold text-slate-900 leading-tight">
+                    ¡Hola, {user.name}!
+                  </h1>
+                  <p className="text-[13px] text-slate-500 flex items-center flex-wrap gap-x-2">
+                    <span>{user.email}</span>
+                    <span>·</span>
+                    <span>nivel {loyalty.level.toLowerCase()}</span>
+                    <span>·</span>
+                    <span className="whitespace-nowrap">{user.purchasesCount} compras realizadas</span>
+                    <span>·</span>
+                    <span className="whitespace-nowrap">
+                      Cliente desde {new Date(user.registeredAt).toLocaleDateString("es-PE", { month: "short", year: "numeric" })}
+                    </span>
+                  </p>
 
-                    <div>
-                      <div className="flex items-center gap-2.5 flex-wrap">
-                        <h1 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
-                          ¡Hola, {user.name}!
-                        </h1>
-                        <Badge className="bg-blue-100 text-blue-800 border-blue-200 text-xs font-semibold">
-                          Nivel {loyalty.level}
-                        </Badge>
+                  {/* Barra de progreso: solo visible cuando compras > 0, 4px de alto, ancho acotado */}
+                  {user.purchasesCount > 0 && (
+                    <div className="flex items-center gap-3 pt-2">
+                      <div className="w-28 h-1 bg-slate-200 rounded-full overflow-hidden shrink-0">
+                        <div
+                          className="h-full bg-blue-600 rounded-full transition-all duration-300"
+                          style={{
+                            width: `${Math.min(100, (user.purchasesCount / loyalty.nextTarget) * 100)}%`,
+                          }}
+                        />
                       </div>
-                      <p className="text-xs text-slate-500 mt-0.5">{user.email}</p>
-
-                      <div className="flex items-center gap-3 mt-2 text-[11px] text-slate-500">
-                        <span className="flex items-center gap-1 font-medium">
-                          <ShoppingBag className="w-3.5 h-3.5 text-emerald-600" />
-                          <strong className="text-slate-800">{user.purchasesCount}</strong> compras realizadas
-                        </span>
-                        <span>•</span>
-                        <span className="flex items-center gap-1 font-medium">
-                          <Calendar className="w-3.5 h-3.5 text-blue-600" />
-                          Cliente desde {new Date(user.registeredAt).toLocaleDateString("es-PE", { month: "short", year: "numeric" })}
-                        </span>
-                      </div>
+                      <span className="text-[13px] text-slate-500 tabular-nums">
+                        {user.purchasesCount} / {loyalty.nextTarget} pedidos para el siguiente nivel
+                      </span>
                     </div>
-                  </div>
-
-                  {/* Loyalty Discount Card */}
-                  <div className="rounded-2xl border border-emerald-200 bg-emerald-50/70 p-4 sm:p-5 flex items-center gap-4 max-w-md shadow-xs">
-                    <div className="w-12 h-12 rounded-xl bg-white border border-emerald-200 flex items-center justify-center shrink-0 text-emerald-700 shadow-xs">
-                      <Gift className="w-6 h-6" />
-                    </div>
-                    <div className="min-w-0">
-                      <div className="flex items-center gap-2">
-                        <span className="text-lg font-black text-emerald-900 tracking-tight">
-                          {loyalty.discount}% de Descuento
-                        </span>
-                        <Badge className="bg-emerald-600 text-white text-[10px] font-bold uppercase">
-                          Activo
-                        </Badge>
-                      </div>
-                      <p className="text-[11.5px] text-emerald-800/90 leading-snug mt-0.5">
-                        Válido para tu siguiente compra en cualquier producto de hasta S/ {loyalty.maxPrice}.
-                      </p>
-                      <p className="text-[11px] text-emerald-900 font-medium mt-1">
-                        Cupón: <strong className="font-mono bg-white px-2 py-0.5 rounded border border-emerald-200 text-emerald-800">NOVA-{user.name.split(" ")[0].toUpperCase()}-{loyalty.discount}</strong>
-                      </p>
-                    </div>
-                  </div>
+                  )}
                 </div>
 
-                {/* Progress bar */}
-                <div className="mt-6 pt-5 border-t border-slate-100">
-                  <div className="flex items-center justify-between text-xs mb-2">
-                    <span className="text-slate-700 font-semibold flex items-center gap-1.5">
-                      <TrendingUp className="w-3.5 h-3.5 text-blue-600" />
-                      Progreso 
-                    </span>
-                    <span className="text-slate-500">
-                      {user.purchasesCount} / {loyalty.nextTarget} pedidos para el siguiente nivel
-                    </span>
-                  </div>
-                  <div className="w-full h-2 rounded-full bg-slate-100 overflow-hidden">
-                    <div
-                      className="h-full bg-blue-600 transition-all duration-500"
-                      style={{
-                        width: `${Math.min(100, (user.purchasesCount / loyalty.nextTarget) * 100)}%`,
-                      }}
-                    />
-                  </div>
+                {/* Bloque sencillo de descuento: borde izq de 3px verde, fondo muy tenue, sin icono */}
+                <div className="border-l-[3px] border-emerald-600 bg-emerald-50/50 rounded-r-md p-3.5 space-y-0.5 max-w-sm shrink-0">
+                  <p className="text-sm font-semibold text-emerald-950">
+                    {loyalty.discount}% de descuento
+                  </p>
+                  <p className="text-[13px] text-slate-600 leading-snug">
+                    Válido para tu siguiente compra en cualquier producto de hasta S/ {loyalty.maxPrice}.
+                  </p>
+                  <p className="text-[13px] text-slate-500 pt-0.5">
+                    Cupón: <span className="font-mono text-slate-800 tabular-nums">NOVA-{user.name.split(" ")[0].toUpperCase()}-{loyalty.discount}</span>
+                  </p>
                 </div>
               </div>
 
-              {/* KPI metrics row */}
-              <div className="bg-white rounded-xl border border-slate-200/90 shadow-sm flex flex-col sm:flex-row divide-y sm:divide-y-0 sm:divide-x divide-slate-200/90">
-                <div className="flex-1 p-5">
-                  <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">
-                    Total Gastado
-                  </p>
-                  <p className="text-3xl font-extrabold text-slate-900 mt-2 font-mono">
+              {/* 4 estadísticas en una sola fila con líneas divisorias verticales de 1px */}
+              <div className="grid grid-cols-2 md:grid-cols-4 divide-y md:divide-y-0 md:divide-x divide-slate-200/80 border-y border-slate-200/80 py-3">
+                <div className="py-2 md:py-0 md:px-4 md:first:pl-0">
+                  <span className="text-[13px] text-slate-500 block">total gastado</span>
+                  <span className="text-[28px] font-medium text-slate-900 tabular-nums leading-tight block mt-0.5">
                     S/ {(user.totalSpent || 0).toLocaleString("es-PE")}
-                  </p>
-                  <p className="text-[11px] text-slate-500 mt-1">
-                    En {user.purchasesCount} pedidos completados
-                  </p>
+                  </span>
                 </div>
 
-                <div className="flex-1 p-5">
-                  <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">
-                    Descuento
-                  </p>
-                  <p className="text-3xl font-extrabold text-emerald-600 mt-2 font-mono">
-                    {loyalty.discount}% OFF
-                  </p>
-                  <p className="text-[11px] text-slate-500 mt-1">
-                    Aplicable hasta productos de S/ {loyalty.maxPrice}
-                  </p>
+                <div className="py-2 md:py-0 md:px-4">
+                  <span className="text-[13px] text-slate-500 block">compras realizadas</span>
+                  <span className="text-[28px] font-medium text-slate-900 tabular-nums leading-tight block mt-0.5">
+                    {user.purchasesCount}
+                  </span>
                 </div>
 
-                <div className="flex-1 p-5">
-                  <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">
-                    Lista de Deseados
-                  </p>
-                  <p className="text-3xl font-extrabold text-rose-600 mt-2 font-mono">
+                <div className="py-2 md:py-0 md:px-4">
+                  <span className="text-[13px] text-slate-500 block">lista de deseados</span>
+                  <span className="text-[28px] font-medium text-slate-900 tabular-nums leading-tight block mt-0.5">
                     {wishlistCount}
-                  </p>
-                  <p className="text-[11px] text-slate-500 mt-1">
-                    Artículos guardados
-                  </p>
+                  </span>
                 </div>
 
-                <div className="flex-1 p-5">
-                  <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">
-                    Mi Carrito
-                  </p>
-                  <p className="text-3xl font-extrabold text-blue-600 mt-2 font-mono">
+                <div className="py-2 md:py-0 md:px-4 md:last:pr-0">
+                  <span className="text-[13px] text-slate-500 block">mi carrito</span>
+                  <span className="text-[28px] font-medium text-slate-900 tabular-nums leading-tight block mt-0.5">
                     {cartCount}
-                  </p>
-                  <p className="text-[11px] text-slate-500 mt-1">
-                    Total: S/ {cartTotal.toLocaleString("es-PE")}
-                  </p>
+                  </span>
                 </div>
               </div>
 
-              {/* Recent Orders Overview */}
-              <div className="bg-white rounded-xl border border-slate-200/90 shadow-sm p-6">
-                <div className="flex items-center justify-between mb-4 pb-3 border-b border-slate-100">
+              {/* Compras Recientes: máximo un nivel de contenedor, bordes sutiles de 1px, sin sombras */}
+              <div className="border border-slate-200/80 rounded-lg p-5 space-y-4">
+                <div className="flex items-center justify-between pb-3 border-b border-slate-200/60">
                   <div>
-                    <h2 className="text-base font-bold text-slate-900">
+                    <h2 className="text-base font-semibold text-slate-900">
                       Compras Recientes
                     </h2>
-                    <p className="text-xs text-slate-500 mt-0.5">Últimos pedidos procesados y estado de entrega</p>
+                    <p className="text-[13px] text-slate-500 mt-0.5">
+                      Últimos pedidos procesados y estado de entrega
+                    </p>
                   </div>
                   <button
+                    type="button"
                     onClick={() => setActiveTab("compras")}
-                    className="text-xs text-blue-600 hover:text-blue-700 font-semibold flex items-center gap-1"
+                    className="text-[13px] text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1 cursor-pointer transition-colors"
                   >
-                    Ver todas ({orders.length}) <ChevronRight className="w-3.5 h-3.5" />
+                    <span>Ver todas ({orders.length})</span>
+                    <ChevronRight className="w-3.5 h-3.5" />
                   </button>
                 </div>
 
                 {orders.length > 0 ? (
                   <div className="divide-y divide-slate-100">
                     {orders.slice(0, 3).map((ord) => (
-                      <div key={ord.id} className="py-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                      <div
+                        key={ord.id}
+                        className="py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2"
+                      >
                         <div>
                           <div className="flex items-center gap-2">
-                            <span className="font-mono text-xs font-bold text-blue-700">{ord.id}</span>
-                            <span className="text-xs text-slate-400">•</span>
+                            <span className="text-xs font-semibold text-slate-900 tabular-nums">
+                              {ord.id}
+                            </span>
+                            <span className="text-xs text-slate-300">·</span>
                             <span className="text-xs text-slate-500">{ord.date}</span>
-                            <Badge className="bg-emerald-50 text-emerald-800 border-emerald-200 text-[10px] font-semibold">
+                            <span className="text-xs text-slate-300">·</span>
+                            <span className="text-xs text-emerald-700 font-medium">
                               {ord.status}
-                            </Badge>
+                            </span>
                           </div>
-                          <p className="text-xs text-slate-700 mt-1 font-medium">{ord.itemsSummary}</p>
+                          <p className="text-xs text-slate-600 mt-0.5">{ord.itemsSummary}</p>
                         </div>
-                        <div className="text-left sm:text-right">
-                          <span className="text-sm font-bold text-slate-900 font-mono block">
+                        <div className="text-left sm:text-right shrink-0">
+                          <span className="text-sm font-semibold text-slate-900 tabular-nums block">
                             S/ {ord.total.toLocaleString("es-PE")}
                           </span>
                           {ord.discountApplied ? (
-                            <span className="text-[10px] text-emerald-600 font-semibold block">
-                              -{ord.discountApplied}% de descuento aplicado
+                            <span className="text-[11px] text-emerald-700 block">
+                              -{ord.discountApplied}% aplicado
                             </span>
                           ) : null}
                         </div>
@@ -793,9 +720,9 @@ function CustomerDashboardContent() {
                     ))}
                   </div>
                 ) : (
-                  <div className="py-8 text-center text-slate-400 text-xs">
-                    No tienes pedidos registrados aún. ¡Explora el catálogo y aprovecha tu 5% de descuento de bienvenida!
-                  </div>
+                  <p className="py-6 text-center text-slate-400 text-xs">
+                    No tienes pedidos registrados aún.
+                  </p>
                 )}
               </div>
             </div>
