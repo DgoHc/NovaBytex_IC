@@ -23,6 +23,8 @@ import {
   ArrowLeftRight,
   Store,
   Clock,
+  Copy,
+  Check,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -65,6 +67,15 @@ function CustomerDashboardContent() {
 
   const [activeTab, setActiveTab] = useState<TabKey>("resumen");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [copiedCoupon, setCopiedCoupon] = useState(false);
+
+  const handleCopyCoupon = (code: string) => {
+    if (typeof window !== "undefined" && navigator.clipboard) {
+      navigator.clipboard.writeText(code);
+      setCopiedCoupon(true);
+      setTimeout(() => setCopiedCoupon(false), 2000);
+    }
+  };
 
   // REDIRECCIÓN OBLIGATORIA: Si el usuario autenticado es ADMIN, debe ir al panel de admin
   useEffect(() => {
@@ -206,10 +217,10 @@ function CustomerDashboardContent() {
       {/* ------------------------------------------------------------- */}
       {/* 1. SIDEBAR IZQUIERDA (Estilo corporativo oscuro tipo /admin)  */}
       {/* ------------------------------------------------------------- */}
-      <aside className="hidden lg:flex flex-col w-64 bg-[#0B132B] border-r border-slate-800 text-slate-300 fixed top-0 bottom-0 left-0 z-40 select-none shadow-xl">
+      <aside className="hidden lg:flex flex-col w-[240px] bg-[#0B132B] border-r border-slate-800 text-slate-300 fixed top-0 bottom-0 left-0 z-40 select-none shadow-xl">
         {/* Brand Header */}
-        <div className="shrink-0 flex items-center gap-3 px-5 h-16 border-b border-slate-800/80 bg-[#080D1F]/50">
-          <div className="w-9 h-9 rounded-xl bg-white p-1 border border-slate-700 shadow-md shrink-0">
+        <div className="shrink-0 flex items-center gap-3 px-5 h-14 border-b border-slate-800/80 bg-[#080D1F]/50">
+          <div className="w-8 h-8 rounded-lg bg-white p-1 border border-slate-700 shadow-sm shrink-0">
             <img
               src="/assets/branding/nb-isotype.png"
               alt="Nova Bytex"
@@ -218,31 +229,31 @@ function CustomerDashboardContent() {
           </div>
           <div className="min-w-0">
             <p className="text-sm font-black text-white leading-tight">Nova Bytex</p>
-            <p className="text-[10.5px] font-medium text-slate-400 leading-tight">
+            <p className="text-[10px] font-medium text-slate-400 leading-tight">
               Portal de Clientes
             </p>
           </div>
         </div>
 
-        {/* User Mini Profile Card */}
-        <div className="p-3 mx-3 my-3 rounded-lg bg-slate-900/40 border border-slate-800/60 flex items-center gap-2.5">
-          <Avatar className="h-8 w-8 border border-slate-700 shrink-0">
+        {/* User Mini Profile */}
+        <div className="px-4 py-3 flex items-center gap-3">
+          <Avatar className="h-9 w-9 ring-2 ring-[#1E40AF] ring-offset-2 ring-offset-[#0B132B] shrink-0">
             {user.avatar && <AvatarImage src={user.avatar} alt={user.name} />}
             <AvatarFallback className="bg-slate-800 text-xs font-semibold text-white">
               {user.name.slice(0, 2).toUpperCase()}
             </AvatarFallback>
           </Avatar>
           <div className="min-w-0 flex-1">
-            <p className="text-xs font-medium text-white truncate">{user.name}</p>
-            <p className="text-[11px] text-slate-400">nivel {loyalty.level.toLowerCase()}</p>
+            <p className="text-sm font-medium text-white truncate">{user.name}</p>
+            <p className="text-xs text-slate-400 truncate">nivel {loyalty.level.toLowerCase()}</p>
           </div>
         </div>
 
         {/* Navigation list */}
-        <nav className="flex-1 overflow-y-auto px-3 py-2 space-y-4 no-scrollbar">
+        <nav className="flex-1 overflow-y-auto px-2.5 py-2 space-y-4 no-scrollbar">
           {navItems.map((section) => (
             <div key={section.group} className="space-y-0.5">
-              <p className="text-[9.5px] font-bold tracking-widest text-slate-500 px-3 py-1 uppercase">
+              <p className="text-[11px] font-medium tracking-wider text-slate-500 px-3 py-1 uppercase">
                 {section.group}
               </p>
               {section.items.map((item) => {
@@ -254,21 +265,21 @@ function CustomerDashboardContent() {
                     type="button"
                     onClick={() => setActiveTab(item.key)}
                     className={cn(
-                      "w-full flex items-center gap-2.5 h-8 text-xs transition-colors text-left",
+                      "w-full flex items-center gap-3 h-10 text-sm transition-colors duration-150 text-left",
                       active
-                        ? "text-white font-medium border-l-2 border-blue-500 pl-2.5"
-                        : "text-slate-400 hover:text-slate-200 pl-3 border-l-2 border-transparent"
+                        ? "text-white font-medium border-l-2 border-[#1E40AF] bg-white/[0.04] pl-3"
+                        : "text-slate-400 hover:text-white pl-3 border-l-2 border-transparent hover:bg-white/[0.02]"
                     )}
                   >
                     <Icon
                       className={cn(
-                        "w-4 h-4 shrink-0 transition-colors",
-                        active ? "text-white" : "text-slate-500 group-hover:text-slate-300"
+                        "w-[18px] h-[18px] shrink-0 transition-colors duration-150",
+                        active ? "text-white" : "text-slate-400"
                       )}
                     />
                     <span className="flex-1 truncate">{item.label}</span>
                     {item.badge !== undefined && (
-                      <span className="text-[11px] text-slate-400 tabular-nums">
+                      <span className="text-xs text-slate-400 tabular-nums">
                         {item.badge}
                       </span>
                     )}
@@ -284,17 +295,17 @@ function CustomerDashboardContent() {
           <Link
             href="/"
             title="Volver a la Tienda Pública"
-            className="flex items-center gap-2 text-slate-400 hover:text-slate-200 transition-colors"
+            className="h-10 text-sm flex items-center gap-3 text-slate-400 hover:text-white transition-colors duration-150 pl-3"
           >
-            <Store className="w-3.5 h-3.5 text-blue-400" />
+            <Store className="w-[18px] h-[18px] text-[#1E40AF]" />
             <span>Volver a la Tienda</span>
           </Link>
-          <div className="flex items-center justify-between pt-1 text-slate-400">
+          <div className="flex items-center justify-between px-3 pt-1 text-xs text-slate-400">
             <button
               type="button"
               onClick={switchAccount}
               title="Cambiar de Cuenta"
-              className="flex items-center gap-1.5 hover:text-slate-200 transition-colors cursor-pointer"
+              className="flex items-center gap-1.5 hover:text-white transition-colors duration-150 cursor-pointer"
             >
               <ArrowLeftRight className="w-3.5 h-3.5" />
               <span>Cuenta</span>
@@ -303,7 +314,7 @@ function CustomerDashboardContent() {
               type="button"
               onClick={() => signOut()}
               title="Cerrar Sesión"
-              className="flex items-center gap-1.5 hover:text-rose-300 transition-colors cursor-pointer"
+              className="flex items-center gap-1.5 hover:text-rose-300 transition-colors duration-150 cursor-pointer"
             >
               <LogOut className="w-3.5 h-3.5" />
               <span>Salir</span>
@@ -330,9 +341,9 @@ function CustomerDashboardContent() {
               animate={{ x: 0 }}
               exit={{ x: "-100%" }}
               transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
-              className="fixed top-0 left-0 z-50 h-full w-72 bg-[#0B132B] text-slate-300 shadow-2xl flex flex-col lg:hidden border-r border-slate-800"
+              className="fixed top-0 left-0 z-50 h-full w-[260px] bg-[#0B132B] text-slate-300 shadow-2xl flex flex-col lg:hidden border-r border-slate-800"
             >
-              <div className="flex items-center justify-between px-4 h-16 border-b border-slate-800 bg-[#080D1F]">
+              <div className="flex items-center justify-between px-4 h-14 border-b border-slate-800 bg-[#080D1F]">
                 <div className="flex items-center gap-2.5">
                   <div className="w-8 h-8 rounded-lg bg-white p-1 border border-slate-700">
                     <img
@@ -342,35 +353,35 @@ function CustomerDashboardContent() {
                     />
                   </div>
                   <div>
-                    <p className="text-sm font-black text-white">Nova Bytex</p>
-                    <p className="text-[10px] text-slate-400">Portal de Clientes</p>
+                    <p className="text-sm font-black text-white leading-tight">Nova Bytex</p>
+                    <p className="text-[10px] text-slate-400 leading-tight">Portal de Clientes</p>
                   </div>
                 </div>
                 <button
                   onClick={() => setMobileMenuOpen(false)}
-                  className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-white hover:bg-slate-800"
+                  className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-white hover:bg-slate-800 transition-colors duration-150"
                 >
                   <X className="w-5 h-5" />
                 </button>
               </div>
 
-              <div className="p-3 mx-3 my-2 rounded-lg bg-slate-900/40 border border-slate-800/60 flex items-center gap-2.5">
-                <Avatar className="h-8 w-8 border border-slate-700 shrink-0">
+              <div className="px-4 py-3 flex items-center gap-3">
+                <Avatar className="h-9 w-9 ring-2 ring-[#1E40AF] ring-offset-2 ring-offset-[#0B132B] shrink-0">
                   {user.avatar && <AvatarImage src={user.avatar} alt={user.name} />}
                   <AvatarFallback className="bg-slate-800 text-xs font-semibold text-white">
                     {user.name.slice(0, 2).toUpperCase()}
                   </AvatarFallback>
                 </Avatar>
-                <div className="min-w-0">
-                  <p className="text-xs font-medium text-white truncate">{user.name}</p>
-                  <p className="text-[11px] text-slate-400">nivel {loyalty.level.toLowerCase()}</p>
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-medium text-white truncate">{user.name}</p>
+                  <p className="text-xs text-slate-400 truncate">nivel {loyalty.level.toLowerCase()}</p>
                 </div>
               </div>
 
-              <nav className="flex-1 overflow-y-auto p-3 space-y-3">
+              <nav className="flex-1 overflow-y-auto px-2.5 py-2 space-y-4 no-scrollbar">
                 {navItems.map((section) => (
                   <div key={section.group} className="space-y-0.5">
-                    <p className="text-[9.5px] font-bold tracking-widest text-slate-500 px-3 uppercase">
+                    <p className="text-[11px] font-medium tracking-wider text-slate-500 px-3 py-1 uppercase">
                       {section.group}
                     </p>
                     {section.items.map((item) => {
@@ -385,16 +396,21 @@ function CustomerDashboardContent() {
                             setMobileMenuOpen(false);
                           }}
                           className={cn(
-                            "w-full flex items-center gap-2.5 h-8 text-xs transition-colors text-left",
+                            "w-full flex items-center gap-3 h-10 text-sm transition-colors duration-150 text-left",
                             active
-                              ? "text-white font-medium border-l-2 border-blue-500 pl-2.5"
-                              : "text-slate-400 hover:text-slate-200 pl-3 border-l-2 border-transparent"
+                              ? "text-white font-medium border-l-2 border-[#1E40AF] bg-white/[0.04] pl-3"
+                              : "text-slate-400 hover:text-white pl-3 border-l-2 border-transparent hover:bg-white/[0.02]"
                           )}
                         >
-                          <Icon className="w-4 h-4 shrink-0" />
+                          <Icon
+                            className={cn(
+                              "w-[18px] h-[18px] shrink-0 transition-colors duration-150",
+                              active ? "text-white" : "text-slate-400"
+                            )}
+                          />
                           <span className="flex-1 truncate">{item.label}</span>
                           {item.badge !== undefined && (
-                            <span className="text-[11px] text-slate-400 tabular-nums">
+                            <span className="text-xs text-slate-400 tabular-nums">
                               {item.badge}
                             </span>
                           )}
@@ -409,19 +425,19 @@ function CustomerDashboardContent() {
                 <Link
                   href="/"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="flex items-center gap-2 text-slate-400 hover:text-slate-200 transition-colors"
+                  className="h-10 text-sm flex items-center gap-3 text-slate-400 hover:text-white transition-colors duration-150 pl-3"
                 >
-                  <Store className="w-3.5 h-3.5 text-blue-400" />
+                  <Store className="w-[18px] h-[18px] text-[#1E40AF]" />
                   <span>Volver a la Tienda</span>
                 </Link>
-                <div className="flex items-center justify-between pt-1 text-slate-400">
+                <div className="flex items-center justify-between px-3 pt-1 text-xs text-slate-400">
                   <button
                     type="button"
                     onClick={() => {
                       setMobileMenuOpen(false);
                       switchAccount();
                     }}
-                    className="flex items-center gap-1.5 hover:text-slate-200 transition-colors"
+                    className="flex items-center gap-1.5 hover:text-white transition-colors duration-150"
                   >
                     <ArrowLeftRight className="w-3.5 h-3.5" />
                     <span>Cuenta</span>
@@ -432,7 +448,7 @@ function CustomerDashboardContent() {
                       setMobileMenuOpen(false);
                       signOut();
                     }}
-                    className="flex items-center gap-1.5 hover:text-rose-300 transition-colors"
+                    className="flex items-center gap-1.5 hover:text-rose-300 transition-colors duration-150"
                   >
                     <LogOut className="w-3.5 h-3.5" />
                     <span>Salir</span>
@@ -447,14 +463,14 @@ function CustomerDashboardContent() {
       {/* ------------------------------------------------------------- */}
       {/* 3. CONTENIDO PRINCIPAL Y BARRA SUPERIOR DEL SISTEMA           */}
       {/* ------------------------------------------------------------- */}
-      <div className="flex-1 flex flex-col lg:ml-64 min-w-0 bg-slate-50 min-h-screen">
+      <div className="flex-1 flex flex-col lg:ml-[240px] min-w-0 bg-slate-50 min-h-screen">
         {/* Top Header del Sistema */}
-        <header className="shrink-0 h-14 bg-white border-b border-slate-200 px-4 sm:px-6 flex items-center justify-between sticky top-0 z-30">
+        <header className="shrink-0 h-14 bg-white border-b border-slate-200 px-4 sm:px-8 flex items-center justify-between sticky top-0 z-30">
           <div className="flex items-center gap-2.5 min-w-0">
             <button
               type="button"
               onClick={() => setMobileMenuOpen(true)}
-              className="w-8 h-8 rounded-md flex items-center justify-center text-slate-700 hover:bg-slate-100 lg:hidden border border-slate-200"
+              className="w-8 h-8 rounded-md flex items-center justify-center text-slate-700 hover:bg-slate-100 lg:hidden border border-slate-200 transition-colors duration-150"
               aria-label="Abrir menú"
             >
               <Menu className="w-4 h-4" />
@@ -487,9 +503,9 @@ function CustomerDashboardContent() {
             <Link
               href="/"
               title="Volver a la Tienda Pública"
-              className="h-8 px-2.5 text-xs rounded-md border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 flex items-center gap-1.5 transition-colors"
+              className="h-8 px-3 text-xs rounded-md border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 flex items-center gap-1.5 transition-colors duration-150"
             >
-              <Store className="w-3.5 h-3.5 text-blue-600" />
+              <Store className="w-3.5 h-3.5 text-[#1E40AF]" />
               <span className="hidden sm:inline font-medium">Tienda</span>
             </Link>
 
@@ -498,9 +514,9 @@ function CustomerDashboardContent() {
               variant="outline"
               size="sm"
               onClick={toggleCart}
-              className="h-8 px-2.5 text-xs rounded-md border-slate-200 bg-white hover:bg-slate-50 text-slate-700 flex items-center gap-1.5 shadow-none"
+              className="h-8 px-3 text-xs rounded-md border-slate-200 bg-white hover:bg-slate-50 text-slate-700 flex items-center gap-1.5 transition-colors duration-150 shadow-none"
             >
-              <ShoppingCart className="w-3.5 h-3.5 text-blue-600" />
+              <ShoppingCart className="w-3.5 h-3.5 text-[#1E40AF]" />
               <span className="tabular-nums font-medium">{cartCount}</span>
             </Button>
 
@@ -509,11 +525,11 @@ function CustomerDashboardContent() {
               <DropdownMenuTrigger asChild>
                 <button
                   type="button"
-                  className="flex items-center gap-2 pl-2 border-l border-slate-200 outline-none hover:opacity-80 transition-opacity select-none cursor-pointer"
+                  className="flex items-center gap-2 pl-2 border-l border-slate-200 outline-none hover:opacity-80 transition-opacity duration-150 select-none cursor-pointer"
                 >
-                  <Avatar className="h-7 w-7 border border-slate-200">
+                  <Avatar className="h-8 w-8 ring-2 ring-[#1E40AF] ring-offset-2 ring-offset-white shrink-0">
                     {user.avatar && <AvatarImage src={user.avatar} alt={user.name} />}
-                    <AvatarFallback className="bg-slate-900 text-[10px] font-bold text-white">
+                    <AvatarFallback className="bg-slate-900 text-[11px] font-bold text-white">
                       {user.name.slice(0, 2).toUpperCase()}
                     </AvatarFallback>
                   </Avatar>
@@ -576,20 +592,20 @@ function CustomerDashboardContent() {
         </header>
 
         {/* Cuerpo de la Sección Activa */}
-        <main className="flex-1 p-4 sm:p-6 max-w-4xl w-full mx-auto space-y-6">
+        <main className="flex-1 py-8 px-4 sm:px-8 max-w-[1120px] w-full mx-auto space-y-8">
           {/* ========================================================= */}
           {/* TAB 1: RESUMEN GENERAL                                    */}
           {/* ========================================================= */}
           {activeTab === "resumen" && (
-            <div className="space-y-6">
-              {/* Saludo y bloque de descuento directo sobre el fondo */}
-              <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
-                {/* Saludo a la izquierda con datos en una sola línea */}
-                <div className="space-y-1">
-                  <h1 className="text-[26px] font-semibold text-slate-900 leading-tight">
+            <div className="space-y-8">
+              {/* Hero Band con degradado de marca */}
+              <div className="bg-gradient-to-r from-[#1E40AF] to-[#0B1220] rounded-xl p-6 sm:p-8 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 shadow-sm">
+                {/* Saludo a la izquierda con datos en blanco al 70% */}
+                <div className="space-y-2">
+                  <h1 className="text-[24px] font-semibold text-white leading-tight">
                     ¡Hola, {user.name}!
                   </h1>
-                  <p className="text-[13px] text-slate-500 flex items-center flex-wrap gap-x-2">
+                  <p className="text-[13px] text-white/70 flex items-center flex-wrap gap-x-2">
                     <span>{user.email}</span>
                     <span>·</span>
                     <span>nivel {loyalty.level.toLowerCase()}</span>
@@ -603,82 +619,103 @@ function CustomerDashboardContent() {
 
                   {/* Barra de progreso: solo visible cuando compras > 0, 4px de alto, ancho acotado */}
                   {user.purchasesCount > 0 && (
-                    <div className="flex items-center gap-3 pt-2">
-                      <div className="w-28 h-1 bg-slate-200 rounded-full overflow-hidden shrink-0">
+                    <div className="flex items-center gap-3 pt-1">
+                      <div className="w-28 h-1 bg-white/20 rounded-full overflow-hidden shrink-0">
                         <div
-                          className="h-full bg-blue-600 rounded-full transition-all duration-300"
+                          className="h-full bg-blue-400 rounded-full transition-all duration-300"
                           style={{
                             width: `${Math.min(100, (user.purchasesCount / loyalty.nextTarget) * 100)}%`,
                           }}
                         />
                       </div>
-                      <span className="text-[13px] text-slate-500 tabular-nums">
+                      <span className="text-xs text-white/70 tabular-nums">
                         {user.purchasesCount} / {loyalty.nextTarget} pedidos para el siguiente nivel
                       </span>
                     </div>
                   )}
                 </div>
 
-                {/* Bloque sencillo de descuento: borde izq de 3px verde, fondo muy tenue, sin icono */}
-                <div className="border-l-[3px] border-emerald-600 bg-emerald-50/50 rounded-r-md p-3.5 space-y-0.5 max-w-sm shrink-0">
-                  <p className="text-sm font-semibold text-emerald-950">
-                    {loyalty.discount}% de descuento
-                  </p>
-                  <p className="text-[13px] text-slate-600 leading-snug">
-                    Válido para tu siguiente compra en cualquier producto de hasta S/ {loyalty.maxPrice}.
-                  </p>
-                  <p className="text-[13px] text-slate-500 pt-0.5">
-                    Cupón: <span className="font-mono text-slate-800 tabular-nums">NOVA-{user.name.split(" ")[0].toUpperCase()}-{loyalty.discount}</span>
-                  </p>
+                {/* Descuento dentro de la banda como un "ticket" */}
+                <div className="bg-white/[0.08] border border-dashed border-white/20 rounded-lg p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 max-w-sm w-full shrink-0">
+                  <div className="space-y-0.5">
+                    <p className="text-sm font-semibold text-white">
+                      {loyalty.discount}% de descuento
+                    </p>
+                    <p className="text-xs text-white/70 leading-snug">
+                      Válido para tu siguiente compra en cualquier producto de hasta S/ {loyalty.maxPrice}.
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-1.5 shrink-0 bg-black/20 px-2 py-1.5 rounded border border-white/10 self-start sm:self-center">
+                    <span className="font-mono text-xs text-white tabular-nums tracking-wide">
+                      NOVA-{user.name.split(" ")[0].toUpperCase()}-{loyalty.discount}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => handleCopyCoupon(`NOVA-${user.name.split(" ")[0].toUpperCase()}-${loyalty.discount}`)}
+                      className="text-white/70 hover:text-white transition-colors duration-150 p-0.5"
+                      title="Copiar código"
+                      aria-label="Copiar código"
+                    >
+                      {copiedCoupon ? (
+                        <Check className="w-3.5 h-3.5 text-emerald-400" />
+                      ) : (
+                        <Copy className="w-3.5 h-3.5" />
+                      )}
+                    </button>
+                  </div>
                 </div>
               </div>
 
-              {/* 4 estadísticas en una sola fila con líneas divisorias verticales de 1px */}
-              <div className="grid grid-cols-2 md:grid-cols-4 divide-y md:divide-y-0 md:divide-x divide-slate-200/80 border-y border-slate-200/80 py-3">
-                <div className="py-2 md:py-0 md:px-4 md:first:pl-0">
-                  <span className="text-[13px] text-slate-500 block">total gastado</span>
-                  <span className="text-[28px] font-medium text-slate-900 tabular-nums leading-tight block mt-0.5">
+              {/* 4 estadísticas en una fila con separadores verticales de 1px (2x2 en móvil con borde sutil) */}
+              <div className="grid grid-cols-2 lg:grid-cols-4 divide-y lg:divide-y-0 lg:divide-x divide-slate-200 border-y border-slate-200 py-4">
+                <div className="p-3 sm:p-4 lg:py-0 lg:px-6 lg:first:pl-0 border-r border-slate-200 lg:border-r-0">
+                  <span className="text-xs text-slate-500 block">total gastado</span>
+                  <span className="text-[28px] font-semibold text-[#1E40AF] tabular-nums leading-tight block mt-1">
                     S/ {(user.totalSpent || 0).toLocaleString("es-PE")}
                   </span>
+                  <div className="w-6 h-0.5 bg-[#1E40AF] rounded-full mt-2" />
                 </div>
 
-                <div className="py-2 md:py-0 md:px-4">
-                  <span className="text-[13px] text-slate-500 block">compras realizadas</span>
-                  <span className="text-[28px] font-medium text-slate-900 tabular-nums leading-tight block mt-0.5">
+                <div className="p-3 sm:p-4 lg:py-0 lg:px-6">
+                  <span className="text-xs text-slate-500 block">compras realizadas</span>
+                  <span className="text-[26px] font-medium text-slate-900 tabular-nums leading-tight block mt-1">
                     {user.purchasesCount}
                   </span>
+                  <div className="w-6 h-0.5 bg-slate-300 rounded-full mt-2" />
                 </div>
 
-                <div className="py-2 md:py-0 md:px-4">
-                  <span className="text-[13px] text-slate-500 block">lista de deseados</span>
-                  <span className="text-[28px] font-medium text-slate-900 tabular-nums leading-tight block mt-0.5">
+                <div className="p-3 sm:p-4 lg:py-0 lg:px-6 border-r border-slate-200 lg:border-r-0">
+                  <span className="text-xs text-slate-500 block">lista de deseados</span>
+                  <span className="text-[26px] font-medium text-slate-900 tabular-nums leading-tight block mt-1">
                     {wishlistCount}
                   </span>
+                  <div className="w-6 h-0.5 bg-slate-300 rounded-full mt-2" />
                 </div>
 
-                <div className="py-2 md:py-0 md:px-4 md:last:pr-0">
-                  <span className="text-[13px] text-slate-500 block">mi carrito</span>
-                  <span className="text-[28px] font-medium text-slate-900 tabular-nums leading-tight block mt-0.5">
+                <div className="p-3 sm:p-4 lg:py-0 lg:px-6 lg:last:pr-0">
+                  <span className="text-xs text-slate-500 block">mi carrito</span>
+                  <span className="text-[26px] font-medium text-slate-900 tabular-nums leading-tight block mt-1">
                     {cartCount}
                   </span>
+                  <div className="w-6 h-0.5 bg-slate-300 rounded-full mt-2" />
                 </div>
               </div>
 
-              {/* Compras Recientes: máximo un nivel de contenedor, bordes sutiles de 1px, sin sombras */}
-              <div className="border border-slate-200/80 rounded-lg p-5 space-y-4">
-                <div className="flex items-center justify-between pb-3 border-b border-slate-200/60">
+              {/* Compras Recientes: padding 20px, esquinas 8px, borde sutil 1px, cero sombra */}
+              <div className="border border-slate-200 rounded-lg p-5 space-y-4 shadow-none bg-white">
+                <div className="flex items-center justify-between pb-3 border-b border-slate-100">
                   <div>
                     <h2 className="text-base font-semibold text-slate-900">
                       Compras Recientes
                     </h2>
-                    <p className="text-[13px] text-slate-500 mt-0.5">
+                    <p className="text-xs text-slate-500 mt-0.5">
                       Últimos pedidos procesados y estado de entrega
                     </p>
                   </div>
                   <button
                     type="button"
                     onClick={() => setActiveTab("compras")}
-                    className="text-[13px] text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1 cursor-pointer transition-colors"
+                    className="text-xs text-[#1E40AF] hover:underline font-medium flex items-center gap-1 cursor-pointer transition-colors duration-150"
                   >
                     <span>Ver todas ({orders.length})</span>
                     <ChevronRight className="w-3.5 h-3.5" />
@@ -720,9 +757,19 @@ function CustomerDashboardContent() {
                     ))}
                   </div>
                 ) : (
-                  <p className="py-6 text-center text-slate-400 text-xs">
-                    No tienes pedidos registrados aún.
-                  </p>
+                  <div className="h-[140px] max-h-[160px] flex flex-col items-center justify-center text-center gap-2 py-3">
+                    <ShoppingBag className="w-7 h-7 text-slate-300 stroke-[1.5]" />
+                    <p className="text-xs text-slate-400">
+                      No tienes pedidos registrados aún.
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => setActiveTab("compras")}
+                      className="text-xs text-[#1E40AF] hover:underline font-medium transition-colors duration-150"
+                    >
+                      Ver todas
+                    </button>
+                  </div>
                 )}
               </div>
             </div>
