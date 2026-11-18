@@ -95,16 +95,16 @@ export const Hero = () => {
               initial={reduceMotion ? false : "hidden"}
               animate={reduceMotion ? { opacity: 1, y: 0 } : "visible"}
               variants={reveal(0.4, 1)}
-              className="mt-10 pt-8 border-t border-slate-200/70 grid grid-cols-3 gap-6 max-w-lg mx-auto lg:mx-0"
+              className="mt-10 pt-8 border-t border-slate-200/70 grid grid-cols-3 gap-4 sm:gap-6 max-w-lg mx-auto lg:mx-0"
             >
               {[
                 { value: "Cajamarca", label: "Tienda física" },
-                { value: "L a V", label: "7:00 a. m. a 7:00 p. m.", highlight: true },
+                { value: "Lunes a Viernes", label: "7:00 a. m. a 7:00 p. m.", highlight: true },
                 { value: "WhatsApp", label: "Cotizaciones directas" }
               ].map((stat) => (
-                <div key={stat.label} className="text-center lg:text-left">
+                <div key={stat.label} className="text-center lg:text-left flex flex-col justify-start">
                   <div
-                    className={`text-2xl font-semibold tracking-tight font-editorial md:text-3xl ${stat.highlight ? "text-blue-700" : "text-slate-900"}`}
+                    className={`text-lg sm:text-2xl font-semibold tracking-tight font-editorial md:text-[26px] leading-tight ${stat.highlight ? "text-blue-700" : "text-slate-900"}`}
                   >
                     {stat.value}
                   </div>

@@ -67,13 +67,13 @@ function CustomerDashboardContent() {
 
   const [activeTab, setActiveTab] = useState<TabKey>("resumen");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [copiedCoupon, setCopiedCoupon] = useState(false);
+  const [copiedCode, setCopiedCode] = useState<string | null>(null);
 
   const handleCopyCoupon = (code: string) => {
     if (typeof window !== "undefined" && navigator.clipboard) {
       navigator.clipboard.writeText(code);
-      setCopiedCoupon(true);
-      setTimeout(() => setCopiedCoupon(false), 2000);
+      setCopiedCode(code);
+      setTimeout(() => setCopiedCode(null), 2000);
     }
   };
 
@@ -656,7 +656,7 @@ function CustomerDashboardContent() {
                       title="Copiar código"
                       aria-label="Copiar código"
                     >
-                      {copiedCoupon ? (
+                      {copiedCode === `NOVA-${user.name.split(" ")[0].toUpperCase()}-${loyalty.discount}` ? (
                         <Check className="w-3.5 h-3.5 text-emerald-400" />
                       ) : (
                         <Copy className="w-3.5 h-3.5" />
@@ -890,91 +890,105 @@ function CustomerDashboardContent() {
           {/* ========================================================= */}
           {activeTab === "promociones" && (
             <div className="space-y-6">
-              <div className="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-6 sm:p-7">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-4 border-b border-slate-100">
-                  <div>
-                    <h2 className="text-base sm:text-lg font-bold text-slate-900 flex items-center gap-2">
-                      <Tag className="w-5 h-5 text-emerald-600" />
-                      Cuponera Digital Nova Bytex
-                    </h2>
-                    <p className="text-xs text-slate-500 mt-0.5">
-                      Beneficios y cupones activos. Podrás seleccionarlos y aplicarlos directamente desde tu Carrito de Compras con tus productos elegidos.
-                    </p>
-                  </div>
-                  <Badge className="bg-emerald-50 text-emerald-800 border-emerald-200 text-xs px-3 py-1 font-semibold shrink-0">
-                    {AVAILABLE_COUPONS.length} Cupones disponibles
-                  </Badge>
+              {/* Encabezado de la Sección */}
+              <div className="space-y-1">
+                <div className="flex items-baseline gap-2">
+                  <h2 className="text-base sm:text-lg font-bold text-slate-900 flex items-center gap-2">
+                    <Tag className="w-5 h-5 text-emerald-600" />
+                    Cuponera Digital Nova Bytex
+                  </h2>
+                  <span className="text-xs text-slate-400 font-normal tabular-nums">
+                    {AVAILABLE_COUPONS.length} cupones
+                  </span>
                 </div>
+                <p className="text-xs text-slate-500 truncate">
+                  Beneficios y cupones activos para aplicar directamente desde tu Carrito de Compras.
+                </p>
+              </div>
 
-                {/* Grid de Cupones */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-                  {AVAILABLE_COUPONS.map((coupon) => {
-                    return (
-                      <div
-                        key={coupon.id}
-                        className={`rounded-2xl border-2 border-dashed p-5 flex flex-col justify-between transition-all relative overflow-hidden ${
-                          coupon.isExtra
-                            ? "border-blue-300 bg-gradient-to-br from-white to-blue-50/40 hover:border-blue-500 shadow-xs"
-                            : "border-slate-200 bg-white hover:border-slate-300 shadow-xs"
-                        }`}
-                      >
-                        {/* Decorative ticket notch indicators */}
-                        <div className="absolute -left-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-slate-50 border border-slate-200/90" />
-                        <div className="absolute -right-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-slate-50 border border-slate-200/90" />
+              {/* Grid de Cupones */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 items-stretch">
+                {AVAILABLE_COUPONS.map((coupon) => {
+                  const isAvailable = coupon.minPurchase === 0 || cartTotal >= coupon.minPurchase;
 
-                        <div>
-                          <div className="flex items-center justify-between gap-2 mb-2">
-                            <span className="font-mono text-xl font-black text-slate-900">
-                              {coupon.badge}
-                            </span>
-                            {coupon.isExtra ? (
-                              <Badge className="bg-blue-600 text-white font-bold text-[9.5px]">
-                                ✨ Cupón Nuevo
-                              </Badge>
-                            ) : (
-                              <Badge className="bg-slate-900 text-white font-bold text-[9.5px]">
-                                Oficial NB
-                              </Badge>
+                  return (
+                    <div
+                      key={coupon.id}
+                      className={cn(
+                        "group relative flex items-stretch rounded-[10px] border border-dashed border-slate-300/80 bg-white shadow-none transition-all duration-150 hover:border-solid hover:border-[#1E40AF] hover:-translate-y-0.5 overflow-hidden",
+                        !isAvailable && "opacity-55"
+                      )}
+                    >
+                      {/* Zona izquierda (~35%): valor del descuento en una sola línea, 30px, bold sans, tabular-nums */}
+                      <div className="w-[35%] shrink-0 flex items-center justify-center p-3 sm:p-4 border-r border-dashed border-slate-300/80 group-hover:border-[#1E40AF]">
+                        <span
+                          className={cn(
+                            "text-[26px] sm:text-[30px] font-bold leading-none whitespace-nowrap tabular-nums tracking-tight",
+                            coupon.discountType === "percentage" ? "text-[#1E40AF]" : "text-emerald-600"
+                          )}
+                        >
+                          {coupon.badge}
+                        </span>
+                      </div>
+
+                      {/* Muesca superior (16px) */}
+                      <div className="absolute -top-2 left-[35%] -translate-x-1/2 w-4 h-4 rounded-full bg-slate-50 border border-dashed border-slate-300/80 group-hover:border-[#1E40AF] z-10 pointer-events-none" />
+
+                      {/* Muesca inferior (16px) */}
+                      <div className="absolute -bottom-2 left-[35%] -translate-x-1/2 w-4 h-4 rounded-full bg-slate-50 border border-dashed border-slate-300/80 group-hover:border-[#1E40AF] z-10 pointer-events-none" />
+
+                      {/* Zona derecha */}
+                      <div className="flex-1 p-3.5 sm:p-4 flex flex-col justify-between min-w-0">
+                        <div className="space-y-1">
+                          {/* Título y badge discreto "Nuevo" */}
+                          <div className="flex items-start justify-between gap-1.5">
+                            <h3 className="text-[15px] font-semibold text-slate-900 leading-snug line-clamp-2">
+                              {coupon.name}
+                            </h3>
+                            {coupon.isExtra && (
+                              <span className="shrink-0 text-[11px] font-medium text-blue-700 bg-blue-50 px-1.5 py-0.5 rounded border border-blue-200/60 leading-none">
+                                Nuevo
+                              </span>
                             )}
                           </div>
 
-                          <h3 className="text-sm font-bold text-slate-900 leading-snug">
-                            {coupon.name}
-                          </h3>
-
-                          <p className="text-xs text-slate-600 mt-1.5 leading-relaxed">
-                            {coupon.description}
+                          {/* Línea secundaria de 12px en gris: compra mínima (si existe) y vigencia separadas por " · " */}
+                          <p className="text-xs text-slate-500 flex items-center flex-wrap gap-x-1.5 leading-tight">
+                            {coupon.minPurchase > 0 && (
+                              <>
+                                <span>Min. S/ {coupon.minPurchase.toLocaleString("es-PE")}</span>
+                                <span>·</span>
+                              </>
+                            )}
+                            <span className="truncate">
+                              Hasta {new Date(coupon.validUntil + "T12:00:00").toLocaleDateString("es-PE", { day: "numeric", month: "short", year: "numeric" })}
+                            </span>
                           </p>
-
-                          {coupon.minPurchase > 0 && (
-                            <div className="mt-2 text-[11px] font-semibold text-slate-500">
-                              Compra mínima: S/ {coupon.minPurchase.toLocaleString("es-PE")}
-                            </div>
-                          )}
                         </div>
 
-                        <div className="mt-5 pt-3 border-t border-slate-200/80 space-y-2.5">
-                          {/* Tiempo de vida */}
-                          <div className="flex items-center gap-1.5 text-[11px] text-amber-700 bg-amber-50 px-2 py-1 rounded-lg border border-amber-200/60 font-medium">
-                            <Clock className="w-3.5 h-3.5 shrink-0 text-amber-600" />
-                            <span className="truncate">{coupon.validUntilDisplay}</span>
-                          </div>
-
-                          {/* Indicador de aplicación en carrito */}
-                          <div className="flex items-center justify-between text-xs pt-1">
-                            <span className="inline-flex items-center gap-1.5 text-slate-500 font-medium text-[11px]">
-                              <ShoppingCart className="w-3.5 h-3.5 text-blue-600" />
-                              <span>Aplicable en tu Carrito</span>
-                            </span>
-                            <span className="font-mono text-[10.5px] font-bold text-slate-700 bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
-                              {coupon.code}
-                            </span>
-                          </div>
+                        {/* Fila inferior: código en una sola fila + botón copiar */}
+                        <div className="flex items-center justify-between gap-2 pt-3 mt-auto">
+                          <code className="font-mono text-xs font-semibold text-slate-800 bg-slate-100/90 px-2 py-0.5 rounded border border-slate-200 tracking-wider truncate">
+                            {coupon.code}
+                          </code>
+                          <button
+                            type="button"
+                            onClick={() => handleCopyCoupon(coupon.code)}
+                            className="p-1 rounded text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors duration-150 shrink-0 cursor-pointer"
+                            title="Copiar código"
+                            aria-label="Copiar código"
+                          >
+                            {copiedCode === coupon.code ? (
+                              <Check className="w-3.5 h-3.5 text-emerald-600" />
+                            ) : (
+                              <Copy className="w-3.5 h-3.5" />
+                            )}
+                          </button>
                         </div>
                       </div>
-                    );
-                  })}
-                </div>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           )}

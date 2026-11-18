@@ -396,12 +396,12 @@ function AffiliatePortalContent() {
           idx === 0
             ? "Más Vendido"
             : idx === 1
-            ? "Alta Conversión"
-            : idx === 2
-            ? "Popular"
-            : idx === 3
-            ? "Comisión Top"
-            : "Recomendado",
+              ? "Alta Conversión"
+              : idx === 2
+                ? "Popular"
+                : idx === 3
+                  ? "Comisión Top"
+                  : "Recomendado",
       }));
     }
     return [
@@ -530,64 +530,56 @@ function AffiliatePortalContent() {
           </Link>
         </div>
 
-        {/* Affiliate Profile Quick Card */}
-        <div className="p-4 mx-3 my-3 rounded-2xl bg-slate-900/80 border border-slate-800 shadow-inner">
+        {/* Affiliate Profile */}
+        <div className="px-4 py-3 border-b border-slate-800/80">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-blue-700 to-indigo-600 flex items-center justify-center font-bold text-white text-sm shadow">
+            <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-700 to-indigo-600 flex items-center justify-center font-bold text-white text-xs shrink-0">
               {(affiliate?.name || user?.name || "AF").slice(0, 2).toUpperCase()}
             </div>
             <div className="min-w-0 flex-1">
-              <p className="text-xs font-bold text-white truncate">
-                {affiliate?.name || user?.name || "Afiliado Activo"}
-              </p>
-              <div className="flex items-center gap-1.5 mt-0.5">
-                <span className="font-mono text-[11px] font-black text-cyan-400">
-                  {affiliate?.affiliate_code || "..."}
-                </span>
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (affiliate?.affiliate_code) {
-                      navigator.clipboard.writeText(affiliate.affiliate_code);
-                      pushToast({
-                        title: "Código copiado",
-                        description: `${affiliate.affiliate_code} copiado al portapapeles.`,
-                        variant: "info",
-                      });
-                    }
-                  }}
-                  title="Copiar código"
-                  className="text-slate-400 hover:text-white transition-colors"
-                >
-                  <Copy className="w-3 h-3" />
-                </button>
+              <div className="flex items-center justify-between gap-1">
+                <p className="text-sm font-medium text-white truncate">
+                  {affiliate?.name || user?.name || "Afiliado Activo"}
+                </p>
+                <div className="flex items-center gap-1 shrink-0">
+                  <span className="font-mono text-xs font-bold text-cyan-400">
+                    {affiliate?.affiliate_code || "..."}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (affiliate?.affiliate_code) {
+                        navigator.clipboard.writeText(affiliate.affiliate_code);
+                        pushToast({
+                          title: "Código copiado",
+                          description: `${affiliate.affiliate_code} copiado al portapapeles.`,
+                          variant: "info",
+                        });
+                      }
+                    }}
+                    title="Copiar código"
+                    className="text-slate-400 hover:text-white transition-colors duration-150 cursor-pointer"
+                  >
+                    <Copy className="w-3.5 h-3.5 stroke-[1.75]" />
+                  </button>
+                </div>
               </div>
-            </div>
-          </div>
 
-          <div className="mt-3 pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs">
-            <div>
-              <span className="text-[10px] uppercase font-bold text-slate-400 block tracking-wider">
-                Comisión
-              </span>
-              <span className="font-bold text-emerald-400">
-                {affiliate?.commission_rate || 10}% por Venta
-              </span>
-            </div>
-            <div className="text-right">
-              <span className="text-[10px] uppercase font-bold text-slate-400 block tracking-wider">
-                Disponible
-              </span>
-              <span className="font-bold font-mono text-white">
-                S/ {Number(affiliate?.balance || 0).toFixed(2)}
-              </span>
+              {/* Comisión y disponible en una sola línea de texto pequeño (12px) */}
+              <p className="text-xs text-slate-400 mt-1 flex items-center gap-1.5 truncate">
+                <span>{affiliate?.commission_rate || 10}% comisión</span>
+                <span>·</span>
+                <span className="text-white font-medium tabular-nums">
+                  Disp. S/ {Number(affiliate?.balance || 0).toFixed(2)}
+                </span>
+              </p>
             </div>
           </div>
         </div>
 
         {/* Navigation Items */}
-        <nav className="flex-1 px-3 py-2 space-y-1 overflow-y-auto no-scrollbar">
-          <p className="px-3 py-1.5 text-[10px] font-black uppercase tracking-widest text-slate-400">
+        <nav className="flex-1 px-2.5 py-2 space-y-1 overflow-y-auto no-scrollbar">
+          <p className="px-3 py-1.5 text-[11px] font-medium uppercase tracking-wider text-slate-500">
             Módulos del Afiliado
           </p>
           {navItems.map((item) => {
@@ -599,19 +591,19 @@ function AffiliatePortalContent() {
                 type="button"
                 onClick={() => setActiveTab(item.id)}
                 className={cn(
-                  "w-full flex items-center justify-between px-3 h-10 rounded-xl text-xs font-semibold transition-all relative group text-left",
+                  "w-full flex items-center justify-between h-10 text-[13px] transition-colors duration-150 text-left",
                   isActive
-                    ? "bg-blue-600 text-white shadow-lg shadow-blue-600/30"
-                    : "text-slate-300 hover:text-white hover:bg-slate-800/60"
+                    ? "border-l-2 border-blue-600 text-white font-medium pl-3 pr-3 bg-transparent"
+                    : "border-l-2 border-transparent text-slate-400 hover:text-white pl-3 pr-3 hover:bg-white/[0.02]"
                 )}
               >
                 <div className="flex items-center gap-3 min-w-0">
                   <Icon
                     className={cn(
-                      "w-4 h-4 shrink-0 transition-colors",
+                      "w-[18px] h-[18px] stroke-[1.75] shrink-0 transition-colors duration-150",
                       isActive
                         ? "text-white"
-                        : "text-slate-400 group-hover:text-cyan-400"
+                        : "text-slate-400"
                     )}
                   />
                   <span className="truncate">{item.label}</span>
@@ -619,7 +611,7 @@ function AffiliatePortalContent() {
                 {item.badge !== undefined && (
                   <span
                     className={cn(
-                      "text-[10px] font-bold px-2 py-0.5 rounded-full",
+                      "text-[10px] font-bold px-2 py-0.5 rounded-full tabular-nums",
                       isActive
                         ? "bg-white/20 text-white"
                         : "bg-blue-500/20 text-cyan-300 border border-blue-500/30"
@@ -637,18 +629,17 @@ function AffiliatePortalContent() {
         <div className="p-3 border-t border-slate-800/80 space-y-1">
           <Link
             href="/"
-            className="flex items-center gap-2.5 px-3 h-9 rounded-xl text-xs font-medium text-slate-300 hover:text-white hover:bg-slate-800/60 transition-colors"
+            className="flex items-center gap-3 px-3 h-10 rounded-lg text-[13px] font-medium text-slate-400 hover:text-white transition-colors duration-150"
           >
-            <Store className="w-4 h-4 text-slate-400" />
+            <Store className="w-[18px] h-[18px] stroke-[1.75] text-current" />
             <span>Ir a la Tienda</span>
-            <ArrowUpRight className="w-3.5 h-3.5 ml-auto text-slate-400" />
           </Link>
           <button
             type="button"
             onClick={signOut}
-            className="w-full flex items-center gap-2.5 px-3 h-9 rounded-xl text-xs font-medium text-rose-400 hover:text-rose-300 hover:bg-rose-950/30 transition-colors"
+            className="w-full flex items-center gap-3 px-3 h-10 rounded-lg text-[13px] font-medium text-slate-400 hover:text-rose-400 transition-colors duration-150 cursor-pointer"
           >
-            <LogOut className="w-4 h-4" />
+            <LogOut className="w-[18px] h-[18px] stroke-[1.75] text-current" />
             <span>Cerrar Sesión</span>
           </button>
         </div>
@@ -693,23 +684,55 @@ function AffiliatePortalContent() {
                 </button>
               </div>
 
-              {/* Mobile Profile Card */}
-              <div className="p-4 mx-3 my-3 rounded-xl bg-slate-900 border border-slate-800">
-                <p className="text-xs font-bold text-white truncate">
-                  {affiliate?.name || user?.name || "Afiliado Activo"}
-                </p>
-                <p className="font-mono text-xs text-cyan-400 font-bold mt-0.5">
-                  {affiliate?.affiliate_code || "..."}
-                </p>
-                <div className="mt-2 pt-2 border-t border-slate-800 flex justify-between text-[11px]">
-                  <span className="text-slate-400">Saldo:</span>
-                  <span className="font-bold text-emerald-400 font-mono">
-                    S/ {Number(affiliate?.balance || 0).toFixed(2)}
-                  </span>
+              {/* Mobile Profile */}
+              <div className="px-4 py-3 border-b border-slate-800">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-700 to-indigo-600 flex items-center justify-center font-bold text-white text-xs shrink-0">
+                    {(affiliate?.name || user?.name || "AF").slice(0, 2).toUpperCase()}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center justify-between gap-1">
+                      <p className="text-sm font-medium text-white truncate">
+                        {affiliate?.name || user?.name || "Afiliado Activo"}
+                      </p>
+                      <div className="flex items-center gap-1 shrink-0">
+                        <span className="font-mono text-xs font-bold text-cyan-400">
+                          {affiliate?.affiliate_code || "..."}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (affiliate?.affiliate_code) {
+                              navigator.clipboard.writeText(affiliate.affiliate_code);
+                              pushToast({
+                                title: "Código copiado",
+                                description: `${affiliate.affiliate_code} copiado al portapapeles.`,
+                                variant: "info",
+                              });
+                            }
+                          }}
+                          title="Copiar código"
+                          className="text-slate-400 hover:text-white transition-colors duration-150"
+                        >
+                          <Copy className="w-3.5 h-3.5 stroke-[1.75]" />
+                        </button>
+                      </div>
+                    </div>
+                    <p className="text-xs text-slate-400 mt-1 flex items-center gap-1.5 truncate">
+                      <span>{affiliate?.commission_rate || 10}% comisión</span>
+                      <span>·</span>
+                      <span className="text-white font-medium tabular-nums">
+                        Disp. S/ {Number(affiliate?.balance || 0).toFixed(2)}
+                      </span>
+                    </p>
+                  </div>
                 </div>
               </div>
 
-              <nav className="flex-1 px-3 py-2 space-y-1 overflow-y-auto">
+              <nav className="flex-1 px-2.5 py-2 space-y-1 overflow-y-auto">
+                <p className="px-3 py-1.5 text-[11px] font-medium uppercase tracking-wider text-slate-500">
+                  Módulos del Afiliado
+                </p>
                 {navItems.map((item) => {
                   const Icon = item.icon;
                   const isActive = activeTab === item.id;
@@ -722,18 +745,18 @@ function AffiliatePortalContent() {
                         setMobileSidebarOpen(false);
                       }}
                       className={cn(
-                        "w-full flex items-center justify-between px-3 h-10 rounded-xl text-xs font-semibold transition-all text-left",
+                        "w-full flex items-center justify-between h-10 text-[13px] transition-colors duration-150 text-left",
                         isActive
-                          ? "bg-blue-600 text-white"
-                          : "text-slate-300 hover:text-white hover:bg-slate-800/60"
+                          ? "border-l-2 border-blue-600 text-white font-medium pl-3 pr-3 bg-transparent"
+                          : "border-l-2 border-transparent text-slate-400 hover:text-white pl-3 pr-3 hover:bg-white/[0.02]"
                       )}
                     >
-                      <div className="flex items-center gap-3">
-                        <Icon className="w-4 h-4" />
-                        <span>{item.label}</span>
+                      <div className="flex items-center gap-3 min-w-0">
+                        <Icon className="w-[18px] h-[18px] stroke-[1.75] shrink-0 text-current" />
+                        <span className="truncate">{item.label}</span>
                       </div>
                       {item.badge !== undefined && (
-                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-white/20 text-white">
+                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full tabular-nums bg-white/20 text-white">
                           {item.badge}
                         </span>
                       )}
@@ -745,17 +768,17 @@ function AffiliatePortalContent() {
               <div className="p-3 border-t border-slate-800 space-y-1">
                 <Link
                   href="/"
-                  className="flex items-center gap-2 px-3 h-9 rounded-xl text-xs text-slate-300 hover:text-white hover:bg-slate-800"
+                  className="flex items-center gap-3 px-3 h-10 rounded-lg text-[13px] font-medium text-slate-400 hover:text-white transition-colors duration-150"
                 >
-                  <Store className="w-4 h-4 text-slate-400" />
+                  <Store className="w-[18px] h-[18px] stroke-[1.75] text-current" />
                   <span>Ir a la Tienda</span>
                 </Link>
                 <button
                   type="button"
                   onClick={signOut}
-                  className="w-full flex items-center gap-2 px-3 h-9 rounded-xl text-xs text-rose-400 hover:bg-rose-950/30"
+                  className="w-full flex items-center gap-3 px-3 h-10 rounded-lg text-[13px] font-medium text-slate-400 hover:text-rose-400 transition-colors duration-150"
                 >
-                  <LogOut className="w-4 h-4" />
+                  <LogOut className="w-[18px] h-[18px] stroke-[1.75] text-current" />
                   <span>Cerrar Sesión</span>
                 </button>
               </div>
@@ -1115,19 +1138,19 @@ function AffiliatePortalContent() {
                                 ref.status === "paid"
                                   ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/30"
                                   : ref.status === "approved"
-                                  ? "bg-blue-500/20 text-blue-300 border-blue-500/30"
-                                  : ref.status === "cancelled"
-                                  ? "bg-rose-500/20 text-rose-300 border-rose-500/30"
-                                  : "bg-amber-500/20 text-amber-300 border-amber-500/30"
+                                    ? "bg-blue-500/20 text-blue-300 border-blue-500/30"
+                                    : ref.status === "cancelled"
+                                      ? "bg-rose-500/20 text-rose-300 border-rose-500/30"
+                                      : "bg-amber-500/20 text-amber-300 border-amber-500/30"
                               )}
                             >
                               {ref.status === "paid"
                                 ? "Pagado"
                                 : ref.status === "approved"
-                                ? "Aprobado"
-                                : ref.status === "cancelled"
-                                ? "Cancelado"
-                                : "Pendiente"}
+                                  ? "Aprobado"
+                                  : ref.status === "cancelled"
+                                    ? "Cancelado"
+                                    : "Pendiente"}
                             </Badge>
                           </div>
                         </div>
@@ -1203,13 +1226,13 @@ function AffiliatePortalContent() {
           {activeTab === "enlaces" && (
             <div className="space-y-6">
               {/* Custom Link Generator Card */}
-              <Card className="p-6 bg-slate-900 border-slate-800 rounded-2xl shadow-xl space-y-5">
+              <Card className="p-5 bg-slate-900 border-slate-800 rounded-xl shadow-none space-y-4">
                 <div>
                   <h2 className="text-base font-bold text-white flex items-center gap-2">
-                    <Link2 className="w-4 h-4 text-cyan-400" />
+                    <Link2 className="w-[18px] h-[18px] stroke-[1.75] text-slate-300" />
                     Generador de Enlaces Personalizados
                   </h2>
-                  <p className="text-xs text-slate-400 mt-0.5">
+                  <p className="text-xs text-slate-400 mt-0.5 truncate">
                     Pega la URL de cualquier software, curso o producto de la tienda para generar tu enlace único con seguimiento de comisiones.
                   </p>
                 </div>
@@ -1223,22 +1246,22 @@ function AffiliatePortalContent() {
                         setTargetUrl(e.target.value);
                         handleGenerateLink(e.target.value);
                       }}
-                      className="h-11 bg-slate-950 border-slate-800 text-slate-100 placeholder:text-slate-500 text-xs rounded-xl"
+                      className="h-11 bg-slate-950 border-slate-800 text-slate-100 placeholder:text-slate-500 text-xs rounded-lg"
                     />
                   </div>
                   <Button
                     onClick={() => handleGenerateLink()}
-                    className="h-11 px-5 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs rounded-xl shadow-lg shadow-blue-600/20 shrink-0"
+                    className="h-11 px-5 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs rounded-lg transition-colors duration-150 shrink-0 shadow-none"
                   >
-                    <Sparkles className="w-4 h-4 mr-2" />
+                    <Sparkles className="w-4 h-4 stroke-[1.75] mr-2" />
                     Generar Enlace
                   </Button>
                 </div>
 
                 {/* Quick presets */}
                 <div>
-                  <span className="text-[11px] font-semibold text-slate-400 block mb-2">
-                    Accesos directos recomendados (haz clic para copiar de inmediato):
+                  <span className="text-xs font-medium text-slate-400 block mb-2">
+                    Accesos directos recomendados:
                   </span>
                   <div className="flex items-center gap-2 flex-wrap">
                     {[
@@ -1251,10 +1274,10 @@ function AffiliatePortalContent() {
                         key={preset.name}
                         type="button"
                         onClick={() => handleQuickPreset(preset.path)}
-                        className="px-3 py-1.5 rounded-lg bg-slate-950 border border-slate-800 hover:border-blue-500/50 hover:bg-blue-950/30 text-xs text-slate-300 font-medium transition-all flex items-center gap-1.5"
+                        className="h-8 px-3 rounded-lg bg-slate-950 border border-slate-800/80 hover:border-blue-500/50 hover:bg-blue-950/20 text-[13px] text-slate-300 font-medium transition-colors duration-150 flex items-center gap-1.5 cursor-pointer"
                       >
                         <span>{preset.name}</span>
-                        <ExternalLink className="w-3 h-3 text-cyan-400" />
+                        <ExternalLink className="w-3.5 h-3.5 stroke-[1.75] text-slate-400" />
                       </button>
                     ))}
                   </div>
@@ -1262,7 +1285,7 @@ function AffiliatePortalContent() {
 
                 {/* Output box */}
                 {generatedLink && (
-                  <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <div className="p-4 rounded-lg bg-slate-950 border border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                     <div className="min-w-0 flex-1">
                       <span className="text-[10px] uppercase font-bold text-slate-400 block mb-0.5">
                         Tu Enlace Rastreable:
@@ -1274,9 +1297,9 @@ function AffiliatePortalContent() {
                     <Button
                       size="sm"
                       onClick={() => handleCopyGenerated()}
-                      className="h-9 px-4 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs rounded-lg shrink-0 shadow-md"
+                      className="h-9 px-4 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs rounded-lg shrink-0"
                     >
-                      <Copy className="w-3.5 h-3.5 mr-1.5" />
+                      <Copy className="w-4 h-4 stroke-[1.75] mr-1.5" />
                       Copiar Enlace
                     </Button>
                   </div>
@@ -1288,67 +1311,65 @@ function AffiliatePortalContent() {
                 <div className="flex items-center justify-between">
                   <div>
                     <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                      <TrendingUp className="w-4 h-4 text-emerald-400" />
+                      <TrendingUp className="w-[18px] h-[18px] stroke-[1.75] text-slate-300" />
                       Productos con Mayor Comisión
                     </h3>
-                    <p className="text-xs text-slate-400">
+                    <p className="text-[13px] text-slate-400 mt-0.5">
                       Licencias de alta demanda listas para promocionar con 1 solo clic
                     </p>
                   </div>
-                  <Badge className="bg-blue-500/20 text-cyan-300 border-blue-500/30 text-xs">
+                  <span className="text-xs text-slate-500 font-medium">
                     {affiliate?.commission_rate || 10}% Comisión fija
-                  </Badge>
+                  </span>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-stretch">
                   {featuredLicenses.map((item) => {
                     const commissionPreview =
                       item.price * ((affiliate?.commission_rate || 10) / 100);
                     return (
                       <Card
                         key={item.id}
-                        className="p-5 bg-slate-900 border-slate-800 rounded-2xl shadow-xl flex flex-col justify-between hover:border-slate-700 transition-all group"
+                        className="p-4 bg-slate-900 border border-slate-800/80 rounded-[10px] shadow-none flex flex-col justify-between transition-colors duration-150"
                       >
-                        <div className="space-y-2">
-                          <div className="flex items-center justify-between">
-                            <Badge className="bg-slate-800 text-slate-300 border-slate-700 text-[10px]">
+                        <div>
+                          <div className="flex items-center justify-between gap-2">
+                            <span className="text-xs text-slate-400 truncate">
                               {item.category}
-                            </Badge>
-                            <Badge className="bg-amber-500/20 text-amber-300 border-amber-500/30 text-[9px] font-bold">
+                            </span>
+                            <span className="text-[11px] font-medium text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20 whitespace-nowrap shrink-0">
                               {item.badge}
-                            </Badge>
+                            </span>
                           </div>
-                          <h4 className="font-bold text-sm text-white group-hover:text-cyan-300 transition-colors">
+                          <h4 className="font-semibold text-sm text-white line-clamp-2 leading-snug mt-2">
                             {item.name}
                           </h4>
                         </div>
 
-                        <div className="mt-4 pt-3 border-t border-slate-800/80 space-y-3">
-                          <div className="flex items-center justify-between">
+                        <div className="mt-4 pt-3 border-t border-slate-800/60 space-y-3">
+                          <div className="flex items-end justify-between gap-2">
                             <div>
-                              <span className="text-[10px] text-slate-400 block">Precio PVP</span>
-                              <span className="font-bold text-xs text-white">
+                              <span className="text-[11px] text-slate-500 block leading-none mb-1">Precio PVP</span>
+                              <span className="text-sm text-slate-300 font-medium tabular-nums block leading-tight">
                                 S/ {item.price.toFixed(2)}
                               </span>
                             </div>
                             <div className="text-right">
-                              <span className="text-[10px] text-emerald-400 font-bold block">
-                                Tu Ganancia
-                              </span>
-                              <span className="font-bold font-mono text-emerald-400 text-sm">
+                              <span className="text-[11px] text-slate-500 block leading-none mb-1">Tu Ganancia</span>
+                              <span className="text-lg font-semibold text-emerald-400 tabular-nums block leading-tight">
                                 +S/ {commissionPreview.toFixed(2)}
                               </span>
                             </div>
                           </div>
 
-                          <Button
-                            size="sm"
+                          <button
+                            type="button"
                             onClick={() => handleQuickPreset(item.path)}
-                            className="w-full h-8 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs rounded-lg"
+                            className="w-full h-9 rounded-lg border border-blue-600/70 bg-transparent text-blue-400 hover:bg-blue-600 hover:text-white transition-colors duration-150 text-xs font-semibold flex items-center justify-center gap-2 cursor-pointer"
                           >
-                            <Copy className="w-3.5 h-3.5 mr-1.5" />
-                            Copiar Link
-                          </Button>
+                            <Copy className="w-4 h-4 stroke-[1.75]" />
+                            <span>Copiar Link</span>
+                          </button>
                         </div>
                       </Card>
                     );
@@ -1446,19 +1467,19 @@ function AffiliatePortalContent() {
                                   ref.status === "paid"
                                     ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30"
                                     : ref.status === "approved"
-                                    ? "bg-blue-500/20 text-blue-300 border border-blue-500/30"
-                                    : ref.status === "cancelled"
-                                    ? "bg-rose-500/20 text-rose-300 border border-rose-500/30"
-                                    : "bg-amber-500/20 text-amber-300 border border-amber-500/30"
+                                      ? "bg-blue-500/20 text-blue-300 border border-blue-500/30"
+                                      : ref.status === "cancelled"
+                                        ? "bg-rose-500/20 text-rose-300 border border-rose-500/30"
+                                        : "bg-amber-500/20 text-amber-300 border border-amber-500/30"
                                 )}
                               >
                                 {ref.status === "paid"
                                   ? "Pagado"
                                   : ref.status === "approved"
-                                  ? "Aprobado"
-                                  : ref.status === "cancelled"
-                                  ? "Cancelado"
-                                  : "Pendiente"}
+                                    ? "Aprobado"
+                                    : ref.status === "cancelled"
+                                      ? "Cancelado"
+                                      : "Pendiente"}
                               </Badge>
                             </td>
                           </tr>
@@ -1572,15 +1593,15 @@ function AffiliatePortalContent() {
                                   p.status === "paid"
                                     ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30"
                                     : p.status === "rejected"
-                                    ? "bg-rose-500/20 text-rose-300 border border-rose-500/30"
-                                    : "bg-amber-500/20 text-amber-300 border border-amber-500/30"
+                                      ? "bg-rose-500/20 text-rose-300 border border-rose-500/30"
+                                      : "bg-amber-500/20 text-amber-300 border border-amber-500/30"
                                 )}
                               >
                                 {p.status === "paid"
                                   ? "Pagado"
                                   : p.status === "rejected"
-                                  ? "Rechazado"
-                                  : "En Proceso"}
+                                    ? "Rechazado"
+                                    : "En Proceso"}
                               </Badge>
                             </td>
                             <td className="py-3.5 px-4 text-center">
@@ -1735,7 +1756,7 @@ function AffiliatePortalContent() {
                     Soporte al Afiliado
                   </span>
                   <p className="text-xs text-slate-300 mt-1">
-                    ¿Dudas con una comisión o liquidación bancaria? Escríbenos directamente a través de nuestro canal corporativo.
+                    ¿Dudas con una comisión o liquidación bancaria? Escríbenos a través de Whatsapp.
                   </p>
                   <a
                     href="https://wa.me/51976543210"
